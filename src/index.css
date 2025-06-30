@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Ensure proper scrolling behavior */
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+#root {
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Fix scrolling for main content areas */
+.main-content {
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+/* Ensure modals and overlays don't interfere with scrolling */
+.modal-overlay {
+  overflow-y: auto;
+}
+
+/* Fix for tables and long content */
+.table-container {
+  overflow-x: auto;
+  overflow-y: visible;
+}
+
+/* Ensure proper scrolling in sidebar */
+.sidebar-content {
+  overflow-y: auto;
+  max-height: calc(100vh - 2rem);
+}
+
+/* Fix for form containers */
+.form-container {
+  overflow-y: auto;
+  max-height: 90vh;
+}
+
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
