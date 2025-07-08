@@ -2,7 +2,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: 'admin' | 'hod' | 'faculty';
+  role: 'admin' | 'committee_member' | 'faculty';
   department?: string;
   phone?: string;
   isApproved?: boolean;
@@ -47,12 +47,20 @@ export interface LeaveApplication {
   leaveType: 'casual' | 'medical' | 'personal' | 'duty';
   subject: string;
   description: string;
-  status: 'pending' | 'approved' | 'rejected';
+  status: 'pending_committee_approval' | 'pending_principal_approval' | 'approved' | 'rejected';
   appliedDate: string;
   reviewedBy?: string;
   reviewedDate?: string;
   comments?: string;
   department?: string;
+  committeeApproved?: boolean;
+  principalApproved?: boolean;
+  committeeReviewedBy?: string;
+  committeeReviewedDate?: string;
+  principalReviewedBy?: string;
+  principalReviewedDate?: string;
+  committeeComments?: string;
+  principalComments?: string;
 }
 
 export interface Achievement {

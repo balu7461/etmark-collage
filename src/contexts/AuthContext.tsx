@@ -58,8 +58,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           await signOut(auth); // Sign out immediately
           
           // Different messages for different roles
-          const roleMessage = userData.role === 'hod' 
-            ? 'Your HOD account is pending admin approval. HOD accounts require special verification.'
+          const roleMessage = userData.role === 'committee_member' 
+            ? 'Your Committee Member account is pending admin approval. Committee accounts require special verification.'
             : 'Your faculty account is pending admin approval.';
             
           throw new Error(`${roleMessage} Please contact the administrator for approval status.`);
@@ -69,7 +69,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem('currentUser', JSON.stringify(userData));
         
         // Welcome message with role
-        const roleDisplay = userData.role === 'hod' ? 'HOD' : userData.role;
+        const roleDisplay = userData.role === 'committee_member' ? 'Committee Member' : userData.role;
         toast.success(`Welcome back, ${userData.name}! (${roleDisplay.toUpperCase()})`);
       } else {
         throw new Error('User profile not found');
@@ -127,8 +127,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               setCurrentUser(null);
               localStorage.removeItem('currentUser');
               
-              const roleMessage = userData.role === 'hod' 
-                ? 'Your HOD account is pending admin approval.'
+              const roleMessage = userData.role === 'committee_member' 
+                ? 'Your Committee Member account is pending admin approval.'
                 : 'Your account is pending admin approval.';
               
               toast.error(roleMessage);

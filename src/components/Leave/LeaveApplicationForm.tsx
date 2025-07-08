@@ -48,7 +48,7 @@ export function LeaveApplicationForm() {
         leaveType: formData.leaveType,
         subject: formData.subject,
         description: formData.description,
-        status: 'pending',
+        status: 'pending_committee_approval',
         appliedDate: format(new Date(), 'yyyy-MM-dd'),
         department: currentUser.department || 'Unknown' // Ensure department is always set
       };

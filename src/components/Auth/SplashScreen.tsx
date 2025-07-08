@@ -43,8 +43,8 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
         </div>
 
         {/* Title with Typewriter Effect */}
-        <h1 className="text-5xl font-bold text-white mb-4 animate-fade-in">
-          CollegeConnect
+        <h1 className="text-5xl font-bold text-white mb-4 animate-fade-in bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
+          Trinity College
         </h1>
         <p className="text-xl text-blue-100 mb-8 animate-fade-in-delay">
           Student & Faculty Management System

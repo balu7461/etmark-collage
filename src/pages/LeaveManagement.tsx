@@ -27,14 +27,20 @@ export function LeaveManagement() {
     try {
       let q;
       
-      if (currentUser?.role === 'hod') {
-        // HOD can only see leaves from their department
+      if (currentUser?.role === 'committee_member') {
+        // Committee members see leaves pending their approval
         q = query(
           collection(db, 'leaveApplications'),
-          where('department', '==', currentUser.department)
+          where('status', '==', 'pending_committee_approval')
+        );
+      } else if (currentUser?.role === 'admin') {
+        // Admin (Principal) sees leaves pending final approval
+        q = query(
+          collection(db, 'leaveApplications'),
+          where('status', '==', 'pending_principal_approval')
         );
       } else {
-        // Admin can see all leaves
+        // Fallback to see all leaves
         q = query(collection(db, 'leaveApplications'));
       }
       
@@ -62,12 +68,43 @@ export function LeaveManagement() {
 
   const handleLeaveAction = async (leaveId: string, action: 'approved' | 'rejected') => {
     try {
-      await updateDoc(doc(db, 'leaveApplications', leaveId), {
-        status: action,
+      const updateData: any = {
         reviewedBy: currentUser?.name,
         reviewedDate: format(new Date(), 'yyyy-MM-dd'),
         comments: reviewComments
-      });
+      };
+
+      if (currentUser?.role === 'committee_member') {
+        if (action === 'approved') {
+          updateData.status = 'pending_principal_approval';
+          updateData.committeeApproved = true;
+          updateData.committeeReviewedBy = currentUser.name;
+          updateData.committeeReviewedDate = format(new Date(), 'yyyy-MM-dd');
+          updateData.committeeComments = reviewComments;
+        } else {
+          updateData.status = 'rejected';
+          updateData.committeeApproved = false;
+          updateData.committeeReviewedBy = currentUser.name;
+          updateData.committeeReviewedDate = format(new Date(), 'yyyy-MM-dd');
+          updateData.committeeComments = reviewComments;
+        }
+      } else if (currentUser?.role === 'admin') {
+        if (action === 'approved') {
+          updateData.status = 'approved';
+          updateData.principalApproved = true;
+          updateData.principalReviewedBy = currentUser.name;
+          updateData.principalReviewedDate = format(new Date(), 'yyyy-MM-dd');
+          updateData.principalComments = reviewComments;
+        } else {
+          updateData.status = 'rejected';
+          updateData.principalApproved = false;
+          updateData.principalReviewedBy = currentUser.name;
+          updateData.principalReviewedDate = format(new Date(), 'yyyy-MM-dd');
+          updateData.principalComments = reviewComments;
+        }
+      }
+
+      await updateDoc(doc(db, 'leaveApplications', leaveId), updateData);
 
       toast.success(`Leave application ${action} successfully`);
       setSelectedLeave(null);
@@ -91,6 +128,10 @@ export function LeaveManagement() {
         return 'bg-green-100 text-green-800 border-green-200';
       case 'rejected':
         return 'bg-red-100 text-red-800 border-red-200';
+      case 'pending_committee_approval':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'pending_principal_approval':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
       default:
         return 'bg-yellow-100 text-yellow-800 border-yellow-200';
     }
@@ -102,6 +143,10 @@ export function LeaveManagement() {
         return <CheckCircle className="h-4 w-4" />;
       case 'rejected':
         return <XCircle className="h-4 w-4" />;
+      case 'pending_committee_approval':
+        return <Clock className="h-4 w-4" />;
+      case 'pending_principal_approval':
+        return <Clock className="h-4 w-4" />;
       default:
         return <Clock className="h-4 w-4" />;
     }
@@ -109,7 +154,9 @@ export function LeaveManagement() {
 
   const getLeaveStats = () => {
     const total = filteredLeaves.length;
-    const pending = filteredLeaves.filter(l => l.status === 'pending').length;
+    const pending = filteredLeaves.filter(l => 
+      l.status === 'pending_committee_approval' || l.status === 'pending_principal_approval'
+    ).length;
     const approved = filteredLeaves.filter(l => l.status === 'approved').length;
     const rejected = filteredLeaves.filter(l => l.status === 'rejected').length;
     
@@ -126,11 +173,14 @@ export function LeaveManagement() {
         <div className="max-w-7xl mx-auto">
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              Leave Management {currentUser?.role === 'hod' && `- ${currentUser.department} Department`}
+              Leave Management {currentUser?.role === 'committee_member' && '- Committee Review'}
+              {currentUser?.role === 'admin' && '- Principal Approval'}
             </h1>
             <p className="text-gray-600">
-              {currentUser?.role === 'hod' 
-                ? 'Review and manage leave applications for your department'
+              {currentUser?.role === 'committee_member' 
+                ? 'Review leave applications for committee approval'
+                : currentUser?.role === 'admin'
+                ? 'Final approval of leave applications as Principal'
                 : 'Review and manage all faculty leave applications'
               }
             </p>
@@ -291,9 +341,33 @@ export function LeaveManagement() {
                               Reviewed by {leave.reviewedBy} on {leave.reviewedDate}
                             </p>
                           )}
+
+                          {leave.committeeComments && (
+                            <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 mb-4">
+                              <p className="text-sm font-medium text-purple-900 mb-1">Committee Comments:</p>
+                              <p className="text-sm text-purple-800">{leave.committeeComments}</p>
+                              {leave.committeeReviewedBy && (
+                                <p className="text-xs text-purple-600 mt-2">
+                                  Reviewed by {leave.committeeReviewedBy} on {leave.committeeReviewedDate}
+                                </p>
+                              )}
+                            </div>
+                          )}
+
+                          {leave.principalComments && (
+                            <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
+                              <p className="text-sm font-medium text-green-900 mb-1">Principal Comments:</p>
+                              <p className="text-sm text-green-800">{leave.principalComments}</p>
+                              {leave.principalReviewedBy && (
+                                <p className="text-xs text-green-600 mt-2">
+                                  Reviewed by {leave.principalReviewedBy} on {leave.principalReviewedDate}
+                                </p>
+                              )}
+                            </div>
+                          )}
                         </div>
                       )}
-                    </div>
+                        {(leave.status === 'pending_committee_approval' || leave.status === 'pending_principal_approval') && (
 
                     {leave.status === 'pending' && (
                       <div className="ml-6 flex space-x-2">
@@ -334,12 +408,12 @@ export function LeaveManagement() {
 
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Review Comments (Optional)
+                  {currentUser?.role === 'committee_member' ? 'Committee Comments' : 'Principal Comments'} (Optional)
                 </label>
                 <textarea
                   value={reviewComments}
                   onChange={(e) => setReviewComments(e.target.value)}
-                  placeholder="Add your review comments..."
+                  placeholder={`Add your ${currentUser?.role === 'committee_member' ? 'committee' : 'principal'} comments...`}
                   rows={4}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />

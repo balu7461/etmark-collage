@@ -20,7 +20,7 @@ export function UserManagement() {
     email: '',
     department: '',
     phone: '',
-    role: 'faculty' as 'admin' | 'faculty'
+    role: 'faculty' as 'admin' | 'faculty' | 'committee_member'
   });
 
   const departments = ['BBA', 'BCA', 'BCOM', 'MCOM', 'Administration'];
@@ -121,16 +121,17 @@ export function UserManagement() {
     const totalStudents = students.length;
     const adminCount = users.filter(u => u.role === 'admin').length;
     const facultyCount = users.filter(u => u.role === 'faculty').length;
+    const committeeCount = users.filter(u => u.role === 'committee_member').length;
     
     const departmentStats = departments.reduce((acc, dept) => {
       acc[dept] = {
-        faculty: users.filter(u => u.department === dept && u.role === 'faculty').length,
+        faculty: users.filter(u => u.department === dept && (u.role === 'faculty' || u.role === 'committee_member')).length,
         students: students.filter(s => s.department === dept).length
       };
       return acc;
     }, {} as Record<string, { faculty: number; students: number }>);
 
-    return { totalUsers, totalStudents, adminCount, facultyCount, departmentStats };
+    return { totalUsers, totalStudents, adminCount, facultyCount, committeeCount, departmentStats };
   };
 
   const stats = getStats();
@@ -178,8 +179,8 @@ export function UserManagement() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transform transition-all duration-200 hover:scale-105">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Faculty</p>
-                  <p className="text-3xl font-bold text-orange-600">{stats.facultyCount}</p>
+                  <p className="text-sm font-medium text-gray-600">Faculty & Committee</p>
+                  <p className="text-3xl font-bold text-orange-600">{stats.facultyCount + stats.committeeCount}</p>
                 </div>
                 <Building className="h-8 w-8 text-orange-600" />
               </div>
@@ -400,12 +401,14 @@ export function UserManagement() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">Role</label>
                   <select
                     value={editFormData.role}
-                    onChange={(e) => setEditFormData(prev => ({ ...prev, role: e.target.value as 'admin' | 'faculty' }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    onChange={(e) => setEditFormData(prev => ({ ...prev, role: e.target.value as 'admin' | 'faculty' | 'committee_member' }))}
+                    onChange={(e) => setFilterRole(e.target.value as 'all' | 'admin' | 'faculty' | 'committee_member')}
                     disabled={editingUser.email === 'hiddencave168@gmail.com'}
                   >
                     <option value="faculty">Faculty</option>
+                    <option value="committee_member">Committee Member</option>
                     <option value="admin">Admin</option>
+                    <option value="committee_member">Committee Member</option>
                   </select>
                   {editingUser.email === 'hiddencave168@gmail.com' && (
                     <p className="text-xs text-gray-500 mt-1">Main admin role cannot be changed</p>

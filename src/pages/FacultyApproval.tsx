@@ -128,17 +128,17 @@ export function FacultyApproval() {
   const displayedUsers = filter === 'pending' ? pendingUsers : approvedUsers;
 
   const getRoleIcon = (role: string) => {
-    return role === 'hod' ? <Crown className="h-4 w-4" /> : <UserCheck className="h-4 w-4" />;
+    return role === 'committee_member' ? <Crown className="h-4 w-4" /> : <UserCheck className="h-4 w-4" />;
   };
 
   const getRoleColor = (role: string) => {
-    return role === 'hod' 
+    return role === 'committee_member' 
       ? 'bg-purple-100 text-purple-800 border-purple-200'
       : 'bg-blue-100 text-blue-800 border-blue-200';
   };
 
   const getPriorityBadge = (role: string) => {
-    if (role === 'hod') {
+    if (role === 'committee_member') {
       return (
         <span className="inline-flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200">
           <AlertTriangle className="h-3 w-3" />
@@ -246,12 +246,12 @@ export function FacultyApproval() {
                 <div className="flex items-center space-x-2">
                   <Clock className="h-4 w-4" />
                   <span>Pending Approval ({stats.pending})</span>
-                  {stats.pendingHOD > 0 && (
+                  {stats.pendingCommittee > 0 && (
                     <AlertTriangle className="h-4 w-4 text-red-600" />
                   )}
                 </div>
                 <div className="text-xs mt-1 opacity-75">
-                  Faculty: {stats.pendingFaculty} • HODs: {stats.pendingHOD}
+                  Faculty: {stats.pendingFaculty} • Committee: {stats.pendingCommittee}
                 </div>
               </button>
               <button
@@ -267,7 +267,7 @@ export function FacultyApproval() {
                   <span>Approved ({stats.approved})</span>
                 </div>
                 <div className="text-xs mt-1 opacity-75">
-                  Faculty: {stats.approvedFaculty} • HODs: {stats.approvedHOD}
+                  Faculty: {stats.approvedFaculty} • Committee: {stats.approvedCommittee}
                 </div>
               </button>
             </div>
@@ -300,14 +300,14 @@ export function FacultyApproval() {
               [...displayedUsers]
                 .sort((a, b) => {
                   if (filter === 'pending') {
-                    if (a.role === 'hod' && b.role !== 'hod') return -1;
-                    if (a.role !== 'hod' && b.role === 'hod') return 1;
+                    if (a.role === 'committee_member' && b.role !== 'committee_member') return -1;
+                    if (a.role !== 'committee_member' && b.role === 'committee_member') return 1;
                   }
                   return 0;
                 })
                 .map((user) => (
                 <div key={user.id} className={`bg-white rounded-xl shadow-sm border p-6 transform transition-all duration-200 hover:shadow-md ${
-                  user.role === 'hod' && !user.isApproved ? 'border-red-200 bg-red-50' : 'border-gray-100'
+                  user.role === 'committee_member' && !user.isApproved ? 'border-red-200 bg-red-50' : 'border-gray-100'
                 }`}>
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -315,7 +315,7 @@ export function FacultyApproval() {
                         <h3 className="text-lg font-semibold text-gray-900">{user.name}</h3>
                         <span className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-sm font-medium border ${getRoleColor(user.role)}`}>
                           {getRoleIcon(user.role)}
-                          <span className="capitalize">{user.role === 'hod' ? 'HOD' : user.role}</span>
+                          <span className="capitalize">{user.role === 'committee_member' ? 'Committee Member' : user.role}</span>
                         </span>
                         {getPriorityBadge(user.role)}
                         <span className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-sm font-medium border ${
@@ -361,9 +361,9 @@ export function FacultyApproval() {
                           <div className="flex items-start space-x-2">
                             <AlertTriangle className="h-4 w-4 text-red-600 mt-0.5" />
                             <div>
-                              <p className="text-sm font-medium text-red-800">HOD Account - Requires Special Attention</p>
+                              <p className="text-sm font-medium text-red-800">Committee Member Account - Requires Special Attention</p>
                               <p className="text-xs text-red-700">
-                                This is a Head of Department application. Please verify credentials carefully before approval.
+                                This is a Committee Member application. Please verify credentials carefully before approval.
                               </p>
                             </div>
                           </div>
@@ -387,7 +387,7 @@ export function FacultyApproval() {
                             className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-all duration-200 transform hover:scale-105 flex items-center space-x-2"
                           >
                             <CheckCircle className="h-4 w-4" />
-                            <span>Approve {user.role === 'hod' ? 'HOD' : 'Faculty'}</span>
+                            <span>Approve {user.role === 'committee_member' ? 'Committee Member' : 'Faculty'}</span>
                           </button>
                           <button
                             onClick={() => handleReject(user.id, user.name, user.role)}

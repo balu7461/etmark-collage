@@ -79,7 +79,7 @@ export function Dashboard() {
 
         const pendingLeavesQuery = query(
           collection(db, 'leaveApplications'),
-          where('status', '==', 'pending')
+          where('status', '==', 'pending_principal_approval')
         );
         const pendingLeavesSnapshot = await getDocs(pendingLeavesQuery);
         const pendingLeaves = pendingLeavesSnapshot.size;
@@ -98,7 +98,7 @@ export function Dashboard() {
         
         for (const dept of departments) {
           const facultyCount = usersSnapshot.docs.filter(
-            doc => doc.data().department === dept && doc.data().role === 'faculty'
+            doc => doc.data().department === dept && (doc.data().role === 'faculty' || doc.data().role === 'committee_member')
           ).length;
           
           const studentCount = studentsSnapshot.docs.filter(
@@ -125,7 +125,7 @@ export function Dashboard() {
         const myLeavesQuery = query(
           collection(db, 'leaveApplications'),
           where('facultyId', '==', currentUser?.id),
-          where('status', '==', 'pending')
+          where('status', 'in', ['pending_committee_approval', 'pending_principal_approval'])
         );
         const myLeavesSnapshot = await getDocs(myLeavesQuery);
         const pendingLeaves = myLeavesSnapshot.size;

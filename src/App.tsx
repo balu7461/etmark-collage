@@ -72,18 +72,16 @@ function AppContent() {
                 <Route path="/attendance" element={<Attendance />} />
                 <Route path="/timetable" element={<Timetable />} />
                 <Route path="/achievements" element={<Achievements />} />
+                <Route path="/leave-management" element={<LeaveManagement />} />
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/settings" element={<Settings />} />
               </>
             )}
             
-            {/* HOD routes */}
-            {currentUser.role === 'hod' && (
+            {/* Committee Member routes */}
+            {currentUser.role === 'committee_member' && (
               <>
-                <Route path="/students" element={<Students />} />
-                <Route path="/mark-attendance" element={<MarkAttendance />} />
                 <Route path="/my-timetable" element={<MyTimetable />} />
-                <Route path="/timetable" element={<Timetable />} />
                 <Route path="/leave-management" element={<LeaveManagement />} />
                 <Route path="/my-leaves" element={<MyLeaves />} />
                 <Route path="/my-achievements" element={<MyAchievements />} />

@@ -52,6 +52,10 @@ export function MyLeaves() {
         return 'bg-green-100 text-green-800 border-green-200';
       case 'rejected':
         return 'bg-red-100 text-red-800 border-red-200';
+      case 'pending_committee_approval':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'pending_principal_approval':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
       default:
         return 'bg-yellow-100 text-yellow-800 border-yellow-200';
     }
@@ -63,6 +67,10 @@ export function MyLeaves() {
         return <CheckCircle className="h-4 w-4" />;
       case 'rejected':
         return <XCircle className="h-4 w-4" />;
+      case 'pending_committee_approval':
+        return <Clock className="h-4 w-4" />;
+      case 'pending_principal_approval':
+        return <Clock className="h-4 w-4" />;
       default:
         return <Clock className="h-4 w-4" />;
     }
@@ -70,7 +78,9 @@ export function MyLeaves() {
 
   const getLeaveStats = () => {
     const total = leaves.length;
-    const pending = leaves.filter(l => l.status === 'pending').length;
+    const pending = leaves.filter(l => 
+      l.status === 'pending_committee_approval' || l.status === 'pending_principal_approval'
+    ).length;
     const approved = leaves.filter(l => l.status === 'approved').length;
     const rejected = leaves.filter(l => l.status === 'rejected').length;
     
@@ -207,6 +217,36 @@ export function MyLeaves() {
                               {leave.reviewedBy && (
                                 <p className="text-xs text-gray-500 mt-2">
                                   Reviewed by {leave.reviewedBy} on {leave.reviewedDate}
+                                </p>
+                              )}
+                            </div>
+                          )}
+
+                          {leave.committeeComments && (
+                            <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 mb-4">
+                              <div className="flex items-center space-x-2 mb-1">
+                                <MessageSquare className="h-4 w-4" />
+                                <p className="text-sm font-medium text-purple-900">Committee Comments:</p>
+                              </div>
+                              <p className="text-sm text-purple-800">{leave.committeeComments}</p>
+                              {leave.committeeReviewedBy && (
+                                <p className="text-xs text-purple-600 mt-2">
+                                  Reviewed by {leave.committeeReviewedBy} on {leave.committeeReviewedDate}
+                                </p>
+                              )}
+                            </div>
+                          )}
+
+                          {leave.principalComments && (
+                            <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
+                              <div className="flex items-center space-x-2 mb-1">
+                                <MessageSquare className="h-4 w-4" />
+                                <p className="text-sm font-medium text-green-900">Principal Comments:</p>
+                              </div>
+                              <p className="text-sm text-green-800">{leave.principalComments}</p>
+                              {leave.principalReviewedBy && (
+                                <p className="text-xs text-green-600 mt-2">
+                                  Reviewed by {leave.principalReviewedBy} on {leave.principalReviewedDate}
                                 </p>
                               )}
                             </div>

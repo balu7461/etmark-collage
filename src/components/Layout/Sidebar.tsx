@@ -37,16 +37,14 @@ export function Sidebar() {
     { to: '/attendance', icon: Calendar, label: 'Attendance' },
     { to: '/timetable', icon: CalendarDays, label: 'Timetable' },
     { to: '/achievements', icon: Award, label: 'Achievements' },
+    { to: '/leave-management', icon: FileText, label: 'Leave Management' },
     { to: '/reports', icon: BarChart3, label: 'Reports' },
     { to: '/settings', icon: Settings, label: 'Settings' },
   ];
 
-  const hodLinks = [
+  const committeeMemberLinks = [
     { to: '/dashboard', icon: BarChart3, label: 'Dashboard' },
-    { to: '/students', icon: Users, label: 'Students' },
-    { to: '/mark-attendance', icon: Clock, label: 'Mark Attendance' },
     { to: '/my-timetable', icon: CalendarDays, label: 'My Timetable' },
-    { to: '/timetable', icon: CalendarDays, label: 'Manage Timetable' },
     { to: '/leave-management', icon: FileText, label: 'Leave Management' },
     { to: '/my-leaves', icon: FileText, label: 'My Leaves' },
     { to: '/my-achievements', icon: Award, label: 'My Achievements' },
@@ -64,8 +62,8 @@ export function Sidebar() {
     switch (currentUser?.role) {
       case 'admin':
         return adminLinks;
-      case 'hod':
-        return hodLinks;
+      case 'committee_member':
+        return committeeMemberLinks;
       case 'faculty':
         return facultyLinks;
       default:
@@ -77,8 +75,8 @@ export function Sidebar() {
     switch (currentUser?.role) {
       case 'admin':
         return 'Admin Panel';
-      case 'hod':
-        return 'HOD Panel';
+      case 'committee_member':
+        return 'Committee Panel';
       case 'faculty':
         return 'Faculty Panel';
       default:
@@ -96,7 +94,7 @@ export function Sidebar() {
             <GraduationCap className="h-8 w-8 animate-pulse" />
           </div>
           <div>
-            <h1 className="text-xl font-bold">CollegeConnect</h1>
+            <h1 className="text-xl font-bold">Trinity College</h1>
             <p className="text-blue-300 text-sm">{getRoleLabel()}</p>
           </div>
         </div>

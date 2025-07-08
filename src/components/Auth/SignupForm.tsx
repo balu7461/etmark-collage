@@ -181,7 +181,7 @@ export function SignupForm({ onBackToLogin }: SignupFormProps) {
                     required
                   >
                     <option value="faculty">Faculty</option>
-                    <option value="hod">Head of Department (HOD)</option>
+                    <option value="committee_member">Committee Member</option>
                   </select>
                 </div>
               </div>
