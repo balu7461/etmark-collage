@@ -408,12 +408,12 @@ export function LeaveManagement() {
 
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {currentUser?.role === 'committee_member' ? 'Committee Comments' : 'Principal Comments'} (Optional)
+                  Review Comments (Optional)
                 </label>
                 <textarea
                   value={reviewComments}
                   onChange={(e) => setReviewComments(e.target.value)}
-                  placeholder={`Add your ${currentUser?.role === 'committee_member' ? 'committee' : 'principal'} comments...`}
+                  placeholder="Add your review comments..."
                   rows={4}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
