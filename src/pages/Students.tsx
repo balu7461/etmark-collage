@@ -27,13 +27,11 @@ export function Students() {
     email: '',
     rollNumber: '',
     class: '',
-    department: '',
     parentEmail: '',
     parentPhone: ''
   });
 
-  const classes = ['BCA-A', 'BCA-B', 'BBA-A', 'BBA-B', 'BCOM-A', 'BCOM-B', 'MCOM-A', 'MCOM-B'];
-  const departments = ['BCA', 'BBA', 'BCOM', 'MCOM'];
+  const classes = ['B.com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
 
   useEffect(() => {
     fetchStudents();
@@ -43,17 +41,8 @@ export function Students() {
     try {
       let q;
       
-      if (currentUser?.role === 'hod') {
-        // HOD can only see students from their department
-        q = query(
-          collection(db, 'students'), 
-          where('isApproved', '==', true),
-          where('department', '==', currentUser.department)
-        );
-      } else {
-        // Admin can see all approved students
-        q = query(collection(db, 'students'), where('isApproved', '==', true));
-      }
+      // Admin can see all approved students
+      q = query(collection(db, 'students'), where('isApproved', '==', true));
       
       const querySnapshot = await getDocs(q);
       const studentsData = querySnapshot.docs.map(doc => ({
@@ -81,7 +70,7 @@ export function Students() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.email || !formData.rollNumber || !formData.class || !formData.department) {
+    if (!formData.name || !formData.email || !formData.rollNumber || !formData.class) {
       toast.error('Please fill in all required fields');
       return;
     }
@@ -131,7 +120,6 @@ export function Students() {
       email: student.email,
       rollNumber: student.rollNumber,
       class: student.class,
-      department: student.department,
       parentEmail: student.parentEmail || '',
       parentPhone: student.parentPhone || ''
     });
@@ -144,7 +132,6 @@ export function Students() {
       email: '',
       rollNumber: '',
       class: '',
-      department: '',
       parentEmail: '',
       parentPhone: ''
     });
@@ -179,14 +166,13 @@ export function Students() {
             email: row['Email'] || row['Email Address'] || '',
             rollNumber: row['Roll Number'] || row['Roll'] || '',
             class: row['Class'] || '',
-            department: row['Department'] || '',
             parentEmail: row['Parent Email'] || '',
             parentPhone: row['Parent Phone'] || '',
             rowIndex: index + 2 // Excel row number (starting from 2)
           };
           
           // Validate required fields
-          student.isValid = !!(student.name && student.email && student.rollNumber && student.class && student.department);
+          student.isValid = !!(student.name && student.email && student.rollNumber && student.class);
           
           return student;
         });
@@ -226,7 +212,6 @@ export function Students() {
           email: student.email,
           rollNumber: student.rollNumber,
           class: student.class,
-          department: student.department,
           parentEmail: student.parentEmail || '',
           parentPhone: student.parentPhone || '',
           isApproved: true, // Auto-approve bulk uploads
@@ -260,8 +245,7 @@ export function Students() {
         'Name': 'John Doe',
         'Email': 'john.doe@student.edu',
         'Roll Number': 'BCA001',
-        'Class': 'BCA-A',
-        'Department': 'BCA',
+        'Class': 'BCA',
         'Parent Email': 'parent@email.com',
         'Parent Phone': '+1234567890'
       }
@@ -280,7 +264,6 @@ export function Students() {
       'Email': student.email,
       'Roll Number': student.rollNumber,
       'Class': student.class,
-      'Department': student.department,
       'Parent Email': student.parentEmail || '',
       'Parent Phone': student.parentPhone || '',
       'Registration Date': student.registrationDate
@@ -299,8 +282,7 @@ export function Students() {
                          student.rollNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          student.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesClass = selectedClass === '' || student.class === selectedClass;
-    const matchesDepartment = selectedDepartment === '' || student.department === selectedDepartment;
-    return matchesSearch && matchesClass && matchesDepartment;
+    return matchesSearch && matchesClass;
   });
 
   const getStudentStats = () => {
@@ -310,12 +292,7 @@ export function Students() {
       return acc;
     }, {} as Record<string, number>);
     
-    const byDepartment = departments.reduce((acc, dept) => {
-      acc[dept] = filteredStudents.filter(s => s.department === dept).length;
-      return acc;
-    }, {} as Record<string, number>);
-    
-    return { totalStudents, byClass, byDepartment };
+    return { totalStudents, byClass };
   };
 
   const stats = getStudentStats();
@@ -330,13 +307,9 @@ export function Students() {
             <div>
               <h1 className="text-2xl font-bold text-gray-900 mb-2">
                 Student Management
-                {currentUser?.role === 'hod' && ` - ${currentUser.department} Department`}
               </h1>
               <p className="text-gray-600">
-                {currentUser?.role === 'hod' 
-                  ? 'Manage students in your department'
-                  : 'Manage all approved student records and information'
-                }
+                Manage all approved student records and information
               </p>
             </div>
             <div className="flex space-x-3">
@@ -388,8 +361,8 @@ export function Students() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transform transition-all duration-200 hover:scale-105">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Departments</p>
-                  <p className="text-3xl font-bold text-purple-600">{Object.keys(stats.byDepartment).filter(dept => stats.byDepartment[dept] > 0).length}</p>
+                  <p className="text-sm font-medium text-gray-600">Active Classes</p>
+                  <p className="text-3xl font-bold text-purple-600">{Object.keys(stats.byClass).filter(cls => stats.byClass[cls] > 0).length}</p>
                 </div>
                 <Building className="h-8 w-8 text-purple-600" />
               </div>
@@ -402,19 +375,6 @@ export function Students() {
                 </div>
                 <Filter className="h-8 w-8 text-orange-600" />
               </div>
-            </div>
-          </div>
-
-          {/* Class Distribution */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Class Distribution</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
-              {classes.map(cls => (
-                <div key={cls} className="text-center p-3 bg-gray-50 rounded-lg transform transition-all duration-200 hover:scale-105">
-                  <p className="text-sm font-medium text-gray-900">{cls}</p>
-                  <p className="text-2xl font-bold text-blue-600">{stats.byClass[cls] || 0}</p>
-                </div>
-              ))}
             </div>
           </div>
 
@@ -477,23 +437,6 @@ export function Students() {
                     <option value="">Select Class</option>
                     {classes.map(cls => (
                       <option key={cls} value={cls}>{cls}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="transform transition-all duration-200 hover:scale-105">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Department *
-                  </label>
-                  <select
-                    value={formData.department}
-                    onChange={(e) => setFormData(prev => ({ ...prev, department: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    required
-                  >
-                    <option value="">Select Department</option>
-                    {departments.map(dept => (
-                      <option key={dept} value={dept}>{dept}</option>
                     ))}
                   </select>
                 </div>
@@ -571,23 +514,9 @@ export function Students() {
                     ))}
                   </select>
 
-                  {currentUser?.role === 'admin' && (
-                    <select
-                      value={selectedDepartment}
-                      onChange={(e) => setSelectedDepartment(e.target.value)}
-                      className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    >
-                      <option value="">All Departments</option>
-                      {departments.map(dept => (
-                        <option key={dept} value={dept}>{dept}</option>
-                      ))}
-                    </select>
-                  )}
-
                   <button
                     onClick={() => {
                       setSelectedClass('');
-                      setSelectedDepartment('');
                       setSearchTerm('');
                     }}
                     className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
@@ -628,9 +557,6 @@ export function Students() {
                             Class
                           </th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Department
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Contact
                           </th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -656,12 +582,6 @@ export function Students() {
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span className="inline-flex px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded-full">
                                 {student.class}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <span className="inline-flex items-center space-x-1 px-2 py-1 text-xs font-semibold bg-purple-100 text-purple-800 rounded-full">
-                                <Building className="h-3 w-3" />
-                                <span>{student.department}</span>
                               </span>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -732,7 +652,7 @@ export function Students() {
                       <h4 className="font-medium text-blue-900 mb-2">Upload Instructions</h4>
                       <ul className="text-sm text-blue-800 space-y-1">
                         <li>• Upload an Excel file (.xlsx or .xls) with student data</li>
-                        <li>• Required columns: Name, Email, Roll Number, Class, Department</li>
+                        <li>• Required columns: Name, Email, Roll Number, Class</li>
                         <li>• Optional columns: Parent Email, Parent Phone</li>
                         <li>• Download the template below for the correct format</li>
                       </ul>
@@ -791,7 +711,6 @@ export function Students() {
                             <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
                             <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Roll</th>
                             <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Class</th>
-                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Dept</th>
                           </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
@@ -808,7 +727,6 @@ export function Students() {
                               <td className="px-4 py-2 whitespace-nowrap text-sm">{student.email}</td>
                               <td className="px-4 py-2 whitespace-nowrap text-sm">{student.rollNumber}</td>
                               <td className="px-4 py-2 whitespace-nowrap text-sm">{student.class}</td>
-                              <td className="px-4 py-2 whitespace-nowrap text-sm">{student.department}</td>
                             </tr>
                           ))}
                         </tbody>

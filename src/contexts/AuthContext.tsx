@@ -66,9 +66,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             case 'examination_committee':
               roleMessage = 'Your Examination Committee account is pending admin approval. Committee accounts require special verification.';
               break;
-            case 'committee_member':
-              roleMessage = 'Your Committee Member account is pending admin approval. Committee accounts require special verification.';
-              break;
             default:
               roleMessage = 'Your faculty account is pending admin approval.';
           }
@@ -80,8 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem('currentUser', JSON.stringify(userData));
         
         // Welcome message with role
-        const roleDisplay = userData.role === 'committee_member' ? 'Committee Member' : 
-                           userData.role === 'timetable_committee' ? 'Timetable Committee' :
+        const roleDisplay = userData.role === 'timetable_committee' ? 'Timetable Committee' :
                            userData.role === 'examination_committee' ? 'Examination Committee' :
                            userData.role;
         toast.success(`Welcome back, ${userData.name}! (${roleDisplay.toUpperCase()})`);
@@ -148,9 +144,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                   break;
                 case 'examination_committee':
                   roleMessage = 'Your Examination Committee account is pending admin approval.';
-                  break;
-                case 'committee_member':
-                  roleMessage = 'Your Committee Member account is pending admin approval.';
                   break;
                 default:
                   roleMessage = 'Your account is pending admin approval.';

@@ -17,7 +17,7 @@ export function Timetable() {
   const [selectedSemester, setSelectedSemester] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
-  const classes = ['BCA-A', 'BCA-B', 'BBA-A', 'BBA-B', 'BCOM-A', 'BCOM-B', 'MCOM-A', 'MCOM-B'];
+  const classes = ['B.com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
   const semesters = ['1', '2', '3', '4', '5', '6'];
 
   useEffect(() => {

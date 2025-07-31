@@ -11,19 +11,15 @@ export function UserManagement() {
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterRole, setFilterRole] = useState<'all' | 'admin' | 'faculty' | 'committee_member' | 'timetable_committee' | 'examination_committee'>('all');
-  const [filterDepartment, setFilterDepartment] = useState('');
+  const [filterRole, setFilterRole] = useState<'all' | 'admin' | 'faculty' | 'timetable_committee' | 'examination_committee'>('all');
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editFormData, setEditFormData] = useState({
     name: '',
     email: '',
-    department: '',
     phone: '',
-    role: 'faculty' as 'admin' | 'faculty' | 'committee_member' | 'timetable_committee' | 'examination_committee'
+    role: 'faculty' as 'admin' | 'faculty' | 'timetable_committee' | 'examination_committee'
   });
-
-  const departments: Department[] = ['Science', 'Commerce', 'Computer Science'];
 
   useEffect(() => {
     fetchAllData();
@@ -60,7 +56,6 @@ export function UserManagement() {
     setEditFormData({
       name: user.name,
       email: user.email,
-      department: user.department || '',
       phone: user.phone || '',
       role: user.role
     });
@@ -75,7 +70,6 @@ export function UserManagement() {
     try {
       await updateDoc(doc(db, 'users', editingUser.id), {
         name: editFormData.name,
-        department: editFormData.department,
         phone: editFormData.phone,
         role: editFormData.role
       });
@@ -114,8 +108,6 @@ export function UserManagement() {
         return 'Administrator';
       case 'faculty':
         return 'Faculty';
-      case 'committee_member':
-        return 'Committee Member';
       case 'timetable_committee':
         return 'Timetable Committee';
       case 'examination_committee':
@@ -134,7 +126,6 @@ export function UserManagement() {
     const roleStats = {
       admin: users.filter(u => u.role === 'admin').length,
       faculty: users.filter(u => u.role === 'faculty').length,
-      committee_member: users.filter(u => u.role === 'committee_member').length,
       timetable_committee: users.filter(u => u.role === 'timetable_committee').length,
       examination_committee: users.filter(u => u.role === 'examination_committee').length,
     };
@@ -146,9 +137,8 @@ export function UserManagement() {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          user.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = filterRole === 'all' || user.role === filterRole;
-    const matchesDepartment = !filterDepartment || user.department === filterDepartment;
     
-    return matchesSearch && matchesRole && matchesDepartment;
+    return matchesSearch && matchesRole;
   });
 
   const stats = getStats();
@@ -217,10 +207,6 @@ export function UserManagement() {
                 <p className="text-sm text-gray-600">Faculty</p>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-purple-600">{stats.roleStats.committee_member}</div>
-                <p className="text-sm text-gray-600">Committee Members</p>
-              </div>
-              <div className="text-center">
                 <div className="text-2xl font-bold text-orange-600">{stats.roleStats.timetable_committee}</div>
                 <p className="text-sm text-gray-600">Timetable Committee</p>
               </div>
@@ -238,7 +224,7 @@ export function UserManagement() {
               <h3 className="text-lg font-medium text-gray-900">Filter Users</h3>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
                 <div className="relative">
@@ -263,23 +249,8 @@ export function UserManagement() {
                   <option value="all">All Roles</option>
                   <option value="admin">Administrator</option>
                   <option value="faculty">Faculty</option>
-                  <option value="committee_member">Committee Member</option>
                   <option value="timetable_committee">Timetable Committee</option>
                   <option value="examination_committee">Examination Committee</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Department</label>
-                <select
-                  value={filterDepartment}
-                  onChange={(e) => setFilterDepartment(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">All Departments</option>
-                  {departments.map(dept => (
-                    <option key={dept} value={dept}>{dept}</option>
-                  ))}
                 </select>
               </div>
             </div>
@@ -297,7 +268,6 @@ export function UserManagement() {
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                   </tr>
@@ -327,9 +297,6 @@ export function UserManagement() {
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                           {getRoleDisplayName(user.role)}
                         </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {user.department || 'N/A'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -403,24 +370,9 @@ export function UserManagement() {
                     required
                   >
                     <option value="faculty">Faculty</option>
-                    <option value="committee_member">Committee Member</option>
                     <option value="timetable_committee">Timetable Committee</option>
                     <option value="examination_committee">Examination Committee</option>
                     <option value="admin">Administrator</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Department</label>
-                  <select
-                    value={editFormData.department}
-                    onChange={(e) => setEditFormData(prev => ({ ...prev, department: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="">Select Department</option>
-                    {departments.map(dept => (
-                      <option key={dept} value={dept}>{dept}</option>
-                    ))}
                   </select>
                 </div>
 
