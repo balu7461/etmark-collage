@@ -25,7 +25,6 @@ export function LeaveManagement() {
     try {
       let q;
       
-      if (currentUser?.role === 'committee_member' || currentUser?.role === 'timetable_committee' || currentUser?.role === 'examination_committee') {
       if (currentUser?.role === 'timetable_committee' || currentUser?.role === 'examination_committee') {
         // Committee members see leaves pending their approval
         q = query(

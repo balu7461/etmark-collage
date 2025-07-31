@@ -13,3 +13,5 @@
              {currentUser.role === 'faculty' && (
                <>
                  <Route path="/mark-attendance" element={<MarkAttendance />} />
+             )
+             }
