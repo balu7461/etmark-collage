@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, updateDoc, doc, deleteDoc } from 'firebase/firestore';
+import { collection, getDocs, updateDoc, doc, deleteDoc, query, where } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { Header } from '../components/Layout/Header';
 import { User, Student, Department } from '../types';
