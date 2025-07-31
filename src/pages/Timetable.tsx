@@ -20,6 +20,16 @@ export function Timetable() {
   const classes = ['B.com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
   const semesters = ['1', '2', '3', '4', '5', '6'];
 
+  const subjectsByClass = {
+    'B.com': ['Accountancy', 'Business Studies', 'Economics', 'English', 'Mathematics', 'Computer Applications'],
+    'BBA': ['Business Administration', 'Marketing', 'Finance', 'Human Resources', 'Operations Management', 'Business Ethics'],
+    'BCA': ['Programming in C', 'Data Structures', 'Database Management', 'Web Development', 'Software Engineering', 'Computer Networks'],
+    'PCMB': ['Physics', 'Chemistry', 'Mathematics', 'Biology'],
+    'PCMC': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science'],
+    'EBAC': ['Economics', 'Business Studies', 'Accountancy', 'Computer Science'],
+    'EBAS': ['Economics', 'Business Studies', 'Accountancy', 'Statistics']
+  };
+
   useEffect(() => {
     fetchTimeSlots();
   }, []);

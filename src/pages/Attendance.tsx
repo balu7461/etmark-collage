@@ -22,6 +22,16 @@ export function Attendance() {
   // Updated classes to match the ones used throughout the application
   const classes = ['B.com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
 
+  const subjectsByClass = {
+    'B.com': ['Accountancy', 'Business Studies', 'Economics', 'English', 'Mathematics', 'Computer Applications'],
+    'BBA': ['Business Administration', 'Marketing', 'Finance', 'Human Resources', 'Operations Management', 'Business Ethics'],
+    'BCA': ['Programming in C', 'Data Structures', 'Database Management', 'Web Development', 'Software Engineering', 'Computer Networks'],
+    'PCMB': ['Physics', 'Chemistry', 'Mathematics', 'Biology'],
+    'PCMC': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science'],
+    'EBAC': ['Economics', 'Business Studies', 'Accountancy', 'Computer Science'],
+    'EBAS': ['Economics', 'Business Studies', 'Accountancy', 'Statistics']
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -218,13 +228,19 @@ export function Attendance() {
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
-                <input
-                  type="text"
-                  placeholder="Search subject..."
+                <select
                   value={filters.subject}
                   onChange={(e) => setFilters(prev => ({ ...prev, subject: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
+                >
+                  <option value="">All Subjects</option>
+                  {filters.class && subjectsByClass[filters.class as keyof typeof subjectsByClass]?.map(subj => (
+                    <option key={subj} value={subj}>{subj}</option>
+                  ))}
+                  {!filters.class && Object.values(subjectsByClass).flat().map(subj => (
+                    <option key={subj} value={subj}>{subj}</option>
+                  ))}
+                </select>
               </div>
               
               <div>

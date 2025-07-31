@@ -199,17 +199,26 @@ export function TimetableForm({ onSuccess }: TimetableFormProps) {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Subject *
             </label>
-            <select
-              value={formData.subject}
-              onChange={handleChange('subject')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              required
-            >
-              <option value="">Select Subject</option>
-              {formData.class && subjectsByClass[formData.class as keyof typeof subjectsByClass]?.map(subj => (
-                <option key={subj} value={subj}>{subj}</option>
-              ))}
-            </select>
+            {formData.class ? (
+              <select
+                value={formData.subject}
+                onChange={handleChange('subject')}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              >
+                <option value="">Select Subject</option>
+                {subjectsByClass[formData.class as keyof typeof subjectsByClass]?.map(subj => (
+                  <option key={subj} value={subj}>{subj}</option>
+                ))}
+              </select>
+            ) : (
+              <select
+                disabled
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500"
+              >
+                <option value="">Select Class First</option>
+              </select>
+            )}
           </div>
 
           <div>

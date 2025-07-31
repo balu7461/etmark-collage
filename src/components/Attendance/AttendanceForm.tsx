@@ -236,17 +236,26 @@ export function AttendanceForm() {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Subject
             </label>
-            <select
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-              required
-            >
-              <option value="">Select Subject</option>
-              {selectedClass && subjectsByClass[selectedClass as keyof typeof subjectsByClass]?.map(subj => (
-                <option key={subj} value={subj}>{subj}</option>
-              ))}
-            </select>
+            {selectedClass ? (
+              <select
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                required
+              >
+                <option value="">Select Subject</option>
+                {subjectsByClass[selectedClass as keyof typeof subjectsByClass]?.map(subj => (
+                  <option key={subj} value={subj}>{subj}</option>
+                ))}
+              </select>
+            ) : (
+              <select
+                disabled
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500"
+              >
+                <option value="">Select Class First</option>
+              </select>
+            )}
           </div>
         </div>
 
