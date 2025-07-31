@@ -72,7 +72,6 @@ export function LeaveManagement() {
         comments: reviewComments
       };
 
-      if (currentUser?.role === 'committee_member' || currentUser?.role === 'timetable_committee' || currentUser?.role === 'examination_committee') {
       if (currentUser?.role === 'timetable_committee' || currentUser?.role === 'examination_committee') {
         if (action === 'approved') {
           updateData.status = 'pending_principal_approval';
@@ -332,29 +331,29 @@ export function LeaveManagement() {
                               Reviewed by {leave.reviewedBy} on {leave.reviewedDate}
                             </p>
                           )}
+                        </div>
+                      )}
 
-                          {leave.committeeComments && (
-                            <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 mb-4">
-                              <p className="text-sm font-medium text-purple-900 mb-1">Committee Comments:</p>
-                              <p className="text-sm text-purple-800">{leave.committeeComments}</p>
-                              {leave.committeeReviewedBy && (
-                                <p className="text-xs text-purple-600 mt-2">
-                                  Reviewed by {leave.committeeReviewedBy} on {leave.committeeReviewedDate}
-                                </p>
-                              )}
-                            </div>
+                      {leave.committeeComments && (
+                        <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 mb-4">
+                          <p className="text-sm font-medium text-purple-900 mb-1">Committee Comments:</p>
+                          <p className="text-sm text-purple-800">{leave.committeeComments}</p>
+                          {leave.committeeReviewedBy && (
+                            <p className="text-xs text-purple-600 mt-2">
+                              Reviewed by {leave.committeeReviewedBy} on {leave.committeeReviewedDate}
+                            </p>
                           )}
+                        </div>
+                      )}
 
-                          {leave.principalComments && (
-                            <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
-                              <p className="text-sm font-medium text-green-900 mb-1">Principal Comments:</p>
-                              <p className="text-sm text-green-800">{leave.principalComments}</p>
-                              {leave.principalReviewedBy && (
-                                <p className="text-xs text-green-600 mt-2">
-                                  Reviewed by {leave.principalReviewedBy} on {leave.principalReviewedDate}
-                                </p>
-                              )}
-                            </div>
+                      {leave.principalComments && (
+                        <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
+                          <p className="text-sm font-medium text-green-900 mb-1">Principal Comments:</p>
+                          <p className="text-sm text-green-800">{leave.principalComments}</p>
+                          {leave.principalReviewedBy && (
+                            <p className="text-xs text-green-600 mt-2">
+                              Reviewed by {leave.principalReviewedBy} on {leave.principalReviewedDate}
+                            </p>
                           )}
                         </div>
                       )}
