@@ -3,7 +3,7 @@ import { collection, getDocs, updateDoc, doc, query, where } from 'firebase/fire
 import { db } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { Header } from '../components/Layout/Header';
-import { LeaveApplication, Department } from '../types';
+import { LeaveApplication } from '../types';
 import { FileText, Clock, CheckCircle, XCircle, Filter, MessageSquare, Calendar, User, Building } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
@@ -13,7 +13,6 @@ export function LeaveManagement() {
   const [leaves, setLeaves] = useState<LeaveApplication[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
-  const [departmentFilter, setDepartmentFilter] = useState('');
   const [selectedLeave, setSelectedLeave] = useState<LeaveApplication | null>(null);
   const [reviewComments, setReviewComments] = useState('');
 
@@ -267,7 +266,6 @@ export function LeaveManagement() {
                   ))}
                 </div>
               </div>
-
             </div>
           </div>
 
@@ -296,7 +294,7 @@ export function LeaveManagement() {
                         </span>
                       </div>
                       
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                         <div className="flex items-center space-x-2 text-sm text-gray-600">
                           <User className="h-4 w-4" />
                           <span><strong>Faculty:</strong> {leave.facultyName}</span>
@@ -386,7 +384,6 @@ export function LeaveManagement() {
               <div className="bg-gray-50 rounded-lg p-4 mb-6">
                 <div className="grid grid-cols-1 gap-3 text-sm">
                   <div><strong>Faculty:</strong> {selectedLeave.facultyName}</div>
-                  <div><strong>Department:</strong> {selectedLeave.department}</div>
                   <div><strong>Subject:</strong> {selectedLeave.subject}</div>
                   <div><strong>Type:</strong> {selectedLeave.leaveType.charAt(0).toUpperCase() + selectedLeave.leaveType.slice(1)}</div>
                   <div><strong>Duration:</strong> {selectedLeave.startDate} to {selectedLeave.endDate}</div>
