@@ -18,7 +18,7 @@ export function AttendanceForm() {
   const [loading, setLoading] = useState(false);
   const [sendingEmails, setSendingEmails] = useState(false);
 
-  const classes = ['BCA-A', 'BCA-B', 'BBA-A', 'BBA-B', 'BCOM-A', 'BCOM-B', 'MCOM-A', 'MCOM-B'];
+  const classes = ['B.com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
 
   useEffect(() => {
     if (selectedClass) {

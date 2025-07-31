@@ -40,8 +40,6 @@ export function Dashboard() {
   });
   const [loading, setLoading] = useState(true);
 
-  const departments: Department[] = ['Science', 'Commerce', 'Computer Science'];
-
   useEffect(() => {
     fetchDashboardStats();
   }, [currentUser]);
@@ -97,21 +95,6 @@ export function Dashboard() {
 
         const attendanceRate = totalStudents > 0 ? (presentToday / totalStudents) * 100 : 0;
 
-        // Calculate department stats
-        const departmentStats: Record<string, { faculty: number; students: number }> = {};
-        
-        for (const dept of departments) {
-          const facultyCount = usersSnapshot.docs.filter(
-            doc => doc.data().department === dept && (doc.data().role === 'faculty' || doc.data().role === 'committee_member' || doc.data().role === 'timetable_committee' || doc.data().role === 'examination_committee')
-          ).length;
-          
-          const studentCount = studentsSnapshot.docs.filter(
-            doc => doc.data().department === dept
-          ).length;
-          
-          departmentStats[dept] = { faculty: facultyCount, students: studentCount };
-        }
-
         setStats({
           totalStudents,
           totalUsers,
@@ -122,7 +105,6 @@ export function Dashboard() {
           totalAchievements,
           totalTimeSlots,
           attendanceRate,
-          departmentStats
         });
       } else if (currentUser?.role === 'timetable_committee') {
         // Fetch timetable committee stats
@@ -161,7 +143,6 @@ export function Dashboard() {
           totalAchievements,
           totalTimeSlots,
           attendanceRate: 0,
-          departmentStats: {}
         });
       } else if (currentUser?.role === 'examination_committee') {
         // Fetch examination committee stats
@@ -200,7 +181,6 @@ export function Dashboard() {
           totalAchievements,
           totalTimeSlots,
           attendanceRate: 0,
-          departmentStats: {}
         });
       } else {
         // Fetch faculty stats
@@ -236,7 +216,6 @@ export function Dashboard() {
           totalAchievements,
           totalTimeSlots,
           attendanceRate: 0,
-          departmentStats: {}
         });
       }
     } catch (error) {
@@ -250,8 +229,6 @@ export function Dashboard() {
     switch (currentUser?.role) {
       case 'admin':
         return 'Administrator';
-      case 'committee_member':
-        return 'Committee Member';
       case 'timetable_committee':
         return 'Timetable Committee';
       case 'examination_committee':
@@ -285,7 +262,7 @@ export function Dashboard() {
               Here's what's happening in your {currentUser?.role === 'admin' ? 'institution' : 'dashboard'} today.
             </p>
             <p className="text-sm text-gray-500 mt-1">
-              Role: {getRoleDisplayName()} • Department: {currentUser?.department || 'N/A'}
+              Role: {getRoleDisplayName()}
             </p>
           </div>
 
@@ -453,34 +430,9 @@ export function Dashboard() {
                 </div>
               )}
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                {/* Department Overview */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                  <div className="flex items-center space-x-3 mb-4">
-                    <Building className="h-6 w-6 text-[#002e5d]" />
-                    <h3 className="text-lg font-medium text-gray-900">Department Overview</h3>
-                  </div>
-                  <div className="space-y-4">
-                    {Object.entries(stats.departmentStats).map(([dept, data]) => (
-                      <div key={dept} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div>
-                          <h4 className="font-medium text-gray-900">{dept}</h4>
-                          <p className="text-sm text-gray-600">
-                            {data.faculty} Faculty • {data.students} Students
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-sm font-medium text-blue-600">
-                            {data.faculty + data.students} Total
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Recent Activities */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+              {/* Recent Activities - Only show real-time data */}
+              {(stats.pendingFacultyApprovals > 0 || stats.pendingStudentApprovals > 0) && (
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
                   <h3 className="text-lg font-medium text-gray-900 mb-4">Recent Activities</h3>
                   <div className="space-y-4">
                     {stats.pendingFacultyApprovals > 0 && (
@@ -509,36 +461,9 @@ export function Dashboard() {
                         </div>
                       </div>
                     )}
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-green-100 rounded-full">
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">Attendance marked for Computer Science-A</p>
-                        <p className="text-xs text-gray-500">2 hours ago</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-blue-100 rounded-full">
-                        <FileText className="h-4 w-4 text-blue-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">New leave application received</p>
-                        <p className="text-xs text-gray-500">4 hours ago</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-purple-100 rounded-full">
-                        <Award className="h-4 w-4 text-purple-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">New achievement submitted</p>
-                        <p className="text-xs text-gray-500">6 hours ago</p>
-                      </div>
-                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               {/* System Status */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
@@ -591,7 +516,7 @@ export function Dashboard() {
             </>
           )}
 
-          {/* Committee Member Specific Content */}
+          {/* Committee Specific Content */}
           {(currentUser?.role === 'timetable_committee' || currentUser?.role === 'examination_committee') && (
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
               <div className="flex items-center space-x-3 mb-4">

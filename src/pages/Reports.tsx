@@ -46,10 +46,8 @@ export function Reports() {
         'Student Name': studentLookup[record.studentId]?.name || 'Unknown',
         'Roll Number': studentLookup[record.studentId]?.rollNumber || 'N/A',
         'Class': record.class,
-        'Subject': record.subject,
         'Status': record.status,
         'Reason': record.reason || '',
-        'Faculty': record.facultyName
       }));
 
       // Create and download Excel file

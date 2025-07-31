@@ -104,27 +104,9 @@ export function StudentApproval() {
     pending: pendingStudents.length,
     approved: approvedStudents.length,
     total: pendingStudents.length + approvedStudents.length,
-    pendingByDepartment: pendingStudents.reduce((acc, student) => {
-      acc[student.department] = (acc[student.department] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>),
-    approvedByDepartment: approvedStudents.reduce((acc, student) => {
-      acc[student.department] = (acc[student.department] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>)
   };
 
   const displayedStudents = filter === 'pending' ? pendingStudents : approvedStudents;
-
-  const getDepartmentColor = (department: string) => {
-    const colors = {
-      'BCA': 'bg-blue-100 text-blue-800 border-blue-200',
-      'BBA': 'bg-green-100 text-green-800 border-green-200',
-      'BCOM': 'bg-purple-100 text-purple-800 border-purple-200',
-      'MCOM': 'bg-orange-100 text-orange-800 border-orange-200'
-    };
-    return colors[department as keyof typeof colors] || 'bg-gray-100 text-gray-800 border-gray-200';
-  };
 
   return (
     <div className="flex-1 flex flex-col">
@@ -189,33 +171,11 @@ export function StudentApproval() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transform transition-all duration-200 hover:scale-105">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Departments</p>
-                  <p className="text-3xl font-bold text-purple-600">4</p>
+                  <p className="text-sm font-medium text-gray-600">Classes</p>
+                  <p className="text-3xl font-bold text-purple-600">7</p>
                 </div>
                 <Building className="h-8 w-8 text-purple-600" />
               </div>
-            </div>
-          </div>
-
-          {/* Department Breakdown */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Department Breakdown</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {['BCA', 'BBA', 'BCOM', 'MCOM'].map(dept => (
-                <div key={dept} className="bg-gray-50 rounded-lg p-4 transform transition-all duration-200 hover:scale-105">
-                  <h4 className="font-medium text-gray-900 mb-2">{dept}</h4>
-                  <div className="space-y-1 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Pending:</span>
-                      <span className="font-medium text-yellow-600">{stats.pendingByDepartment[dept] || 0}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Approved:</span>
-                      <span className="font-medium text-green-600">{stats.approvedByDepartment[dept] || 0}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
 
@@ -283,10 +243,6 @@ export function StudentApproval() {
                     <div className="flex-1">
                       <div className="flex items-center space-x-3 mb-3">
                         <h3 className="text-lg font-semibold text-gray-900">{student.name}</h3>
-                        <span className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-sm font-medium border ${getDepartmentColor(student.department)}`}>
-                          <Building className="h-4 w-4" />
-                          <span>{student.department}</span>
-                        </span>
                         <span className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-sm font-medium border ${
                           student.isApproved 
                             ? 'bg-green-100 text-green-800 border-green-200'

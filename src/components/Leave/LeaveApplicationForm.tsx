@@ -23,8 +23,6 @@ export function LeaveApplicationForm() {
     { value: 'personal', label: 'Personal Leave' }
   ];
 
-  const departments: Department[] = ['Science', 'Commerce', 'Computer Science'];
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -50,7 +48,6 @@ export function LeaveApplicationForm() {
         description: formData.description,
         status: 'pending_committee_approval',
         appliedDate: format(new Date(), 'yyyy-MM-dd'),
-        department: currentUser.department || 'Unknown' // Ensure department is always set
       };
 
       await addDoc(collection(db, 'leaveApplications'), leaveApplication);

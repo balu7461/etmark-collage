@@ -2,8 +2,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: 'admin' | 'committee_member' | 'faculty' | 'timetable_committee' | 'examination_committee';
-  department?: string;
+  role: 'admin' | 'faculty' | 'timetable_committee' | 'examination_committee';
   phone?: string;
   isApproved?: boolean;
   approvedBy?: string;
@@ -17,7 +16,6 @@ export interface Student {
   email: string;
   rollNumber: string;
   class: string;
-  department: string;
   parentEmail?: string;
   parentPhone?: string;
   isApproved?: boolean;
@@ -52,7 +50,6 @@ export interface LeaveApplication {
   reviewedBy?: string;
   reviewedDate?: string;
   comments?: string;
-  department?: string;
   committeeApproved?: boolean;
   principalApproved?: boolean;
   committeeReviewedBy?: string;
@@ -100,9 +97,6 @@ export interface Timetable {
   createdDate: string;
   lastModified: string;
 }
-
-// Department types
-export type Department = 'Science' | 'Commerce' | 'Computer Science';
 
 // Leave type types
 export type LeaveType = 'medical' | 'personal';

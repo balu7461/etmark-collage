@@ -59,14 +59,6 @@ export function Sidebar() {
     { to: '/my-achievements', icon: Award, label: 'My Achievements' },
   ];
 
-  const committeeMemberLinks = [
-    { to: '/dashboard', icon: BarChart3, label: 'Dashboard' },
-    { to: '/my-timetable', icon: CalendarDays, label: 'My Timetable' },
-    { to: '/leave-management', icon: FileText, label: 'Leave Management' },
-    { to: '/my-leaves', icon: FileText, label: 'My Leaves' },
-    { to: '/my-achievements', icon: Award, label: 'My Achievements' },
-  ];
-
   const facultyLinks = [
     { to: '/dashboard', icon: BarChart3, label: 'Dashboard' },
     { to: '/mark-attendance', icon: Clock, label: 'Mark Attendance' },
@@ -83,8 +75,6 @@ export function Sidebar() {
         return timetableCommitteeLinks;
       case 'examination_committee':
         return examinationCommitteeLinks;
-      case 'committee_member':
-        return committeeMemberLinks;
       case 'faculty':
         return facultyLinks;
       default:
@@ -100,8 +90,6 @@ export function Sidebar() {
         return 'Timetable Committee Panel';
       case 'examination_committee':
         return 'Examination Committee Panel';
-      case 'committee_member':
-        return 'Committee Panel';
       case 'faculty':
         return 'Faculty Panel';
       default:
@@ -153,9 +141,6 @@ export function Sidebar() {
           <p className="font-medium truncate">{currentUser?.name}</p>
           <p className="text-xs text-blue-400 truncate">{currentUser?.email}</p>
           <p className="text-xs text-blue-400 capitalize">{currentUser?.role?.replace('_', ' ')}</p>
-          {currentUser?.department && (
-            <p className="text-xs text-blue-400">{currentUser.department}</p>
-          )}
         </div>
         <button
           onClick={handleLogout}

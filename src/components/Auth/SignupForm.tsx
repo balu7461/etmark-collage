@@ -18,18 +18,15 @@ export function SignupForm({ onBackToLogin }: SignupFormProps) {
     password: '',
     confirmPassword: '',
     phone: '',
-    department: '',
-    role: 'faculty' as 'faculty' | 'committee_member' | 'timetable_committee' | 'examination_committee'
+    role: 'faculty' as 'faculty' | 'timetable_committee' | 'examination_committee'
   });
   const [loading, setLoading] = useState(false);
   const [showApprovalModal, setShowApprovalModal] = useState(false);
 
-  const departments: Department[] = ['Science', 'Commerce', 'Computer Science'];
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.email || !formData.password || !formData.phone || !formData.department || !formData.role) {
+    if (!formData.name || !formData.email || !formData.password || !formData.phone || !formData.role) {
       toast.error('Please fill in all fields');
       return;
     }
@@ -53,7 +50,6 @@ export function SignupForm({ onBackToLogin }: SignupFormProps) {
         email: formData.email,
         name: formData.name,
         role: formData.role,
-        department: formData.department,
         phone: formData.phone,
         isApproved: false, // All new accounts need admin approval
         registrationDate: format(new Date(), 'yyyy-MM-dd HH:mm:ss')
@@ -166,26 +162,6 @@ export function SignupForm({ onBackToLogin }: SignupFormProps) {
               <div className="transform transition-all duration-200 hover:scale-105">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   <div className="flex items-center space-x-2">
-                    <Building className="h-4 w-4 text-[#002e5d]" />
-                    <span>Department</span>
-                  </div>
-                </label>
-                <select
-                  value={formData.department}
-                  onChange={handleChange('department')}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#002e5d] focus:border-transparent transition-all duration-200"
-                  required
-                >
-                  <option value="">Select Department</option>
-                  {departments.map(dept => (
-                    <option key={dept} value={dept}>{dept}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="transform transition-all duration-200 hover:scale-105">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <div className="flex items-center space-x-2">
                     <Shield className="h-4 w-4 text-[#002e5d]" />
                     <span>Role</span>
                   </div>
@@ -197,7 +173,6 @@ export function SignupForm({ onBackToLogin }: SignupFormProps) {
                   required
                 >
                   <option value="faculty">Faculty</option>
-                  <option value="committee_member">Committee Member</option>
                   <option value="timetable_committee">Timetable Committee</option>
                   <option value="examination_committee">Examination Committee</option>
                 </select>
@@ -238,7 +213,7 @@ export function SignupForm({ onBackToLogin }: SignupFormProps) {
               </div>
 
               {/* Role-specific information */}
-              {(formData.role === 'committee_member' || formData.role === 'timetable_committee' || formData.role === 'examination_committee') && (
+              {(formData.role === 'timetable_committee' || formData.role === 'examination_committee') && (
                 <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
                   <div className="flex items-start space-x-3">
                     <Crown className="h-5 w-5 text-blue-600 mt-0.5" />
@@ -309,7 +284,7 @@ export function SignupForm({ onBackToLogin }: SignupFormProps) {
                   <div>
                     <h4 className="font-medium text-blue-900 mb-1">Approval Required</h4>
                     <p className="text-sm text-blue-800">
-                      {formData.role === 'timetable_committee' || formData.role === 'examination_committee' || formData.role === 'committee_member'
+                      {formData.role === 'timetable_committee' || formData.role === 'examination_committee'
                         ? 'Committee accounts require special verification. You will be notified once approved.'
                         : 'Your account will be reviewed by the administrator. You will be notified once approved.'
                       }

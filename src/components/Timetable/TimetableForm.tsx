@@ -28,7 +28,7 @@ export function TimetableForm({ onSuccess }: TimetableFormProps) {
   const [loading, setLoading] = useState(false);
 
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const classes = ['BCA-A', 'BCA-B', 'BBA-A', 'BBA-B', 'BCOM-A', 'BCOM-B', 'MCOM-A', 'MCOM-B'];
+  const classes = ['B.com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
   const semesters = ['1', '2', '3', '4', '5', '6'];
   const timeSlots = [
     { start: '09:00', end: '10:00' },

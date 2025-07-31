@@ -20,7 +20,7 @@ export function Attendance() {
   });
 
   // Updated classes to match the ones used throughout the application
-  const classes = ['BCA-A', 'BCA-B', 'BBA-A', 'BBA-B', 'BCOM-A', 'BCOM-B', 'MCOM-A', 'MCOM-B'];
+  const classes = ['B.com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
 
   useEffect(() => {
     fetchData();

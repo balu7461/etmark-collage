@@ -17,8 +17,6 @@ export function LeaveManagement() {
   const [selectedLeave, setSelectedLeave] = useState<LeaveApplication | null>(null);
   const [reviewComments, setReviewComments] = useState('');
 
-  const departments: Department[] = ['Science', 'Commerce', 'Computer Science'];
-
   useEffect(() => {
     fetchLeaves();
   }, [currentUser]);
@@ -28,6 +26,7 @@ export function LeaveManagement() {
       let q;
       
       if (currentUser?.role === 'committee_member' || currentUser?.role === 'timetable_committee' || currentUser?.role === 'examination_committee') {
+      if (currentUser?.role === 'timetable_committee' || currentUser?.role === 'examination_committee') {
         // Committee members see leaves pending their approval
         q = query(
           collection(db, 'leaveApplications'),
@@ -75,6 +74,7 @@ export function LeaveManagement() {
       };
 
       if (currentUser?.role === 'committee_member' || currentUser?.role === 'timetable_committee' || currentUser?.role === 'examination_committee') {
+      if (currentUser?.role === 'timetable_committee' || currentUser?.role === 'examination_committee') {
         if (action === 'approved') {
           updateData.status = 'pending_principal_approval';
           updateData.committeeApproved = true;
@@ -118,8 +118,7 @@ export function LeaveManagement() {
 
   const filteredLeaves = leaves.filter(leave => {
     const matchesStatus = filter === 'all' || leave.status === filter;
-    const matchesDepartment = !departmentFilter || leave.department === departmentFilter;
-    return matchesStatus && matchesDepartment;
+    return matchesStatus;
   });
 
   const getStatusColor = (status: string) => {
@@ -165,8 +164,6 @@ export function LeaveManagement() {
 
   const getRoleDisplayName = () => {
     switch (currentUser?.role) {
-      case 'committee_member':
-        return 'Committee Review';
       case 'timetable_committee':
         return 'Timetable Committee Review';
       case 'examination_committee':
@@ -191,7 +188,7 @@ export function LeaveManagement() {
               Leave Management - {getRoleDisplayName()}
             </h1>
             <p className="text-gray-600">
-              {currentUser?.role === 'committee_member' || currentUser?.role === 'timetable_committee' || currentUser?.role === 'examination_committee'
+              {currentUser?.role === 'timetable_committee' || currentUser?.role === 'examination_committee'
                 ? 'Review leave applications for committee approval'
                 : currentUser?.role === 'admin'
                 ? 'Final approval of leave applications as Principal'
@@ -273,21 +270,6 @@ export function LeaveManagement() {
                 </div>
               </div>
 
-              {currentUser?.role === 'admin' && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Department</label>
-                  <select
-                    value={departmentFilter}
-                    onChange={(e) => setDepartmentFilter(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="">All Departments</option>
-                    {departments.map(dept => (
-                      <option key={dept} value={dept}>{dept}</option>
-                    ))}
-                  </select>
-                </div>
-              )}
             </div>
           </div>
 
@@ -320,10 +302,6 @@ export function LeaveManagement() {
                         <div className="flex items-center space-x-2 text-sm text-gray-600">
                           <User className="h-4 w-4" />
                           <span><strong>Faculty:</strong> {leave.facultyName}</span>
-                        </div>
-                        <div className="flex items-center space-x-2 text-sm text-gray-600">
-                          <Building className="h-4 w-4" />
-                          <span><strong>Dept:</strong> {leave.department}</span>
                         </div>
                         <div className="flex items-center space-x-2 text-sm text-gray-600">
                           <FileText className="h-4 w-4" />
@@ -422,12 +400,12 @@ export function LeaveManagement() {
 
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {currentUser?.role === 'committee_member' || currentUser?.role === 'timetable_committee' || currentUser?.role === 'examination_committee' ? 'Committee Comments' : 'Principal Comments'} (Optional)
+                  {currentUser?.role === 'timetable_committee' || currentUser?.role === 'examination_committee' ? 'Committee Comments' : 'Principal Comments'} (Optional)
                 </label>
                 <textarea
                   value={reviewComments}
                   onChange={(e) => setReviewComments(e.target.value)}
-                  placeholder={`Add your ${currentUser?.role === 'committee_member' || currentUser?.role === 'timetable_committee' || currentUser?.role === 'examination_committee' ? 'committee' : 'principal'} comments...`}
+                  placeholder={`Add your ${currentUser?.role === 'timetable_committee' || currentUser?.role === 'examination_committee' ? 'committee' : 'principal'} comments...`}
                   rows={4}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />

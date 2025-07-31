@@ -9,7 +9,6 @@ export function Settings() {
   const [profileData, setProfileData] = useState({
     name: currentUser?.name || '',
     email: currentUser?.email || '',
-    department: currentUser?.department || '',
     phone: currentUser?.phone || ''
   });
   const [emailSettings, setEmailSettings] = useState({
@@ -72,18 +71,6 @@ export function Settings() {
                       type="email"
                       value={profileData.email}
                       onChange={(e) => setProfileData(prev => ({ ...prev, email: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Department
-                    </label>
-                    <input
-                      type="text"
-                      value={profileData.department}
-                      onChange={(e) => setProfileData(prev => ({ ...prev, department: e.target.value }))}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>

@@ -118,8 +118,6 @@ export function FacultyApproval() {
     switch (role) {
       case 'faculty':
         return 'Faculty';
-      case 'committee_member':
-        return 'Committee Member';
       case 'timetable_committee':
         return 'Timetable Committee';
       case 'examination_committee':
@@ -133,8 +131,6 @@ export function FacultyApproval() {
     switch (role) {
       case 'faculty':
         return <UserCheck className="h-4 w-4" />;
-      case 'committee_member':
-        return <Shield className="h-4 w-4" />;
       case 'timetable_committee':
         return <Calendar className="h-4 w-4" />;
       case 'examination_committee':
@@ -148,8 +144,6 @@ export function FacultyApproval() {
     switch (role) {
       case 'faculty':
         return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'committee_member':
-        return 'bg-purple-100 text-purple-800 border-purple-200';
       case 'timetable_committee':
         return 'bg-green-100 text-green-800 border-green-200';
       case 'examination_committee':
@@ -167,13 +161,6 @@ export function FacultyApproval() {
           <span className="inline-flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200">
             <AlertTriangle className="h-3 w-3" />
             <span>High Priority</span>
-          </span>
-        );
-      case 'committee_member':
-        return (
-          <span className="inline-flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
-            <Clock className="h-3 w-3" />
-            <span>Medium Priority</span>
           </span>
         );
       default:
@@ -270,12 +257,6 @@ export function FacultyApproval() {
                           <div className="flex items-center space-x-2 text-sm text-gray-600">
                             <Phone className="h-4 w-4" />
                             <span>{user.phone}</span>
-                          </div>
-                        )}
-                        {user.department && (
-                          <div className="flex items-center space-x-2 text-sm text-gray-600">
-                            <Building className="h-4 w-4" />
-                            <span>{user.department}</span>
                           </div>
                         )}
                         <div className="flex items-center space-x-2 text-sm text-gray-600">
