@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../../lib/firebase';
-import { User } from '../../types';
+import { User, Department } from '../../types';
 import { GraduationCap, Mail, Lock, User as UserIcon, Phone, Building, ArrowLeft, UserPlus, Crown, AlertCircle, CheckCircle, Clock, Shield } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
@@ -19,12 +19,12 @@ export function SignupForm({ onBackToLogin }: SignupFormProps) {
     confirmPassword: '',
     phone: '',
     department: '',
-    role: 'faculty' as 'faculty' | 'hod'
+    role: 'faculty' as 'faculty' | 'committee_member' | 'timetable_committee' | 'examination_committee'
   });
   const [loading, setLoading] = useState(false);
   const [showApprovalModal, setShowApprovalModal] = useState(false);
 
-  const departments = ['BBA', 'BCA', 'BCOM', 'MCOM'];
+  const departments: Department[] = ['Science', 'Commerce', 'Computer Science'];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,6 +81,21 @@ export function SignupForm({ onBackToLogin }: SignupFormProps) {
     onBackToLogin(); // This redirects to login page
   };
 
+  const getRoleDisplayName = (role: string) => {
+    switch (role) {
+      case 'faculty':
+        return 'Faculty';
+      case 'committee_member':
+        return 'Committee Member';
+      case 'timetable_committee':
+        return 'Timetable Committee';
+      case 'examination_committee':
+        return 'Examination Committee';
+      default:
+        return role.charAt(0).toUpperCase() + role.slice(1);
+    }
+  };
+
   return (
     <>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4 overflow-y-auto">
@@ -99,131 +114,155 @@ export function SignupForm({ onBackToLogin }: SignupFormProps) {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="transform transition-all duration-200 hover:scale-105">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Full Name
+                  <div className="flex items-center space-x-2">
+                    <UserIcon className="h-4 w-4 text-[#002e5d]" />
+                    <span>Full Name</span>
+                  </div>
                 </label>
-                <div className="relative">
-                  <UserIcon className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={handleChange('name')}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    placeholder="Enter your full name"
-                    required
-                  />
-                </div>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={handleChange('name')}
+                  placeholder="Enter your full name"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#002e5d] focus:border-transparent transition-all duration-200"
+                  required
+                />
               </div>
 
               <div className="transform transition-all duration-200 hover:scale-105">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Email Address
+                  <div className="flex items-center space-x-2">
+                    <Mail className="h-4 w-4 text-[#002e5d]" />
+                    <span>Email Address</span>
+                  </div>
                 </label>
-                <div className="relative">
-                  <Mail className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                  <input
-                    type="email"
-                    value={formData.email}
-                    onChange={handleChange('email')}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    placeholder="Enter your email"
-                    required
-                  />
-                </div>
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange('email')}
+                  placeholder="Enter your email address"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#002e5d] focus:border-transparent transition-all duration-200"
+                  required
+                />
               </div>
 
               <div className="transform transition-all duration-200 hover:scale-105">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Phone Number
+                  <div className="flex items-center space-x-2">
+                    <Phone className="h-4 w-4 text-[#002e5d]" />
+                    <span>Phone Number</span>
+                  </div>
                 </label>
-                <div className="relative">
-                  <Phone className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                  <input
-                    type="tel"
-                    value={formData.phone}
-                    onChange={handleChange('phone')}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    placeholder="Enter your phone number"
-                    required
-                  />
-                </div>
+                <input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={handleChange('phone')}
+                  placeholder="Enter your phone number"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#002e5d] focus:border-transparent transition-all duration-200"
+                  required
+                />
               </div>
 
               <div className="transform transition-all duration-200 hover:scale-105">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Department
+                  <div className="flex items-center space-x-2">
+                    <Building className="h-4 w-4 text-[#002e5d]" />
+                    <span>Department</span>
+                  </div>
                 </label>
-                <div className="relative">
-                  <Building className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                  <select
-                    value={formData.department}
-                    onChange={handleChange('department')}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none"
-                    required
-                  >
-                    <option value="">Select Department</option>
-                    {departments.map(dept => (
-                      <option key={dept} value={dept}>{dept}</option>
-                    ))}
-                  </select>
-                </div>
+                <select
+                  value={formData.department}
+                  onChange={handleChange('department')}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#002e5d] focus:border-transparent transition-all duration-200"
+                  required
+                >
+                  <option value="">Select Department</option>
+                  {departments.map(dept => (
+                    <option key={dept} value={dept}>{dept}</option>
+                  ))}
+                </select>
               </div>
 
               <div className="transform transition-all duration-200 hover:scale-105">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Role
+                  <div className="flex items-center space-x-2">
+                    <Shield className="h-4 w-4 text-[#002e5d]" />
+                    <span>Role</span>
+                  </div>
                 </label>
-                <div className="relative">
-                  <Crown className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                  <select
-                    value={formData.role}
-                    onChange={handleChange('role')}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none"
-                    required
-                  >
-                    <option value="faculty">Faculty</option>
-                    <option value="committee_member">Committee Member</option>
-                  </select>
-                </div>
+                <select
+                  value={formData.role}
+                  onChange={handleChange('role')}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#002e5d] focus:border-transparent transition-all duration-200"
+                  required
+                >
+                  <option value="faculty">Faculty</option>
+                  <option value="committee_member">Committee Member</option>
+                  <option value="timetable_committee">Timetable Committee</option>
+                  <option value="examination_committee">Examination Committee</option>
+                </select>
               </div>
 
               <div className="transform transition-all duration-200 hover:scale-105">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Password
+                  <div className="flex items-center space-x-2">
+                    <Lock className="h-4 w-4 text-[#002e5d]" />
+                    <span>Password</span>
+                  </div>
                 </label>
-                <div className="relative">
-                  <Lock className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                  <input
-                    type="password"
-                    value={formData.password}
-                    onChange={handleChange('password')}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    placeholder="Create a password"
-                    required
-                  />
-                </div>
+                <input
+                  type="password"
+                  value={formData.password}
+                  onChange={handleChange('password')}
+                  placeholder="Create a password"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#002e5d] focus:border-transparent transition-all duration-200"
+                  required
+                />
               </div>
 
               <div className="transform transition-all duration-200 hover:scale-105">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Confirm Password
+                  <div className="flex items-center space-x-2">
+                    <Lock className="h-4 w-4 text-[#002e5d]" />
+                    <span>Confirm Password</span>
+                  </div>
                 </label>
-                <div className="relative">
-                  <Lock className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                  <input
-                    type="password"
-                    value={formData.confirmPassword}
-                    onChange={handleChange('confirmPassword')}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    placeholder="Confirm your password"
-                    required
-                  />
-                </div>
+                <input
+                  type="password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange('confirmPassword')}
+                  placeholder="Confirm your password"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#002e5d] focus:border-transparent transition-all duration-200"
+                  required
+                />
               </div>
+
+              {/* Role-specific information */}
+              {(formData.role === 'committee_member' || formData.role === 'timetable_committee' || formData.role === 'examination_committee') && (
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                  <div className="flex items-start space-x-3">
+                    <Crown className="h-5 w-5 text-blue-600 mt-0.5" />
+                    <div>
+                      <h4 className="font-medium text-blue-900 mb-1">
+                        {getRoleDisplayName(formData.role)} Account
+                      </h4>
+                      <p className="text-sm text-blue-800">
+                        {formData.role === 'timetable_committee' 
+                          ? 'Timetable Committee members can review leave applications and manage timetables.'
+                          : formData.role === 'examination_committee'
+                          ? 'Examination Committee members can review leave applications and manage examination schedules.'
+                          : 'Committee members have special privileges and can review leave applications.'
+                        }
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#002e5d] text-white py-3 px-4 rounded-lg hover:bg-blue-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 transform hover:scale-105"
+                className="w-full bg-[#002e5d] text-white py-3 px-4 rounded-xl hover:bg-blue-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
               >
                 {loading ? (
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
@@ -239,7 +278,7 @@ export function SignupForm({ onBackToLogin }: SignupFormProps) {
             <div className="mt-6 text-center">
               <button
                 onClick={onBackToLogin}
-                className="text-[#002e5d] hover:text-blue-800 font-medium flex items-center justify-center space-x-2 mx-auto transition-colors"
+                className="flex items-center justify-center space-x-2 text-[#002e5d] hover:text-blue-800 transition-colors duration-200"
               >
                 <ArrowLeft className="h-4 w-4" />
                 <span>Back to Login</span>
@@ -249,89 +288,41 @@ export function SignupForm({ onBackToLogin }: SignupFormProps) {
         </div>
       </div>
 
-      {/* Admin Approval Confirmation Modal */}
+      {/* Approval Modal */}
       {showApprovalModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 modal-overlay overflow-y-auto">
-          <div className="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 transform transition-all duration-300 my-8 form-container">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-8 transform transition-all duration-300">
             <div className="text-center">
               <div className="flex justify-center mb-4">
                 <div className="bg-green-100 p-3 rounded-full">
                   <CheckCircle className="h-8 w-8 text-green-600" />
                 </div>
               </div>
-              
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Account Created Successfully!</h3>
+              <p className="text-gray-600 mb-6">
+                Your {getRoleDisplayName(formData.role).toLowerCase()} account has been created and is pending admin approval.
+              </p>
               
-              <div className="text-sm text-gray-600 mb-6 space-y-4 overflow-y-auto max-h-96">
-                <p className="text-base">Your {formData.role === 'hod' ? 'HOD' : 'faculty'} account has been created and is now pending admin approval.</p>
-                
-                {/* Approval Process Explanation */}
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-left">
-                  <div className="flex items-start space-x-3">
-                    <Shield className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-medium text-blue-900 mb-2">What happens next?</h4>
-                      <div className="space-y-2 text-blue-800">
-                        <div className="flex items-start space-x-2">
-                          <Clock className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                          <span className="text-xs">Your account is now in the admin approval queue</span>
-                        </div>
-                        <div className="flex items-start space-x-2">
-                          <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                          <span className="text-xs">Admin will review your {formData.role === 'hod' ? 'HOD' : 'faculty'} credentials and department information</span>
-                        </div>
-                        <div className="flex items-start space-x-2">
-                          <Mail className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                          <span className="text-xs">You'll receive an email notification once approved</span>
-                        </div>
-                        <div className="flex items-start space-x-2">
-                          <CheckCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                          <span className="text-xs">After approval, you can login and access all {formData.role === 'hod' ? 'HOD' : 'faculty'} features</span>
-                        </div>
-                      </div>
-                    </div>
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+                <div className="flex items-start space-x-3">
+                  <Clock className="h-5 w-5 text-blue-600 mt-0.5" />
+                  <div>
+                    <h4 className="font-medium text-blue-900 mb-1">Approval Required</h4>
+                    <p className="text-sm text-blue-800">
+                      {formData.role === 'timetable_committee' || formData.role === 'examination_committee' || formData.role === 'committee_member'
+                        ? 'Committee accounts require special verification. You will be notified once approved.'
+                        : 'Your account will be reviewed by the administrator. You will be notified once approved.'
+                      }
+                    </p>
                   </div>
                 </div>
-
-                {/* Role-specific information */}
-                {formData.role === 'hod' ? (
-                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 text-left">
-                    <div className="flex items-start space-x-3">
-                      <Crown className="h-5 w-5 text-purple-600 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <h4 className="font-medium text-purple-900 mb-1">HOD Account Features</h4>
-                        <p className="text-xs text-purple-800">
-                          As an HOD, you'll have access to department management, faculty oversight, 
-                          leave approvals, and advanced reporting features once approved.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-left">
-                    <div className="flex items-start space-x-3">
-                      <UserIcon className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <h4 className="font-medium text-green-900 mb-1">Faculty Account Features</h4>
-                        <p className="text-xs text-green-800">
-                          As faculty, you'll have access to attendance marking, timetable management, 
-                          leave applications, and achievement tracking once approved.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                
-                <p className="text-xs text-gray-500 mt-3">
-                  Approval typically takes 24-48 hours. You can try logging in after receiving approval confirmation.
-                </p>
               </div>
 
               <button
                 onClick={handleApprovalModalClose}
-                className="w-full bg-[#002e5d] text-white py-3 px-4 rounded-lg hover:bg-blue-800 transition-colors"
+                className="w-full bg-[#002e5d] text-white py-3 px-4 rounded-xl hover:bg-blue-800 transition-all duration-200"
               >
-                Back to Login
+                Continue to Login
               </button>
             </div>
           </div>

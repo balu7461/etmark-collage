@@ -78,6 +78,26 @@ function AppContent() {
               </>
             )}
             
+            {/* Timetable Committee routes */}
+            {currentUser.role === 'timetable_committee' && (
+              <>
+                <Route path="/my-timetable" element={<MyTimetable />} />
+                <Route path="/leave-management" element={<LeaveManagement />} />
+                <Route path="/my-leaves" element={<MyLeaves />} />
+                <Route path="/my-achievements" element={<MyAchievements />} />
+              </>
+            )}
+            
+            {/* Examination Committee routes */}
+            {currentUser.role === 'examination_committee' && (
+              <>
+                <Route path="/my-timetable" element={<MyTimetable />} />
+                <Route path="/leave-management" element={<LeaveManagement />} />
+                <Route path="/my-leaves" element={<MyLeaves />} />
+                <Route path="/my-achievements" element={<MyAchievements />} />
+              </>
+            )}
+            
             {/* Committee Member routes */}
             {currentUser.role === 'committee_member' && (
               <>

@@ -4,6 +4,7 @@ import { db } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { StatsCard } from '../components/Dashboard/StatsCard';
 import { Header } from '../components/Layout/Header';
+import { Department } from '../types';
 import { 
   Users, 
   Calendar, 
@@ -18,7 +19,9 @@ import {
   CalendarDays,
   BookOpen,
   UserCheck,
-  GraduationCap
+  GraduationCap,
+  Clock3,
+  FileCheck
 } from 'lucide-react';
 
 export function Dashboard() {
@@ -36,6 +39,8 @@ export function Dashboard() {
     departmentStats: {} as Record<string, { faculty: number; students: number }>
   });
   const [loading, setLoading] = useState(true);
+
+  const departments: Department[] = ['Science', 'Commerce', 'Computer Science'];
 
   useEffect(() => {
     fetchDashboardStats();
@@ -93,12 +98,11 @@ export function Dashboard() {
         const attendanceRate = totalStudents > 0 ? (presentToday / totalStudents) * 100 : 0;
 
         // Calculate department stats
-        const departments = ['BBA', 'BCA', 'BCOM', 'MCOM'];
         const departmentStats: Record<string, { faculty: number; students: number }> = {};
         
         for (const dept of departments) {
           const facultyCount = usersSnapshot.docs.filter(
-            doc => doc.data().department === dept && (doc.data().role === 'faculty' || doc.data().role === 'committee_member')
+            doc => doc.data().department === dept && (doc.data().role === 'faculty' || doc.data().role === 'committee_member' || doc.data().role === 'timetable_committee' || doc.data().role === 'examination_committee')
           ).length;
           
           const studentCount = studentsSnapshot.docs.filter(
@@ -119,6 +123,84 @@ export function Dashboard() {
           totalTimeSlots,
           attendanceRate,
           departmentStats
+        });
+      } else if (currentUser?.role === 'timetable_committee') {
+        // Fetch timetable committee stats
+        const pendingLeavesQuery = query(
+          collection(db, 'leaveApplications'),
+          where('status', '==', 'pending_committee_approval')
+        );
+        const pendingLeavesSnapshot = await getDocs(pendingLeavesQuery);
+        const pendingLeaves = pendingLeavesSnapshot.size;
+
+        const timeSlotsSnapshot = await getDocs(collection(db, 'timeSlots'));
+        const totalTimeSlots = timeSlotsSnapshot.size;
+
+        const myLeavesQuery = query(
+          collection(db, 'leaveApplications'),
+          where('facultyId', '==', currentUser?.id),
+          where('status', 'in', ['pending_committee_approval', 'pending_principal_approval'])
+        );
+        const myLeavesSnapshot = await getDocs(myLeavesQuery);
+        const myPendingLeaves = myLeavesSnapshot.size;
+
+        const myAchievementsQuery = query(
+          collection(db, 'achievements'),
+          where('facultyId', '==', currentUser?.id)
+        );
+        const myAchievementsSnapshot = await getDocs(myAchievementsQuery);
+        const totalAchievements = myAchievementsSnapshot.size;
+
+        setStats({
+          totalStudents: 0,
+          totalUsers: 0,
+          pendingFacultyApprovals: 0,
+          pendingStudentApprovals: 0,
+          presentToday: 0,
+          pendingLeaves,
+          totalAchievements,
+          totalTimeSlots,
+          attendanceRate: 0,
+          departmentStats: {}
+        });
+      } else if (currentUser?.role === 'examination_committee') {
+        // Fetch examination committee stats
+        const pendingLeavesQuery = query(
+          collection(db, 'leaveApplications'),
+          where('status', '==', 'pending_committee_approval')
+        );
+        const pendingLeavesSnapshot = await getDocs(pendingLeavesQuery);
+        const pendingLeaves = pendingLeavesSnapshot.size;
+
+        const myLeavesQuery = query(
+          collection(db, 'leaveApplications'),
+          where('facultyId', '==', currentUser?.id),
+          where('status', 'in', ['pending_committee_approval', 'pending_principal_approval'])
+        );
+        const myLeavesSnapshot = await getDocs(myLeavesQuery);
+        const myPendingLeaves = myLeavesSnapshot.size;
+
+        const myAchievementsQuery = query(
+          collection(db, 'achievements'),
+          where('facultyId', '==', currentUser?.id)
+        );
+        const myAchievementsSnapshot = await getDocs(myAchievementsQuery);
+        const totalAchievements = myAchievementsSnapshot.size;
+
+        const timeSlotsSnapshot = await getDocs(collection(db, 'timeSlots'));
+        const totalTimeSlots = timeSlotsSnapshot.size;
+
+        setStats({
+          totalStudents: 0,
+          totalUsers: 0,
+          pendingFacultyApprovals: 0,
+          pendingStudentApprovals: 0,
+          presentToday: 0,
+          pendingLeaves,
+          totalAchievements,
+          totalTimeSlots,
+          attendanceRate: 0,
+          departmentStats: {}
         });
       } else {
         // Fetch faculty stats
@@ -164,6 +246,23 @@ export function Dashboard() {
     }
   };
 
+  const getRoleDisplayName = () => {
+    switch (currentUser?.role) {
+      case 'admin':
+        return 'Administrator';
+      case 'committee_member':
+        return 'Committee Member';
+      case 'timetable_committee':
+        return 'Timetable Committee';
+      case 'examination_committee':
+        return 'Examination Committee';
+      case 'faculty':
+        return 'Faculty';
+      default:
+        return 'User';
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex-1 flex items-center justify-center">
@@ -184,6 +283,9 @@ export function Dashboard() {
             </h1>
             <p className="text-gray-600">
               Here's what's happening in your {currentUser?.role === 'admin' ? 'institution' : 'dashboard'} today.
+            </p>
+            <p className="text-sm text-gray-500 mt-1">
+              Role: {getRoleDisplayName()} • Department: {currentUser?.department || 'N/A'}
             </p>
           </div>
 
@@ -215,6 +317,60 @@ export function Dashboard() {
                   icon={Users}
                   color="blue"
                   trend={{ value: 3.1, isPositive: true }}
+                />
+              </>
+            ) : currentUser?.role === 'timetable_committee' ? (
+              <>
+                <StatsCard
+                  title="Pending Leave Reviews"
+                  value={stats.pendingLeaves}
+                  icon={Clock}
+                  color="yellow"
+                />
+                <StatsCard
+                  title="Total Time Slots"
+                  value={stats.totalTimeSlots}
+                  icon={CalendarDays}
+                  color="blue"
+                />
+                <StatsCard
+                  title="My Pending Leaves"
+                  value={stats.pendingLeaves}
+                  icon={FileText}
+                  color="orange"
+                />
+                <StatsCard
+                  title="My Achievements"
+                  value={stats.totalAchievements}
+                  icon={Award}
+                  color="purple"
+                />
+              </>
+            ) : currentUser?.role === 'examination_committee' ? (
+              <>
+                <StatsCard
+                  title="Pending Leave Reviews"
+                  value={stats.pendingLeaves}
+                  icon={Clock}
+                  color="yellow"
+                />
+                <StatsCard
+                  title="My Pending Leaves"
+                  value={stats.pendingLeaves}
+                  icon={FileText}
+                  color="orange"
+                />
+                <StatsCard
+                  title="My Achievements"
+                  value={stats.totalAchievements}
+                  icon={Award}
+                  color="purple"
+                />
+                <StatsCard
+                  title="My Classes"
+                  value={stats.totalTimeSlots}
+                  icon={CalendarDays}
+                  color="blue"
                 />
               </>
             ) : (
@@ -358,7 +514,7 @@ export function Dashboard() {
                         <CheckCircle className="h-4 w-4 text-green-600" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">Attendance marked for BCA-A</p>
+                        <p className="text-sm font-medium text-gray-900">Attendance marked for Computer Science-A</p>
                         <p className="text-xs text-gray-500">2 hours ago</p>
                       </div>
                     </div>
@@ -433,6 +589,40 @@ export function Dashboard() {
                 </div>
               </div>
             </>
+          )}
+
+          {/* Committee Member Specific Content */}
+          {(currentUser?.role === 'timetable_committee' || currentUser?.role === 'examination_committee') && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+              <div className="flex items-center space-x-3 mb-4">
+                {currentUser?.role === 'timetable_committee' ? (
+                  <CalendarDays className="h-6 w-6 text-[#002e5d]" />
+                ) : (
+                  <FileCheck className="h-6 w-6 text-[#002e5d]" />
+                )}
+                <h3 className="text-lg font-medium text-gray-900">
+                  {currentUser?.role === 'timetable_committee' ? 'Timetable Committee' : 'Examination Committee'} Dashboard
+                </h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h4 className="font-medium text-blue-900 mb-2">Leave Review Responsibilities</h4>
+                  <p className="text-sm text-blue-800">
+                    As a {currentUser?.role === 'timetable_committee' ? 'Timetable Committee' : 'Examination Committee'} member, 
+                    you are responsible for reviewing leave applications before they are sent to the Principal for final approval.
+                  </p>
+                </div>
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <h4 className="font-medium text-green-900 mb-2">Quick Actions</h4>
+                  <div className="space-y-2 text-sm text-green-800">
+                    <p>• Review pending leave applications</p>
+                    <p>• Approve or reject leave requests</p>
+                    <p>• Add comments for Principal review</p>
+                    <p>• Monitor leave patterns</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </main>

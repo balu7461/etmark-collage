@@ -53,14 +53,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (userDoc.exists()) {
         const userData = userDoc.data() as User;
         
-        // Check if user is approved (applies to both faculty and HOD)
+        // Check if user is approved (applies to all roles)
         if (!userData.isApproved) {
           await signOut(auth); // Sign out immediately
           
           // Different messages for different roles
-          const roleMessage = userData.role === 'committee_member' 
-            ? 'Your Committee Member account is pending admin approval. Committee accounts require special verification.'
-            : 'Your faculty account is pending admin approval.';
+          let roleMessage = '';
+          switch (userData.role) {
+            case 'timetable_committee':
+              roleMessage = 'Your Timetable Committee account is pending admin approval. Committee accounts require special verification.';
+              break;
+            case 'examination_committee':
+              roleMessage = 'Your Examination Committee account is pending admin approval. Committee accounts require special verification.';
+              break;
+            case 'committee_member':
+              roleMessage = 'Your Committee Member account is pending admin approval. Committee accounts require special verification.';
+              break;
+            default:
+              roleMessage = 'Your faculty account is pending admin approval.';
+          }
             
           throw new Error(`${roleMessage} Please contact the administrator for approval status.`);
         }
@@ -69,7 +80,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem('currentUser', JSON.stringify(userData));
         
         // Welcome message with role
-        const roleDisplay = userData.role === 'committee_member' ? 'Committee Member' : userData.role;
+        const roleDisplay = userData.role === 'committee_member' ? 'Committee Member' : 
+                           userData.role === 'timetable_committee' ? 'Timetable Committee' :
+                           userData.role === 'examination_committee' ? 'Examination Committee' :
+                           userData.role;
         toast.success(`Welcome back, ${userData.name}! (${roleDisplay.toUpperCase()})`);
       } else {
         throw new Error('User profile not found');
@@ -127,9 +141,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               setCurrentUser(null);
               localStorage.removeItem('currentUser');
               
-              const roleMessage = userData.role === 'committee_member' 
-                ? 'Your Committee Member account is pending admin approval.'
-                : 'Your account is pending admin approval.';
+              let roleMessage = '';
+              switch (userData.role) {
+                case 'timetable_committee':
+                  roleMessage = 'Your Timetable Committee account is pending admin approval.';
+                  break;
+                case 'examination_committee':
+                  roleMessage = 'Your Examination Committee account is pending admin approval.';
+                  break;
+                case 'committee_member':
+                  roleMessage = 'Your Committee Member account is pending admin approval.';
+                  break;
+                default:
+                  roleMessage = 'Your account is pending admin approval.';
+              }
               
               toast.error(roleMessage);
               setLoading(false);

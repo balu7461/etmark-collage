@@ -2,7 +2,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: 'admin' | 'committee_member' | 'faculty';
+  role: 'admin' | 'committee_member' | 'faculty' | 'timetable_committee' | 'examination_committee';
   department?: string;
   phone?: string;
   isApproved?: boolean;
@@ -44,7 +44,7 @@ export interface LeaveApplication {
   facultyName: string;
   startDate: string;
   endDate: string;
-  leaveType: 'casual' | 'medical' | 'personal' | 'duty';
+  leaveType: 'medical' | 'personal';
   subject: string;
   description: string;
   status: 'pending_committee_approval' | 'pending_principal_approval' | 'approved' | 'rejected';
@@ -100,3 +100,9 @@ export interface Timetable {
   createdDate: string;
   lastModified: string;
 }
+
+// Department types
+export type Department = 'Science' | 'Commerce' | 'Computer Science';
+
+// Leave type types
+export type LeaveType = 'medical' | 'personal';

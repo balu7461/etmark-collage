@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { useAuth } from '../../contexts/AuthContext';
-import { LeaveApplication } from '../../types';
+import { LeaveApplication, LeaveType, Department } from '../../types';
 import { FileText, Calendar, Send } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
@@ -12,18 +12,18 @@ export function LeaveApplicationForm() {
   const [formData, setFormData] = useState({
     startDate: '',
     endDate: '',
-    leaveType: '' as 'casual' | 'medical' | 'personal' | 'duty' | '',
+    leaveType: '' as LeaveType | '',
     subject: '',
     description: ''
   });
   const [loading, setLoading] = useState(false);
 
   const leaveTypes = [
-    { value: 'casual', label: 'Casual Leave' },
     { value: 'medical', label: 'Medical Leave' },
-    { value: 'personal', label: 'Personal Leave' },
-    { value: 'duty', label: 'Duty Leave' }
+    { value: 'personal', label: 'Personal Leave' }
   ];
+
+  const departments: Department[] = ['Science', 'Commerce', 'Computer Science'];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

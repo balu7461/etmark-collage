@@ -13,7 +13,8 @@ import {
   CalendarDays,
   UserCheck,
   Users,
-  GraduationCapIcon
+  GraduationCapIcon,
+  FileCheck
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -42,6 +43,22 @@ export function Sidebar() {
     { to: '/settings', icon: Settings, label: 'Settings' },
   ];
 
+  const timetableCommitteeLinks = [
+    { to: '/dashboard', icon: BarChart3, label: 'Dashboard' },
+    { to: '/leave-management', icon: FileText, label: 'Leave Management' },
+    { to: '/my-timetable', icon: CalendarDays, label: 'My Timetable' },
+    { to: '/my-leaves', icon: FileText, label: 'My Leaves' },
+    { to: '/my-achievements', icon: Award, label: 'My Achievements' },
+  ];
+
+  const examinationCommitteeLinks = [
+    { to: '/dashboard', icon: BarChart3, label: 'Dashboard' },
+    { to: '/leave-management', icon: FileText, label: 'Leave Management' },
+    { to: '/my-timetable', icon: CalendarDays, label: 'My Timetable' },
+    { to: '/my-leaves', icon: FileText, label: 'My Leaves' },
+    { to: '/my-achievements', icon: Award, label: 'My Achievements' },
+  ];
+
   const committeeMemberLinks = [
     { to: '/dashboard', icon: BarChart3, label: 'Dashboard' },
     { to: '/my-timetable', icon: CalendarDays, label: 'My Timetable' },
@@ -62,6 +79,10 @@ export function Sidebar() {
     switch (currentUser?.role) {
       case 'admin':
         return adminLinks;
+      case 'timetable_committee':
+        return timetableCommitteeLinks;
+      case 'examination_committee':
+        return examinationCommitteeLinks;
       case 'committee_member':
         return committeeMemberLinks;
       case 'faculty':
@@ -75,6 +96,10 @@ export function Sidebar() {
     switch (currentUser?.role) {
       case 'admin':
         return 'Admin Panel';
+      case 'timetable_committee':
+        return 'Timetable Committee Panel';
+      case 'examination_committee':
+        return 'Examination Committee Panel';
       case 'committee_member':
         return 'Committee Panel';
       case 'faculty':
@@ -127,7 +152,7 @@ export function Sidebar() {
           <p className="text-sm text-blue-300">Logged in as</p>
           <p className="font-medium truncate">{currentUser?.name}</p>
           <p className="text-xs text-blue-400 truncate">{currentUser?.email}</p>
-          <p className="text-xs text-blue-400 capitalize">{currentUser?.role}</p>
+          <p className="text-xs text-blue-400 capitalize">{currentUser?.role?.replace('_', ' ')}</p>
           {currentUser?.department && (
             <p className="text-xs text-blue-400">{currentUser.department}</p>
           )}

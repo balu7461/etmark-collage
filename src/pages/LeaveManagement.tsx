@@ -3,7 +3,7 @@ import { collection, getDocs, updateDoc, doc, query, where } from 'firebase/fire
 import { db } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { Header } from '../components/Layout/Header';
-import { LeaveApplication } from '../types';
+import { LeaveApplication, Department } from '../types';
 import { FileText, Clock, CheckCircle, XCircle, Filter, MessageSquare, Calendar, User, Building } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
@@ -17,7 +17,7 @@ export function LeaveManagement() {
   const [selectedLeave, setSelectedLeave] = useState<LeaveApplication | null>(null);
   const [reviewComments, setReviewComments] = useState('');
 
-  const departments = ['BBA', 'BCA', 'BCOM', 'MCOM'];
+  const departments: Department[] = ['Science', 'Commerce', 'Computer Science'];
 
   useEffect(() => {
     fetchLeaves();
@@ -27,7 +27,7 @@ export function LeaveManagement() {
     try {
       let q;
       
-      if (currentUser?.role === 'committee_member') {
+      if (currentUser?.role === 'committee_member' || currentUser?.role === 'timetable_committee' || currentUser?.role === 'examination_committee') {
         // Committee members see leaves pending their approval
         q = query(
           collection(db, 'leaveApplications'),
@@ -74,7 +74,7 @@ export function LeaveManagement() {
         comments: reviewComments
       };
 
-      if (currentUser?.role === 'committee_member') {
+      if (currentUser?.role === 'committee_member' || currentUser?.role === 'timetable_committee' || currentUser?.role === 'examination_committee') {
         if (action === 'approved') {
           updateData.status = 'pending_principal_approval';
           updateData.committeeApproved = true;
@@ -163,6 +163,21 @@ export function LeaveManagement() {
     return { total, pending, approved, rejected };
   };
 
+  const getRoleDisplayName = () => {
+    switch (currentUser?.role) {
+      case 'committee_member':
+        return 'Committee Review';
+      case 'timetable_committee':
+        return 'Timetable Committee Review';
+      case 'examination_committee':
+        return 'Examination Committee Review';
+      case 'admin':
+        return 'Principal Approval';
+      default:
+        return 'Leave Management';
+    }
+  };
+
   const stats = getLeaveStats();
 
   return (
@@ -173,11 +188,10 @@ export function LeaveManagement() {
         <div className="max-w-7xl mx-auto">
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              Leave Management {currentUser?.role === 'committee_member' && '- Committee Review'}
-              {currentUser?.role === 'admin' && '- Principal Approval'}
+              Leave Management - {getRoleDisplayName()}
             </h1>
             <p className="text-gray-600">
-              {currentUser?.role === 'committee_member' 
+              {currentUser?.role === 'committee_member' || currentUser?.role === 'timetable_committee' || currentUser?.role === 'examination_committee'
                 ? 'Review leave applications for committee approval'
                 : currentUser?.role === 'admin'
                 ? 'Final approval of leave applications as Principal'
@@ -408,12 +422,12 @@ export function LeaveManagement() {
 
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {currentUser?.role === 'committee_member' ? 'Committee Comments' : 'Principal Comments'} (Optional)
+                  {currentUser?.role === 'committee_member' || currentUser?.role === 'timetable_committee' || currentUser?.role === 'examination_committee' ? 'Committee Comments' : 'Principal Comments'} (Optional)
                 </label>
                 <textarea
                   value={reviewComments}
                   onChange={(e) => setReviewComments(e.target.value)}
-                  placeholder={`Add your ${currentUser?.role === 'committee_member' ? 'committee' : 'principal'} comments...`}
+                  placeholder={`Add your ${currentUser?.role === 'committee_member' || currentUser?.role === 'timetable_committee' || currentUser?.role === 'examination_committee' ? 'committee' : 'principal'} comments...`}
                   rows={4}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
