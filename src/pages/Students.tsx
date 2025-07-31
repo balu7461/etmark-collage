@@ -39,10 +39,11 @@ export function Students() {
 
   const fetchStudents = async () => {
     try {
-      let q;
-      
-      // Admin can see all approved students
-      q = query(collection(db, 'students'), where('isApproved', '==', true));
+      // Fetch only approved students for real-time data
+      const q = query(
+        collection(db, 'students'), 
+        where('isApproved', '==', true)
+      );
       
       const querySnapshot = await getDocs(q);
       const studentsData = querySnapshot.docs.map(doc => ({
@@ -266,7 +267,7 @@ export function Students() {
       'Class': student.class,
       'Parent Email': student.parentEmail || '',
       'Parent Phone': student.parentPhone || '',
-      'Registration Date': student.registrationDate
+      'Registration Date': student.registrationDate || 'N/A'
     }));
 
     const ws = XLSX.utils.json_to_sheet(exportData);

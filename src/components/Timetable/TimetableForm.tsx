@@ -30,6 +30,16 @@ export function TimetableForm({ onSuccess }: TimetableFormProps) {
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const classes = ['B.com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
   const semesters = ['1', '2', '3', '4', '5', '6'];
+  
+  const subjectsByClass = {
+    'B.com': ['Accountancy', 'Business Studies', 'Economics', 'English', 'Mathematics', 'Computer Applications'],
+    'BBA': ['Business Administration', 'Marketing', 'Finance', 'Human Resources', 'Operations Management', 'Business Ethics'],
+    'BCA': ['Programming in C', 'Data Structures', 'Database Management', 'Web Development', 'Software Engineering', 'Computer Networks'],
+    'PCMB': ['Physics', 'Chemistry', 'Mathematics', 'Biology'],
+    'PCMC': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science'],
+    'EBAC': ['Economics', 'Business Studies', 'Accountancy', 'Computer Science'],
+    'EBAS': ['Economics', 'Business Studies', 'Accountancy', 'Statistics']
+  };
   const timeSlots = [
     { start: '09:00', end: '10:00' },
     { start: '10:00', end: '11:00' },
@@ -189,14 +199,17 @@ export function TimetableForm({ onSuccess }: TimetableFormProps) {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Subject *
             </label>
-            <input
-              type="text"
+            <select
               value={formData.subject}
               onChange={handleChange('subject')}
-              placeholder="Enter subject name"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
-            />
+            >
+              <option value="">Select Subject</option>
+              {formData.class && subjectsByClass[formData.class as keyof typeof subjectsByClass]?.map(subj => (
+                <option key={subj} value={subj}>{subj}</option>
+              ))}
+            </select>
           </div>
 
           <div>
@@ -211,7 +224,7 @@ export function TimetableForm({ onSuccess }: TimetableFormProps) {
             >
               <option value="">Select Faculty</option>
               {faculty.map(f => (
-                <option key={f.id} value={f.id}>{f.name} ({f.department})</option>
+                <option key={f.id} value={f.id}>{f.name}</option>
               ))}
             </select>
           </div>

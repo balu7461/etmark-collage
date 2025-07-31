@@ -19,6 +19,16 @@ export function AttendanceForm() {
   const [sendingEmails, setSendingEmails] = useState(false);
 
   const classes = ['B.com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
+  
+  const subjectsByClass = {
+    'B.com': ['Accountancy', 'Business Studies', 'Economics', 'English', 'Mathematics', 'Computer Applications'],
+    'BBA': ['Business Administration', 'Marketing', 'Finance', 'Human Resources', 'Operations Management', 'Business Ethics'],
+    'BCA': ['Programming in C', 'Data Structures', 'Database Management', 'Web Development', 'Software Engineering', 'Computer Networks'],
+    'PCMB': ['Physics', 'Chemistry', 'Mathematics', 'Biology'],
+    'PCMC': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science'],
+    'EBAC': ['Economics', 'Business Studies', 'Accountancy', 'Computer Science'],
+    'EBAS': ['Economics', 'Business Studies', 'Accountancy', 'Statistics']
+  };
 
   useEffect(() => {
     if (selectedClass) {
@@ -226,14 +236,17 @@ export function AttendanceForm() {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Subject
             </label>
-            <input
-              type="text"
+            <select
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              placeholder="Enter subject name"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               required
-            />
+            >
+              <option value="">Select Subject</option>
+              {selectedClass && subjectsByClass[selectedClass as keyof typeof subjectsByClass]?.map(subj => (
+                <option key={subj} value={subj}>{subj}</option>
+              ))}
+            </select>
           </div>
         </div>
 

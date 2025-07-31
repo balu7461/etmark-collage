@@ -35,7 +35,11 @@ export function UserManagement() {
       })) as User[];
 
       // Fetch students
-      const studentsSnapshot = await getDocs(collection(db, 'students'));
+      const studentsQuery = query(
+        collection(db, 'students'),
+        where('isApproved', '==', true)
+      );
+      const studentsSnapshot = await getDocs(studentsQuery);
       const studentsData = studentsSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()

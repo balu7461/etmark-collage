@@ -133,7 +133,12 @@ export function Reports() {
   const exportStudentReport = async () => {
     setLoading(true);
     try {
-      const studentsSnapshot = await getDocs(collection(db, 'students'));
+      // Fetch only approved students for real-time data
+      const studentsQuery = query(
+        collection(db, 'students'),
+        where('isApproved', '==', true)
+      );
+      const studentsSnapshot = await getDocs(studentsQuery);
       const studentsData = studentsSnapshot.docs.map(doc => doc.data()) as Student[];
 
       const exportData = studentsData.map(student => ({
@@ -141,7 +146,6 @@ export function Reports() {
         'Roll Number': student.rollNumber,
         'Email': student.email,
         'Class': student.class,
-        'Department': student.department,
         'Parent Email': student.parentEmail || '',
         'Parent Phone': student.parentPhone || ''
       }));

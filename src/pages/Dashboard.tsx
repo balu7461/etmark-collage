@@ -48,10 +48,18 @@ export function Dashboard() {
     try {
       if (currentUser?.role === 'admin') {
         // Fetch admin stats
-        const studentsSnapshot = await getDocs(collection(db, 'students'));
+        const approvedStudentsQuery = query(
+          collection(db, 'students'),
+          where('isApproved', '==', true)
+        );
+        const studentsSnapshot = await getDocs(approvedStudentsQuery);
         const totalStudents = studentsSnapshot.size;
 
-        const usersSnapshot = await getDocs(collection(db, 'users'));
+        const approvedUsersQuery = query(
+          collection(db, 'users'),
+          where('isApproved', '==', true)
+        );
+        const usersSnapshot = await getDocs(approvedUsersQuery);
         const totalUsers = usersSnapshot.size;
 
         // Fetch pending faculty approvals
@@ -79,13 +87,19 @@ export function Dashboard() {
         const presentToday = attendanceSnapshot.docs.filter(
           doc => doc.data().status === 'present'
         ).length;
+        const totalAttendanceToday = attendanceSnapshot.size;
 
-        const pendingLeavesQuery = query(
+        const pendingCommitteeLeavesQuery = query(
+          collection(db, 'leaveApplications'),
+          where('status', '==', 'pending_committee_approval')
+        );
+        const pendingPrincipalLeavesQuery = query(
           collection(db, 'leaveApplications'),
           where('status', '==', 'pending_principal_approval')
         );
-        const pendingLeavesSnapshot = await getDocs(pendingLeavesQuery);
-        const pendingLeaves = pendingLeavesSnapshot.size;
+        const pendingCommitteeSnapshot = await getDocs(pendingCommitteeLeavesQuery);
+        const pendingPrincipalSnapshot = await getDocs(pendingPrincipalLeavesQuery);
+        const pendingLeaves = pendingCommitteeSnapshot.size + pendingPrincipalSnapshot.size;
 
         const achievementsSnapshot = await getDocs(collection(db, 'achievements'));
         const totalAchievements = achievementsSnapshot.size;
@@ -93,7 +107,7 @@ export function Dashboard() {
         const timeSlotsSnapshot = await getDocs(collection(db, 'timeSlots'));
         const totalTimeSlots = timeSlotsSnapshot.size;
 
-        const attendanceRate = totalStudents > 0 ? (presentToday / totalStudents) * 100 : 0;
+        const attendanceRate = totalAttendanceToday > 0 ? (presentToday / totalAttendanceToday) * 100 : 0;
 
         setStats({
           totalStudents,
@@ -105,6 +119,7 @@ export function Dashboard() {
           totalAchievements,
           totalTimeSlots,
           attendanceRate,
+          departmentStats: {}
         });
       } else if (currentUser?.role === 'timetable_committee') {
         // Fetch timetable committee stats
