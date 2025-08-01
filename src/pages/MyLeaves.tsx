@@ -247,7 +247,7 @@ export function MyLeaves() {
                                 </p>
                               )}
                             </div>
-                          )}
+                          <span><strong>Type:</strong> {leave.leaveType === 'OD' ? 'On Duty (OD)' : 'Casual'}</span>
                         </div>
                       </div>
                     </div>

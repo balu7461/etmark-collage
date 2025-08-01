@@ -5,12 +5,13 @@ import { Clock, MapPin, User, BookOpen, Edit2, Trash2 } from 'lucide-react';
 interface TimetableGridProps {
   timeSlots: TimeSlot[];
   selectedClass?: string;
+  selectedYear?: string;
   isAdmin?: boolean;
   onEdit?: (timeSlot: TimeSlot) => void;
   onDelete?: (timeSlotId: string) => void;
 }
 
-export function TimetableGrid({ timeSlots, selectedClass, isAdmin = false, onEdit, onDelete }: TimetableGridProps) {
+export function TimetableGrid({ timeSlots, selectedClass, selectedYear, isAdmin = false, onEdit, onDelete }: TimetableGridProps) {
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const timeSlotHours = [
     '09:00-10:00',
@@ -28,7 +29,8 @@ export function TimetableGrid({ timeSlots, selectedClass, isAdmin = false, onEdi
       slot.day === day && 
       slot.startTime === startTime && 
       slot.endTime === endTime &&
-      (!selectedClass || slot.class === selectedClass)
+      (!selectedClass || slot.class === selectedClass) &&
+      (!selectedYear || slot.year === selectedYear)
     );
   };
 
@@ -92,6 +94,7 @@ export function TimetableGrid({ timeSlots, selectedClass, isAdmin = false, onEdi
                             <div className="flex items-center justify-center space-x-1">
                               <BookOpen className="h-3 w-3" />
                               <span>{slot.class}</span>
+                              {slot.year && <span>({slot.year})</span>}
                             </div>
                             {slot.room && (
                               <div className="flex items-center justify-center space-x-1">

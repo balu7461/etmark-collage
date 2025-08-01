@@ -19,8 +19,8 @@ export function LeaveApplicationForm() {
   const [loading, setLoading] = useState(false);
 
   const leaveTypes = [
-    { value: 'medical', label: 'Medical Leave' },
-    { value: 'personal', label: 'Personal Leave' }
+    { value: 'OD', label: 'On Duty (OD) Leave' },
+    { value: 'casual', label: 'Casual Leave' }
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {

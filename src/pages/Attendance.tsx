@@ -14,12 +14,14 @@ export function Attendance() {
     startDate: format(new Date(), 'yyyy-MM-dd'),
     endDate: format(new Date(), 'yyyy-MM-dd'),
     class: '',
+    year: '',
     subject: '',
     faculty: ''
   });
 
   // Updated classes to match the ones used throughout the application
   const classes = ['B.com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
+  const years = ['1st Year', '2nd Year', '3rd Year'];
 
   const subjectsByClass = {
     'B.com': ['Accountancy', 'Business Studies', 'Economics', 'English', 'Mathematics', 'Computer Applications'],
@@ -81,10 +83,11 @@ export function Attendance() {
   const filteredRecords = attendanceRecords.filter(record => {
     const matchesDateRange = record.date >= filters.startDate && record.date <= filters.endDate;
     const matchesClass = !filters.class || record.class === filters.class;
+    const matchesYear = !filters.year || record.year === filters.year;
     const matchesSubject = !filters.subject || record.subject.toLowerCase().includes(filters.subject.toLowerCase());
     const matchesFaculty = !filters.faculty || record.facultyName.toLowerCase().includes(filters.faculty.toLowerCase());
     
-    return matchesDateRange && matchesClass && matchesSubject && matchesFaculty;
+    return matchesDateRange && matchesClass && matchesYear && matchesSubject && matchesFaculty;
   });
 
   const exportToExcel = () => {
@@ -188,7 +191,7 @@ export function Attendance() {
               <h3 className="text-lg font-medium text-gray-900">Filters</h3>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
                 <input
@@ -219,6 +222,20 @@ export function Attendance() {
                   <option value="">All Classes</option>
                   {classes.map(cls => (
                     <option key={cls} value={cls}>{cls}</option>
+                  ))}
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Year</label>
+                <select
+                  value={filters.year}
+                  onChange={(e) => setFilters(prev => ({ ...prev, year: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">All Years</option>
+                  {years.map(year => (
+                    <option key={year} value={year}>{year}</option>
                   ))}
                 </select>
               </div>
@@ -294,6 +311,7 @@ export function Attendance() {
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Class</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Year</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Faculty</th>
@@ -313,6 +331,11 @@ export function Attendance() {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className="inline-flex px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded-full">
                             {record.class}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap hidden sm:table-cell">
+                          <span className="inline-flex px-2 py-1 text-xs font-semibold bg-purple-100 text-purple-800 rounded-full">
+                            {record.year || 'N/A'}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.subject}</td>

@@ -14,9 +14,11 @@ export function Timetable() {
   const [showForm, setShowForm] = useState(false);
   const [selectedClass, setSelectedClass] = useState('');
   const [selectedSemester, setSelectedSemester] = useState('');
+  const [selectedYear, setSelectedYear] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
   const classes = ['B.com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
+  const years = ['1st Year', '2nd Year', '3rd Year'];
   const semesters = ['1', '2', '3', '4', '5', '6'];
 
   const subjectsByClass = {
@@ -88,12 +90,13 @@ export function Timetable() {
   const getFilteredTimeSlots = () => {
     return timeSlots.filter(slot => {
       const matchesClass = !selectedClass || slot.class === selectedClass;
+      const matchesYear = !selectedYear || slot.year === selectedYear;
       const matchesSemester = !selectedSemester || slot.semester === selectedSemester;
       const matchesSearch = !searchTerm || 
         slot.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
         slot.facultyName.toLowerCase().includes(searchTerm.toLowerCase());
       
-      return matchesClass && matchesSemester && matchesSearch;
+      return matchesClass && matchesYear && matchesSemester && matchesSearch;
     });
   };
 
@@ -198,7 +201,7 @@ export function Timetable() {
                   <h3 className="text-lg font-medium text-gray-900">Filters</h3>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                   <div className="relative">
                     <Search className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                     <input
@@ -222,6 +225,17 @@ export function Timetable() {
                   </select>
 
                   <select
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(e.target.value)}
+                    className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">All Years</option>
+                    {years.map(year => (
+                      <option key={year} value={year}>{year}</option>
+                    ))}
+                  </select>
+
+                  <select
                     value={selectedSemester}
                     onChange={(e) => setSelectedSemester(e.target.value)}
                     className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -235,6 +249,7 @@ export function Timetable() {
                   <button
                     onClick={() => {
                       setSelectedClass('');
+                      setSelectedYear('');
                       setSelectedSemester('');
                       setSearchTerm('');
                     }}
@@ -254,6 +269,7 @@ export function Timetable() {
                 <TimetableGrid
                   timeSlots={filteredTimeSlots}
                   selectedClass={selectedClass}
+                  selectedYear={selectedYear}
                   isAdmin={true}
                   onDelete={handleDelete}
                 />

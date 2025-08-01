@@ -298,7 +298,7 @@ export function LeaveManagement() {
                         </div>
                         <div className="flex items-center space-x-2 text-sm text-gray-600">
                           <FileText className="h-4 w-4" />
-                          <span><strong>Type:</strong> {leave.leaveType.charAt(0).toUpperCase() + leave.leaveType.slice(1)}</span>
+                          <span><strong>Type:</strong> {leave.leaveType === 'OD' ? 'On Duty (OD)' : 'Casual'}</span>
                         </div>
                         <div className="flex items-center space-x-2 text-sm text-gray-600">
                           <Calendar className="h-4 w-4" />

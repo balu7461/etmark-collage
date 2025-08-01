@@ -21,6 +21,7 @@ export function TimetableForm({ onSuccess }: TimetableFormProps) {
     subject: '',
     facultyId: '',
     class: '',
+    year: '',
     room: '',
     semester: '',
     academicYear: new Date().getFullYear().toString()
@@ -29,6 +30,7 @@ export function TimetableForm({ onSuccess }: TimetableFormProps) {
 
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const classes = ['B.com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
+  const years = ['1st Year', '2nd Year', '3rd Year'];
   const semesters = ['1', '2', '3', '4', '5', '6'];
   
   const subjectsByClass = {
@@ -73,7 +75,7 @@ export function TimetableForm({ onSuccess }: TimetableFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.day || !formData.startTime || !formData.endTime || !formData.subject || !formData.facultyId || !formData.class || !formData.semester) {
+    if (!formData.day || !formData.startTime || !formData.endTime || !formData.subject || !formData.facultyId || !formData.class || !formData.year || !formData.semester) {
       toast.error('Please fill in all required fields');
       return;
     }
@@ -95,6 +97,7 @@ export function TimetableForm({ onSuccess }: TimetableFormProps) {
         facultyId: formData.facultyId,
         facultyName: selectedFaculty?.name || '',
         class: formData.class,
+        year: formData.year,
         room: formData.room,
         semester: formData.semester,
         academicYear: formData.academicYear
@@ -112,6 +115,7 @@ export function TimetableForm({ onSuccess }: TimetableFormProps) {
         subject: '',
         facultyId: '',
         class: '',
+        year: '',
         room: '',
         semester: '',
         academicYear: new Date().getFullYear().toString()
@@ -239,7 +243,7 @@ export function TimetableForm({ onSuccess }: TimetableFormProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Class *
@@ -253,6 +257,23 @@ export function TimetableForm({ onSuccess }: TimetableFormProps) {
               <option value="">Select Class</option>
               {classes.map(cls => (
                 <option key={cls} value={cls}>{cls}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Year *
+            </label>
+            <select
+              value={formData.year}
+              onChange={handleChange('year')}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              required
+            >
+              <option value="">Select Year</option>
+              {years.map(year => (
+                <option key={year} value={year}>{year}</option>
               ))}
             </select>
           </div>
