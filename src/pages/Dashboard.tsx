@@ -265,23 +265,21 @@ export function Dashboard() {
 
   return (
     <div className="flex-1 flex flex-col">
-      <Header />
-      
-      <main className="flex-1 p-6 bg-gray-50">
+      <main className="flex-1 p-4 lg:p-6 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
               Welcome back, {currentUser?.name}!
             </h1>
-            <p className="text-gray-600">
+            <p className="text-sm lg:text-base text-gray-600">
               Here's what's happening in your {currentUser?.role === 'admin' ? 'institution' : 'dashboard'} today.
             </p>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-xs lg:text-sm text-gray-500 mt-1">
               Role: {getRoleDisplayName()}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6 lg:mb-8">
             {currentUser?.role === 'admin' ? (
               <>
                 <StatsCard
@@ -398,7 +396,7 @@ export function Dashboard() {
           {currentUser?.role === 'admin' && (
             <>
               {/* Additional Admin Stats */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-4 lg:mb-6">
                 <StatsCard
                   title="Present Today"
                   value={stats.presentToday.toLocaleString()}
@@ -427,12 +425,12 @@ export function Dashboard() {
 
               {/* Approval Alerts */}
               {(stats.pendingFacultyApprovals > 0 || stats.pendingStudentApprovals > 0) && (
-                <div className="bg-red-50 border border-red-200 rounded-xl p-6 mb-6">
+                <div className="bg-red-50 border border-red-200 rounded-xl p-4 lg:p-6 mb-4 lg:mb-6">
                   <div className="flex items-start space-x-3">
                     <XCircle className="h-6 w-6 text-red-600 mt-0.5" />
                     <div>
-                      <h3 className="text-lg font-medium text-red-900 mb-2">Pending Approvals Require Attention</h3>
-                      <div className="space-y-1 text-sm text-red-800">
+                      <h3 className="text-base lg:text-lg font-medium text-red-900 mb-2">Pending Approvals Require Attention</h3>
+                      <div className="space-y-1 text-xs lg:text-sm text-red-800">
                         {stats.pendingFacultyApprovals > 0 && (
                           <p>• {stats.pendingFacultyApprovals} faculty/HOD registration{stats.pendingFacultyApprovals > 1 ? 's' : ''} pending approval</p>
                         )}
@@ -447,8 +445,8 @@ export function Dashboard() {
 
               {/* Recent Activities - Only show real-time data */}
               {(stats.pendingFacultyApprovals > 0 || stats.pendingStudentApprovals > 0) && (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Recent Activities</h3>
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 lg:p-6 mb-4 lg:mb-6">
+                  <h3 className="text-base lg:text-lg font-medium text-gray-900 mb-4">Recent Activities</h3>
                   <div className="space-y-4">
                     {stats.pendingFacultyApprovals > 0 && (
                       <div className="flex items-center space-x-3">
@@ -456,7 +454,7 @@ export function Dashboard() {
                           <UserCheck className="h-4 w-4 text-yellow-600" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-900">
+                          <p className="text-xs lg:text-sm font-medium text-gray-900">
                             {stats.pendingFacultyApprovals} faculty approval{stats.pendingFacultyApprovals > 1 ? 's' : ''} pending
                           </p>
                           <p className="text-xs text-gray-500">Requires your attention</p>
@@ -469,7 +467,7 @@ export function Dashboard() {
                           <GraduationCap className="h-4 w-4 text-red-600" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-900">
+                          <p className="text-xs lg:text-sm font-medium text-gray-900">
                             {stats.pendingStudentApprovals} student approval{stats.pendingStudentApprovals > 1 ? 's' : ''} pending
                           </p>
                           <p className="text-xs text-gray-500">Requires your attention</p>
@@ -481,14 +479,14 @@ export function Dashboard() {
               )}
 
               {/* System Status */}
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">System Status</h3>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 lg:p-6">
+                <h3 className="text-base lg:text-lg font-medium text-gray-900 mb-4">System Status</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-green-600 mb-2">
+                    <div className="text-xl lg:text-2xl font-bold text-green-600 mb-2">
                       {Math.round(stats.attendanceRate)}%
                     </div>
-                    <p className="text-sm text-gray-600">Today's Attendance Rate</p>
+                    <p className="text-xs lg:text-sm text-gray-600">Today's Attendance Rate</p>
                     <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
                       <div 
                         className="bg-green-600 h-2 rounded-full transition-all duration-300"
@@ -498,30 +496,30 @@ export function Dashboard() {
                   </div>
                   
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-600 mb-2">
+                    <div className="text-xl lg:text-2xl font-bold text-blue-600 mb-2">
                       {stats.totalAchievements}
                     </div>
-                    <p className="text-sm text-gray-600">Total Achievements</p>
+                    <p className="text-xs lg:text-sm text-gray-600">Total Achievements</p>
                     <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
                       <div className="bg-blue-600 h-2 rounded-full w-3/4"></div>
                     </div>
                   </div>
                   
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-purple-600 mb-2">
+                    <div className="text-xl lg:text-2xl font-bold text-purple-600 mb-2">
                       {stats.pendingLeaves}
                     </div>
-                    <p className="text-sm text-gray-600">Pending Reviews</p>
+                    <p className="text-xs lg:text-sm text-gray-600">Pending Reviews</p>
                     <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
                       <div className="bg-purple-600 h-2 rounded-full w-1/2"></div>
                     </div>
                   </div>
 
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-orange-600 mb-2">
+                    <div className="text-xl lg:text-2xl font-bold text-orange-600 mb-2">
                       {stats.totalTimeSlots}
                     </div>
-                    <p className="text-sm text-gray-600">Scheduled Classes</p>
+                    <p className="text-xs lg:text-sm text-gray-600">Scheduled Classes</p>
                     <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
                       <div className="bg-orange-600 h-2 rounded-full w-4/5"></div>
                     </div>
@@ -533,28 +531,28 @@ export function Dashboard() {
 
           {/* Committee Specific Content */}
           {(currentUser?.role === 'timetable_committee' || currentUser?.role === 'examination_committee') && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 lg:p-6 mb-4 lg:mb-6">
               <div className="flex items-center space-x-3 mb-4">
                 {currentUser?.role === 'timetable_committee' ? (
                   <CalendarDays className="h-6 w-6 text-[#002e5d]" />
                 ) : (
                   <FileCheck className="h-6 w-6 text-[#002e5d]" />
                 )}
-                <h3 className="text-lg font-medium text-gray-900">
+                <h3 className="text-base lg:text-lg font-medium text-gray-900">
                   {currentUser?.role === 'timetable_committee' ? 'Timetable Committee' : 'Examination Committee'} Dashboard
                 </h3>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 lg:p-4">
                   <h4 className="font-medium text-blue-900 mb-2">Leave Review Responsibilities</h4>
-                  <p className="text-sm text-blue-800">
+                  <p className="text-xs lg:text-sm text-blue-800">
                     As a {currentUser?.role === 'timetable_committee' ? 'Timetable Committee' : 'Examination Committee'} member, 
                     you are responsible for reviewing leave applications before they are sent to the Principal for final approval.
                   </p>
                 </div>
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3 lg:p-4">
                   <h4 className="font-medium text-green-900 mb-2">Quick Actions</h4>
-                  <div className="space-y-2 text-sm text-green-800">
+                  <div className="space-y-2 text-xs lg:text-sm text-green-800">
                     <p>• Review pending leave applications</p>
                     <p>• Approve or reject leave requests</p>
                     <p>• Add comments for Principal review</p>

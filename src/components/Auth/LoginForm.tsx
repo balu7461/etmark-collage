@@ -32,18 +32,18 @@ export function LoginForm({ onShowSignup }: LoginFormProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4 py-8">
       <div className="max-w-md w-full">
-        <div className="bg-white rounded-2xl shadow-xl p-8 transform transition-all duration-300 hover:shadow-2xl">
+        <div className="bg-white rounded-2xl shadow-xl p-6 lg:p-8 transform transition-all duration-300 hover:shadow-2xl">
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
               <div className="bg-[#002e5d] p-3 rounded-full animate-pulse">
                 <GraduationCap className="h-8 w-8 text-white" />
               </div>
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">CollegeConnect</h1>
-            <p className="text-gray-600 mb-2">Student & Faculty Management System</p>
-            <p className="text-sm text-gray-500 font-medium">Powered by Doutly</p>
+            <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">CollegeConnect</h1>
+            <p className="text-sm lg:text-base text-gray-600 mb-2">Student & Faculty Management System</p>
+            <p className="text-xs lg:text-sm text-gray-500 font-medium">Powered by Doutly</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -84,7 +84,7 @@ export function LoginForm({ onShowSignup }: LoginFormProps) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#002e5d] text-white py-3 px-4 rounded-lg hover:bg-blue-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 transform hover:scale-105"
+              className="w-full bg-[#002e5d] text-white py-3 px-4 rounded-lg hover:bg-blue-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 transform hover:scale-105 text-sm lg:text-base min-h-[44px]"
             >
               {loading ? (
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
@@ -100,7 +100,7 @@ export function LoginForm({ onShowSignup }: LoginFormProps) {
           <div className="mt-6 text-center">
             <button
               onClick={onShowSignup}
-              className="text-[#002e5d] hover:text-blue-800 font-medium flex items-center justify-center space-x-2 mx-auto transition-colors"
+              className="text-[#002e5d] hover:text-blue-800 font-medium flex items-center justify-center space-x-2 mx-auto transition-colors text-sm lg:text-base min-h-[44px] px-4"
             >
               <UserPlus className="h-4 w-4" />
               <span>Create Faculty Account</span>

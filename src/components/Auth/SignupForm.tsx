@@ -94,17 +94,17 @@ export function SignupForm({ onBackToLogin }: SignupFormProps) {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4 overflow-y-auto">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4 py-8 overflow-y-auto">
         <div className="max-w-md w-full my-8">
-          <div className="bg-white rounded-2xl shadow-xl p-8 transform transition-all duration-300 hover:shadow-2xl">
+          <div className="bg-white rounded-2xl shadow-xl p-6 lg:p-8 transform transition-all duration-300 hover:shadow-2xl">
             <div className="text-center mb-8">
               <div className="flex justify-center mb-4">
                 <div className="bg-[#002e5d] p-3 rounded-full animate-pulse">
                   <GraduationCap className="h-8 w-8 text-white" />
                 </div>
               </div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Join Faculty Management</h1>
-              <p className="text-gray-600">Create your account</p>
+              <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">Join Faculty Management</h1>
+              <p className="text-sm lg:text-base text-gray-600">Create your account</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -237,7 +237,7 @@ export function SignupForm({ onBackToLogin }: SignupFormProps) {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#002e5d] text-white py-3 px-4 rounded-xl hover:bg-blue-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                className="w-full bg-[#002e5d] text-white py-3 px-4 rounded-xl hover:bg-blue-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 text-sm lg:text-base min-h-[44px]"
               >
                 {loading ? (
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
@@ -253,7 +253,7 @@ export function SignupForm({ onBackToLogin }: SignupFormProps) {
             <div className="mt-6 text-center">
               <button
                 onClick={onBackToLogin}
-                className="flex items-center justify-center space-x-2 text-[#002e5d] hover:text-blue-800 transition-colors duration-200"
+                className="flex items-center justify-center space-x-2 text-[#002e5d] hover:text-blue-800 transition-colors duration-200 text-sm lg:text-base min-h-[44px] px-4"
               >
                 <ArrowLeft className="h-4 w-4" />
                 <span>Back to Login</span>
@@ -266,15 +266,15 @@ export function SignupForm({ onBackToLogin }: SignupFormProps) {
       {/* Approval Modal */}
       {showApprovalModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-8 transform transition-all duration-300">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 lg:p-8 transform transition-all duration-300">
             <div className="text-center">
               <div className="flex justify-center mb-4">
                 <div className="bg-green-100 p-3 rounded-full">
                   <CheckCircle className="h-8 w-8 text-green-600" />
                 </div>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Account Created Successfully!</h3>
-              <p className="text-gray-600 mb-6">
+              <h3 className="text-lg lg:text-xl font-semibold text-gray-900 mb-2">Account Created Successfully!</h3>
+              <p className="text-sm lg:text-base text-gray-600 mb-6">
                 Your {getRoleDisplayName(formData.role).toLowerCase()} account has been created and is pending admin approval.
               </p>
               
@@ -283,7 +283,7 @@ export function SignupForm({ onBackToLogin }: SignupFormProps) {
                   <Clock className="h-5 w-5 text-blue-600 mt-0.5" />
                   <div>
                     <h4 className="font-medium text-blue-900 mb-1">Approval Required</h4>
-                    <p className="text-sm text-blue-800">
+                    <p className="text-xs lg:text-sm text-blue-800">
                       {formData.role === 'timetable_committee' || formData.role === 'examination_committee'
                         ? 'Committee accounts require special verification. You will be notified once approved.'
                         : 'Your account will be reviewed by the administrator. You will be notified once approved.'
@@ -295,7 +295,7 @@ export function SignupForm({ onBackToLogin }: SignupFormProps) {
 
               <button
                 onClick={handleApprovalModalClose}
-                className="w-full bg-[#002e5d] text-white py-3 px-4 rounded-xl hover:bg-blue-800 transition-all duration-200"
+                className="w-full bg-[#002e5d] text-white py-3 px-4 rounded-xl hover:bg-blue-800 transition-all duration-200 text-sm lg:text-base min-h-[44px]"
               >
                 Continue to Login
               </button>

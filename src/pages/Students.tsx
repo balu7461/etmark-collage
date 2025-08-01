@@ -310,38 +310,36 @@ export function Students() {
 
   return (
     <div className="flex-1 flex flex-col">
-      <Header />
-      
-      <main className="flex-1 p-6 bg-gray-50 overflow-y-auto">
+      <main className="flex-1 p-4 lg:p-6 bg-gray-50 overflow-y-auto">
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              <h1 className="text-xl lg:text-2xl font-bold text-gray-900 mb-2">
                 Student Management
               </h1>
-              <p className="text-gray-600">
+              <p className="text-sm lg:text-base text-gray-600">
                 Manage all approved student records and information
               </p>
             </div>
-            <div className="flex space-x-3">
+            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
               <button
                 onClick={exportStudents}
                 disabled={filteredStudents.length === 0}
-                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-all duration-200 transform hover:scale-105 flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-green-600 text-white px-3 lg:px-4 py-2 rounded-lg hover:bg-green-700 transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm lg:text-base"
               >
                 <Download className="h-4 w-4" />
                 <span>Export</span>
               </button>
               <button
                 onClick={() => setShowUploadModal(true)}
-                className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-all duration-200 transform hover:scale-105 flex items-center space-x-2"
+                className="bg-purple-600 text-white px-3 lg:px-4 py-2 rounded-lg hover:bg-purple-700 transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-2 text-sm lg:text-base"
               >
                 <Upload className="h-4 w-4" />
                 <span>Bulk Upload</span>
               </button>
               <button
                 onClick={() => setShowForm(!showForm)}
-                className="bg-[#002e5d] text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition-all duration-200 transform hover:scale-105 flex items-center space-x-2"
+                className="bg-[#002e5d] text-white px-3 lg:px-4 py-2 rounded-lg hover:bg-blue-800 transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-2 text-sm lg:text-base"
               >
                 <Plus className="h-4 w-4" />
                 <span>{showForm ? 'View Students' : 'Add Student'}</span>
@@ -350,7 +348,7 @@ export function Students() {
           </div>
 
           {/* Statistics Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-4 lg:mb-6">
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transform transition-all duration-200 hover:scale-105">
               <div className="flex items-center justify-between">
                 <div>
@@ -390,12 +388,12 @@ export function Students() {
           </div>
 
           {showForm ? (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6 transform transition-all duration-300">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 lg:p-6 mb-4 lg:mb-6 transform transition-all duration-300">
+              <h2 className="text-lg lg:text-xl font-semibold text-gray-900 mb-4 lg:mb-6">
                 {editingStudent ? 'Edit Student' : 'Add New Student'}
               </h2>
               
-              <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
                 <div className="transform transition-all duration-200 hover:scale-105">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Student Name *
@@ -476,17 +474,17 @@ export function Students() {
                   />
                 </div>
 
-                <div className="md:col-span-2 flex space-x-4">
+                <div className="lg:col-span-2 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
                   <button
                     type="submit"
-                    className="bg-[#002e5d] text-white px-6 py-2 rounded-lg hover:bg-blue-800 transition-all duration-200 transform hover:scale-105"
+                    className="bg-[#002e5d] text-white px-6 py-2 rounded-lg hover:bg-blue-800 transition-all duration-200 transform hover:scale-105 text-sm lg:text-base"
                   >
                     {editingStudent ? 'Update Student' : 'Add Student'}
                   </button>
                   <button
                     type="button"
                     onClick={resetForm}
-                    className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-all duration-200 transform hover:scale-105"
+                    className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-all duration-200 transform hover:scale-105 text-sm lg:text-base"
                   >
                     Cancel
                   </button>
@@ -496,13 +494,13 @@ export function Students() {
           ) : (
             <>
               {/* Filters */}
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 lg:p-6 mb-4 lg:mb-6">
                 <div className="flex items-center space-x-3 mb-4">
                   <Filter className="h-5 w-5 text-gray-600" />
-                  <h3 className="text-lg font-medium text-gray-900">Filter Students</h3>
+                  <h3 className="text-base lg:text-lg font-medium text-gray-900">Filter Students</h3>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div className="relative">
                     <Search className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                     <input
@@ -530,13 +528,13 @@ export function Students() {
                       setSelectedClass('');
                       setSearchTerm('');
                     }}
-                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm lg:text-base"
                   >
                     Clear Filters
                   </button>
                 </div>
 
-                <div className="mt-4 text-sm text-gray-600">
+                <div className="mt-4 text-xs lg:text-sm text-gray-600">
                   Showing {filteredStudents.length} of {students.length} students
                 </div>
               </div>
@@ -558,19 +556,19 @@ export function Students() {
                     <table className="min-w-full divide-y divide-gray-200">
                       <thead className="bg-gray-50">
                         <tr>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Student
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Roll Number
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Class
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
                             Contact
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Actions
                           </th>
                         </tr>
@@ -578,28 +576,28 @@ export function Students() {
                       <tbody className="bg-white divide-y divide-gray-200">
                         {filteredStudents.map((student) => (
                           <tr key={student.id} className="hover:bg-gray-50 transition-colors">
-                            <td className="px-6 py-4 whitespace-nowrap">
+                            <td className="px-4 lg:px-6 py-4">
                               <div>
-                                <div className="text-sm font-medium text-gray-900">{student.name}</div>
-                                <div className="text-sm text-gray-500 flex items-center">
+                                <div className="text-sm font-medium text-gray-900 truncate max-w-32 lg:max-w-none">{student.name}</div>
+                                <div className="text-xs lg:text-sm text-gray-500 flex items-center">
                                   <Mail className="h-3 w-3 mr-1" />
-                                  {student.email}
+                                  <span className="truncate max-w-24 lg:max-w-none">{student.email}</span>
                                 </div>
                               </div>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                               {student.rollNumber}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
+                            <td className="px-4 lg:px-6 py-4 whitespace-nowrap">
                               <span className="inline-flex px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded-full">
                                 {student.class}
                               </span>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell">
                               {student.parentEmail && (
                                 <div className="flex items-center mb-1">
                                   <Mail className="h-3 w-3 mr-1" />
-                                  <span className="truncate max-w-32">{student.parentEmail}</span>
+                                  <span className="truncate max-w-24 lg:max-w-32">{student.parentEmail}</span>
                                 </div>
                               )}
                               {student.parentPhone && (
@@ -609,7 +607,7 @@ export function Students() {
                                 </div>
                               )}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-sm font-medium">
                               <div className="flex space-x-2">
                                 <button
                                   onClick={() => handleEdit(student)}
@@ -639,9 +637,9 @@ export function Students() {
         {/* Bulk Upload Modal */}
         {showUploadModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 modal-overlay overflow-y-auto">
-            <div className="bg-white rounded-xl shadow-xl max-w-4xl w-full p-6 transform transition-all duration-300 my-8 form-container max-h-[90vh] overflow-y-auto">
+            <div className="bg-white rounded-xl shadow-xl max-w-4xl w-full p-4 lg:p-6 transform transition-all duration-300 my-8 form-container max-h-[90vh] overflow-y-auto">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-semibold text-gray-900">Bulk Upload Students</h3>
+                <h3 className="text-lg lg:text-xl font-semibold text-gray-900">Bulk Upload Students</h3>
                 <button
                   onClick={() => {
                     setShowUploadModal(false);
@@ -661,7 +659,7 @@ export function Students() {
                     <FileSpreadsheet className="h-5 w-5 text-blue-600 mt-0.5" />
                     <div>
                       <h4 className="font-medium text-blue-900 mb-2">Upload Instructions</h4>
-                      <ul className="text-sm text-blue-800 space-y-1">
+                      <ul className="text-xs lg:text-sm text-blue-800 space-y-1">
                         <li>• Upload an Excel file (.xlsx or .xls) with student data</li>
                         <li>• Required columns: Name, Email, Roll Number, Class</li>
                         <li>• Optional columns: Parent Email, Parent Phone</li>
@@ -675,7 +673,7 @@ export function Students() {
                 <div className="flex justify-center">
                   <button
                     onClick={downloadTemplate}
-                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2"
+                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2 text-sm lg:text-base"
                   >
                     <Download className="h-4 w-4" />
                     <span>Download Template</span>
@@ -698,10 +696,10 @@ export function Students() {
                 {/* Preview */}
                 {uploadPreview.length > 0 && (
                   <div>
-                    <h4 className="font-medium text-gray-900 mb-4">Preview ({uploadPreview.length} records)</h4>
+                    <h4 className="text-sm lg:text-base font-medium text-gray-900 mb-4">Preview ({uploadPreview.length} records)</h4>
                     
                     <div className="bg-gray-50 rounded-lg p-4 mb-4">
-                      <div className="flex items-center space-x-4 text-sm">
+                      <div className="flex items-center space-x-4 text-xs lg:text-sm">
                         <div className="flex items-center space-x-2">
                           <CheckCircle className="h-4 w-4 text-green-600" />
                           <span className="text-green-800">Valid: {uploadPreview.filter(s => s.isValid).length}</span>
@@ -717,27 +715,27 @@ export function Students() {
                       <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
                           <tr>
-                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Roll</th>
-                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Class</th>
+                            <th className="px-2 lg:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                            <th className="px-2 lg:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                            <th className="px-2 lg:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">Email</th>
+                            <th className="px-2 lg:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Roll</th>
+                            <th className="px-2 lg:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Class</th>
                           </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
                           {uploadPreview.map((student, index) => (
                             <tr key={index} className={student.isValid ? 'bg-green-50' : 'bg-red-50'}>
-                              <td className="px-4 py-2 whitespace-nowrap">
+                              <td className="px-2 lg:px-4 py-2 whitespace-nowrap">
                                 {student.isValid ? (
                                   <CheckCircle className="h-4 w-4 text-green-600" />
                                 ) : (
                                   <AlertCircle className="h-4 w-4 text-red-600" />
                                 )}
                               </td>
-                              <td className="px-4 py-2 whitespace-nowrap text-sm">{student.name}</td>
-                              <td className="px-4 py-2 whitespace-nowrap text-sm">{student.email}</td>
-                              <td className="px-4 py-2 whitespace-nowrap text-sm">{student.rollNumber}</td>
-                              <td className="px-4 py-2 whitespace-nowrap text-sm">{student.class}</td>
+                              <td className="px-2 lg:px-4 py-2 text-xs lg:text-sm truncate max-w-24 lg:max-w-none">{student.name}</td>
+                              <td className="px-2 lg:px-4 py-2 text-xs lg:text-sm truncate max-w-24 lg:max-w-none hidden sm:table-cell">{student.email}</td>
+                              <td className="px-2 lg:px-4 py-2 whitespace-nowrap text-xs lg:text-sm">{student.rollNumber}</td>
+                              <td className="px-2 lg:px-4 py-2 whitespace-nowrap text-xs lg:text-sm">{student.class}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -748,11 +746,11 @@ export function Students() {
 
                 {/* Upload Button */}
                 {uploadPreview.length > 0 && (
-                  <div className="flex space-x-3">
+                  <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
                     <button
                       onClick={handleBulkUpload}
                       disabled={uploadLoading || uploadPreview.filter(s => s.isValid).length === 0}
-                      className="flex-1 bg-[#002e5d] text-white py-3 px-4 rounded-lg hover:bg-blue-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                      className="flex-1 bg-[#002e5d] text-white py-3 px-4 rounded-lg hover:bg-blue-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 text-sm lg:text-base"
                     >
                       {uploadLoading ? (
                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
@@ -768,7 +766,7 @@ export function Students() {
                         setUploadFile(null);
                         setUploadPreview([]);
                       }}
-                      className="px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                      className="px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm lg:text-base"
                     >
                       Clear
                     </button>

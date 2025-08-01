@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { SplashScreen } from './components/Auth/SplashScreen';
 import { AuthContainer } from './components/Auth/AuthContainer';
 import { Sidebar } from './components/Layout/Sidebar';
+import { Header } from './components/Layout/Header';
 import { Dashboard } from './pages/Dashboard';
 import { UserManagement } from './pages/UserManagement';
 import { FacultyApproval } from './pages/FacultyApproval';
@@ -24,6 +25,15 @@ import { Toaster } from 'react-hot-toast';
 function AppContent() {
   const { currentUser, loading } = useAuth();
   const [showSplash, setShowSplash] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
+  };
 
   useEffect(() => {
     // Show splash screen for 5 seconds
@@ -54,9 +64,25 @@ function AppContent() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
-      <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
+    <div className="flex h-screen bg-gray-50 overflow-hidden relative">
+      {/* Mobile sidebar backdrop */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={closeSidebar}
+        />
+      )}
+      
+      {/* Sidebar */}
+      <Sidebar 
+        isSidebarOpen={isSidebarOpen} 
+        toggleSidebar={toggleSidebar}
+        closeSidebar={closeSidebar}
+      />
+      
+      {/* Main content */}
+      <div className="flex-1 flex flex-col overflow-hidden lg:ml-0">
+        <Header toggleSidebar={toggleSidebar} />
         <div className="flex-1 overflow-y-auto main-content">
           <Routes>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />

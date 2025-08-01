@@ -22,26 +22,26 @@ const colorClasses = {
 
 export function StatsCard({ title, value, icon: Icon, trend, color }: StatsCardProps) {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 lg:p-6 hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-gray-600">{title}</p>
-          <p className="text-3xl font-bold text-gray-900 mt-2">{value}</p>
+          <p className="text-xs lg:text-sm font-medium text-gray-600">{title}</p>
+          <p className="text-2xl lg:text-3xl font-bold text-gray-900 mt-2">{value}</p>
           {trend && (
             <div className="flex items-center mt-2">
               <span
-                className={`text-sm font-medium ${
+                className={`text-xs lg:text-sm font-medium ${
                   trend.isPositive ? 'text-green-600' : 'text-red-600'
                 }`}
               >
                 {trend.isPositive ? '+' : ''}{trend.value}%
               </span>
-              <span className="text-sm text-gray-500 ml-1">vs last month</span>
+              <span className="text-xs lg:text-sm text-gray-500 ml-1">vs last month</span>
             </div>
           )}
         </div>
-        <div className={`p-3 rounded-lg border ${colorClasses[color]}`}>
-          <Icon className="h-6 w-6" />
+        <div className={`p-2 lg:p-3 rounded-lg border ${colorClasses[color]}`}>
+          <Icon className="h-5 w-5 lg:h-6 lg:w-6" />
         </div>
       </div>
     </div>

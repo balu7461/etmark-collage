@@ -14,11 +14,18 @@ import {
   UserCheck,
   Users,
   GraduationCapIcon,
-  FileCheck
+  FileCheck,
+  X
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
-export function Sidebar() {
+interface SidebarProps {
+  isSidebarOpen: boolean;
+  toggleSidebar: () => void;
+  closeSidebar: () => void;
+}
+
+export function Sidebar({ isSidebarOpen, toggleSidebar, closeSidebar }: SidebarProps) {
   const { currentUser, logout } = useAuth();
 
   const handleLogout = async () => {
@@ -100,15 +107,27 @@ export function Sidebar() {
   const links = getLinks();
 
   return (
-    <div className="bg-[#002e5d] text-white w-64 min-h-screen flex flex-col shadow-2xl overflow-hidden">
+    <div className={`bg-[#002e5d] text-white w-64 min-h-screen flex flex-col shadow-2xl overflow-hidden fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${
+      isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+    }`}>
+      {/* Mobile close button */}
+      <div className="lg:hidden flex justify-end p-4">
+        <button
+          onClick={closeSidebar}
+          className="text-white hover:text-gray-300 transition-colors"
+        >
+          <X className="h-6 w-6" />
+        </button>
+      </div>
+      
       <div className="p-6 border-b border-blue-800 flex-shrink-0">
         <div className="flex items-center space-x-3">
           <div className="bg-white/20 p-2 rounded-lg">
             <GraduationCap className="h-8 w-8 animate-pulse" />
           </div>
           <div>
-            <h1 className="text-xl font-bold">Trinity College</h1>
-            <p className="text-blue-300 text-sm">{getRoleLabel()}</p>
+            <h1 className="text-lg lg:text-xl font-bold">Trinity College</h1>
+            <p className="text-blue-300 text-xs lg:text-sm">{getRoleLabel()}</p>
           </div>
         </div>
       </div>
@@ -128,7 +147,7 @@ export function Sidebar() {
                 }
               >
                 <link.icon className="h-5 w-5 flex-shrink-0" />
-                <span className="truncate">{link.label}</span>
+                <span className="truncate text-sm lg:text-base">{link.label}</span>
               </NavLink>
             </li>
           ))}
@@ -137,14 +156,14 @@ export function Sidebar() {
 
       <div className="p-4 border-t border-blue-800 flex-shrink-0">
         <div className="mb-4 p-3 bg-blue-800/50 rounded-lg">
-          <p className="text-sm text-blue-300">Logged in as</p>
-          <p className="font-medium truncate">{currentUser?.name}</p>
+          <p className="text-xs lg:text-sm text-blue-300">Logged in as</p>
+          <p className="font-medium truncate text-sm lg:text-base">{currentUser?.name}</p>
           <p className="text-xs text-blue-400 truncate">{currentUser?.email}</p>
           <p className="text-xs text-blue-400 capitalize">{currentUser?.role?.replace('_', ' ')}</p>
         </div>
         <button
           onClick={handleLogout}
-          className="flex items-center space-x-2 w-full px-4 py-2 text-left text-blue-100 hover:bg-blue-800 rounded-lg transition-all duration-200 transform hover:scale-105"
+          className="flex items-center space-x-2 w-full px-4 py-2 text-left text-blue-100 hover:bg-blue-800 rounded-lg transition-all duration-200 transform hover:scale-105 text-sm lg:text-base"
         >
           <LogOut className="h-4 w-4 flex-shrink-0" />
           <span>Logout</span>
