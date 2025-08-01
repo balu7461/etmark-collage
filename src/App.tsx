@@ -11,6 +11,7 @@ import { FacultyApproval } from './pages/FacultyApproval';
 import { StudentApproval } from './pages/StudentApproval';
 import { Students } from './pages/Students';
 import { Attendance } from './pages/Attendance';
+import { StudentOverallAttendance } from './pages/StudentOverallAttendance';
 import { MarkAttendance } from './pages/MarkAttendance';
 import { Timetable } from './pages/Timetable';
 import { MyTimetable } from './pages/MyTimetable';
@@ -96,6 +97,7 @@ function AppContent() {
                 <Route path="/student-approval" element={<StudentApproval />} />
                 <Route path="/students" element={<Students />} />
                 <Route path="/attendance" element={<Attendance />} />
+                <Route path="/student-attendance" element={<StudentOverallAttendance />} />
                 <Route path="/timetable" element={<Timetable />} />
                 <Route path="/achievements" element={<Achievements />} />
                 <Route path="/leave-management" element={<LeaveManagement />} />

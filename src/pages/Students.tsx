@@ -27,11 +27,13 @@ export function Students() {
     email: '',
     rollNumber: '',
     class: '',
+    year: '',
     parentEmail: '',
     parentPhone: ''
   });
 
   const classes = ['B.com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
+  const years = ['1st Year', '2nd Year', '3rd Year'];
 
   const subjectsByClass = {
     'B.com': ['Accountancy', 'Business Studies', 'Economics', 'English', 'Mathematics', 'Computer Applications'],
@@ -81,7 +83,7 @@ export function Students() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.email || !formData.rollNumber || !formData.class) {
+    if (!formData.name || !formData.email || !formData.rollNumber || !formData.class || !formData.year) {
       toast.error('Please fill in all required fields');
       return;
     }
@@ -131,6 +133,7 @@ export function Students() {
       email: student.email,
       rollNumber: student.rollNumber,
       class: student.class,
+      year: student.year || '',
       parentEmail: student.parentEmail || '',
       parentPhone: student.parentPhone || ''
     });
@@ -143,6 +146,7 @@ export function Students() {
       email: '',
       rollNumber: '',
       class: '',
+      year: '',
       parentEmail: '',
       parentPhone: ''
     });
@@ -452,6 +456,23 @@ export function Students() {
 
                 <div className="transform transition-all duration-200 hover:scale-105">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Year *
+                  </label>
+                  <select
+                    value={formData.year}
+                    onChange={(e) => setFormData(prev => ({ ...prev, year: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    required
+                  >
+                    <option value="">Select Year</option>
+                    {years.map(year => (
+                      <option key={year} value={year}>{year}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="transform transition-all duration-200 hover:scale-105">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Parent Email
                   </label>
                   <input
@@ -592,6 +613,11 @@ export function Students() {
                               <span className="inline-flex px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded-full">
                                 {student.class}
                               </span>
+                              {student.year && (
+                                <span className="inline-flex px-2 py-1 text-xs font-semibold bg-purple-100 text-purple-800 rounded-full ml-1">
+                                  {student.year}
+                                </span>
+                              )}
                             </td>
                             <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell">
                               {student.parentEmail && (

@@ -16,6 +16,7 @@ export interface Student {
   email: string;
   rollNumber: string;
   class: string;
+  year: string;
   parentEmail?: string;
   parentPhone?: string;
   isApproved?: boolean;
@@ -34,6 +35,7 @@ export interface AttendanceRecord {
   facultyName: string;
   reason?: string;
   class: string;
+  year: string;
 }
 
 export interface LeaveApplication {
@@ -82,6 +84,7 @@ export interface TimeSlot {
   facultyId: string;
   facultyName: string;
   class: string;
+  year: string;
   room?: string;
   semester: string;
   academicYear: string;
@@ -90,6 +93,7 @@ export interface TimeSlot {
 export interface Timetable {
   id: string;
   class: string;
+  year: string;
   semester: string;
   academicYear: string;
   timeSlots: TimeSlot[];
@@ -97,6 +101,3 @@ export interface Timetable {
   createdDate: string;
   lastModified: string;
 }
-
-// Leave type types
-export type LeaveType = 'medical' | 'personal';

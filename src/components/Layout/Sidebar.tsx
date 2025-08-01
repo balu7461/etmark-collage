@@ -43,6 +43,7 @@ export function Sidebar({ isSidebarOpen, toggleSidebar, closeSidebar }: SidebarP
     { to: '/student-approval', icon: GraduationCapIcon, label: 'Student Approval' },
     { to: '/students', icon: Users, label: 'Students' },
     { to: '/attendance', icon: Calendar, label: 'Attendance' },
+    { to: '/student-attendance', icon: FileCheck, label: 'Student Attendance' },
     { to: '/timetable', icon: CalendarDays, label: 'Timetable' },
     { to: '/achievements', icon: Award, label: 'Achievements' },
     { to: '/leave-management', icon: FileText, label: 'Leave Management' },
