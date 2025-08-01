@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
-import { Header } from '../components/Layout/Header';
 import { LeaveApplicationForm } from '../components/Leave/LeaveApplicationForm';
 import { LeaveApplication } from '../types';
 import { Calendar, Clock, CheckCircle, XCircle, FileText, Plus, User, MessageSquare } from 'lucide-react';
@@ -91,8 +90,6 @@ export function MyLeaves() {
 
   return (
     <div className="flex-1 flex flex-col">
-      <Header />
-      
       <main className="flex-1 p-6 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-6">

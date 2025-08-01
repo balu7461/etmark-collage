@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
-import { Header } from '../components/Layout/Header';
 import { TimetableGrid } from '../components/Timetable/TimetableGrid';
 import { TimeSlot } from '../types';
 import { CalendarDays, Clock, BookOpen, MapPin, Download } from 'lucide-react';
@@ -111,8 +110,6 @@ export function MyTimetable() {
 
   return (
     <div className="flex-1 flex flex-col">
-      <Header />
-      
       <main className="flex-1 p-6 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-6">

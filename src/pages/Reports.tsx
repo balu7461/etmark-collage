@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
 import { db } from '../lib/firebase';
-import { Header } from '../components/Layout/Header';
 import { AttendanceRecord, Student, LeaveApplication, Achievement } from '../types';
 import { BarChart3, Download, Calendar, Users, FileText, Award } from 'lucide-react';
 import * as XLSX from 'xlsx';
@@ -166,8 +165,6 @@ export function Reports() {
 
   return (
     <div className="flex-1 flex flex-col">
-      <Header />
-      
       <main className="flex-1 p-6 bg-gray-50">
         <div className="max-w-4xl mx-auto">
           <div className="mb-6">

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { collection, getDocs, updateDoc, doc, deleteDoc, query, where } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
-import { Header } from '../components/Layout/Header';
 import { Student } from '../types';
 import { GraduationCap, UserX, Clock, CheckCircle, XCircle, Mail, Phone, Building, Calendar, Users, AlertTriangle, Shield } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -110,8 +109,6 @@ export function StudentApproval() {
 
   return (
     <div className="flex-1 flex flex-col">
-      <Header />
-      
       <main className="flex-1 p-6 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="mb-6">
