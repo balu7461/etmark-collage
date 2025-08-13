@@ -90,7 +90,7 @@ export function Attendance() {
   const filteredRecords = attendanceRecords.filter(record => {
     const matchesDateRange = record.date >= filters.startDate && record.date <= filters.endDate;
     const matchesClass = !filters.class || record.class === filters.class;
-    const matchesYear = !filters.year || (record.year && record.year === filters.year);
+    const matchesYear = !filters.year || record.year === filters.year;
     const matchesFaculty = !filters.faculty || record.facultyName.toLowerCase().includes(filters.faculty.toLowerCase());
     
     return matchesDateRange && matchesClass && matchesYear && matchesFaculty;
@@ -288,7 +288,7 @@ export function Attendance() {
                   <div key={cls} className="text-center p-3 bg-gray-50 rounded-lg transform transition-all duration-200 hover:scale-105">
                     <p className="text-sm font-medium text-gray-900">{cls}</p>
                     <p className="text-lg font-bold text-blue-600">{classTotal}</p>
-                    <p className="text-xs text-gray-600">{classRate}% attendance</p>
+                    <p className="text-xs text-gray-600">{classRate}% present</p>
                   </div>
                 );
               })}
@@ -339,7 +339,7 @@ export function Attendance() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap hidden sm:table-cell">
                           <span className="inline-flex px-2 py-1 text-xs font-semibold bg-purple-100 text-purple-800 rounded-full">
-                            {record.year || '—'}
+                            {record.year || 'N/A'}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.subject}</td>
@@ -352,8 +352,8 @@ export function Attendance() {
                             {record.status}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 truncate max-w-32">{record.facultyName}</td>
-                    {(filters.class ? getYearsForClass(filters.class) : ['1st Year', '2nd Year', '3rd Year']).map(year => (
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.facultyName}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{record.reason || '-'}</td>
                       </tr>
                     ))}
                   </tbody>
