@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { useAuth } from '../../contexts/AuthContext';
-import { Student, AttendanceRecord } from '../../types';
+import { Student, AttendanceRecord, getYearsForClass, classes, subjectsByClass } from '../../types';
 import { Calendar, Users, BookOpen, Save, CheckCircle, XCircle, Mail, Send } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
@@ -19,26 +19,6 @@ export function AttendanceForm() {
   const [loading, setLoading] = useState(false);
   const [sendingEmails, setSendingEmails] = useState(false);
 
-  const classes = ['B.com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
-  
-  const getYearsForClass = (selectedClass: string) => {
-    if (['B.com', 'BBA', 'BCA'].includes(selectedClass)) {
-      return ['1st Year', '2nd Year', '3rd Year'];
-    } else if (['PCMB', 'PCMC', 'EBAC', 'EBAS'].includes(selectedClass)) {
-      return ['1st Year', '2nd Year'];
-    }
-    return [];
-  };
-
-  const subjectsByClass = {
-    'B.com': ['Accountancy', 'Business Studies', 'Economics', 'English', 'Mathematics', 'Computer Applications'],
-    'BBA': ['Business Administration', 'Marketing', 'Finance', 'Human Resources', 'Operations Management', 'Business Ethics'],
-    'BCA': ['Programming in C', 'Data Structures', 'Database Management', 'Web Development', 'Software Engineering', 'Computer Networks'],
-    'PCMB': ['Physics', 'Chemistry', 'Mathematics', 'Biology'],
-    'PCMC': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science'],
-    'EBAC': ['Economics', 'Business Studies', 'Accountancy', 'Computer Science'],
-    'EBAS': ['Economics', 'Business Studies', 'Accountancy', 'Statistics']
-  };
   useEffect(() => {
     if (selectedClass && selectedYear && selectedSubject) {
       fetchStudents();

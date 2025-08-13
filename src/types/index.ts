@@ -92,6 +92,30 @@ export interface StudentAchievement {
   submittedDate: string;
 }
 
+// Centralized function to get years for each class
+export const getYearsForClass = (selectedClass: string): string[] => {
+  if (['B.com', 'BBA', 'BCA'].includes(selectedClass)) {
+    return ['1st Year', '2nd Year', '3rd Year'];
+  } else if (['PCMB', 'PCMC', 'EBAC', 'EBAS'].includes(selectedClass)) {
+    return ['1st Year', '2nd Year'];
+  }
+  return [];
+};
+
+// Centralized class list
+export const classes = ['B.com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
+
+// Centralized subjects by class mapping
+export const subjectsByClass = {
+  'B.com': ['Accountancy', 'Business Studies', 'Economics', 'English', 'Mathematics', 'Computer Applications'],
+  'BBA': ['Business Administration', 'Marketing', 'Finance', 'Human Resources', 'Operations Management', 'Business Ethics'],
+  'BCA': ['Programming in C', 'Data Structures', 'Database Management', 'Web Development', 'Software Engineering', 'Computer Networks'],
+  'PCMB': ['Physics', 'Chemistry', 'Mathematics', 'Biology'],
+  'PCMC': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science'],
+  'EBAC': ['Economics', 'Business Studies', 'Accountancy', 'Computer Science'],
+  'EBAS': ['Economics', 'Business Studies', 'Accountancy', 'Statistics']
+};
+
 export interface TimeSlot {
   id: string;
   day: 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday';

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { useAuth } from '../../contexts/AuthContext';
-import { TimeSlot, User } from '../../types';
+import { TimeSlot, User, getYearsForClass, classes, subjectsByClass } from '../../types';
 import { CalendarDays, Plus, Save, Clock, MapPin, BookOpen } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
@@ -29,27 +29,7 @@ export function TimetableForm({ onSuccess }: TimetableFormProps) {
   const [loading, setLoading] = useState(false);
 
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const classes = ['B.com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
   const semesters = ['1', '2', '3', '4', '5', '6'];
-  
-  const getYearsForClass = (selectedClass: string) => {
-    if (['B.com', 'BBA', 'BCA'].includes(selectedClass)) {
-      return ['1st Year', '2nd Year', '3rd Year'];
-    } else if (['PCMB', 'PCMC', 'EBAC', 'EBAS'].includes(selectedClass)) {
-      return ['1st Year', '2nd Year'];
-    }
-    return [];
-  };
-  
-  const subjectsByClass = {
-    'B.com': ['Accountancy', 'Business Studies', 'Economics', 'English', 'Mathematics', 'Computer Applications'],
-    'BBA': ['Business Administration', 'Marketing', 'Finance', 'Human Resources', 'Operations Management', 'Business Ethics'],
-    'BCA': ['Programming in C', 'Data Structures', 'Database Management', 'Web Development', 'Software Engineering', 'Computer Networks'],
-    'PCMB': ['Physics', 'Chemistry', 'Mathematics', 'Biology'],
-    'PCMC': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science'],
-    'EBAC': ['Economics', 'Business Studies', 'Accountancy', 'Computer Science'],
-    'EBAS': ['Economics', 'Business Studies', 'Accountancy', 'Statistics']
-  };
   const timeSlots = [
     { start: '09:00', end: '10:00' },
     { start: '10:00', end: '11:00' },

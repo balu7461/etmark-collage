@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
 import { db } from '../lib/firebase';
-import { AttendanceRecord, Student } from '../types';
+import { AttendanceRecord, Student, getYearsForClass, classes, subjectsByClass } from '../types';
 import { Calendar, Users, Filter, Download, Search } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { format } from 'date-fns';
@@ -17,28 +17,6 @@ export function Attendance() {
     year: '',
     faculty: ''
   });
-
-  // Updated classes to match the ones used throughout the application
-  const classes = ['B.com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
-  
-  const getYearsForClass = (selectedClass: string) => {
-    if (['B.com', 'BBA', 'BCA'].includes(selectedClass)) {
-      return ['1st Year', '2nd Year', '3rd Year'];
-    } else if (['PCMB', 'PCMC', 'EBAC', 'EBAS'].includes(selectedClass)) {
-      return ['1st Year', '2nd Year'];
-    }
-    return [];
-  };
-
-  const subjectsByClass = {
-    'B.com': ['Accountancy', 'Business Studies', 'Economics', 'English', 'Mathematics', 'Computer Applications'],
-    'BBA': ['Business Administration', 'Marketing', 'Finance', 'Human Resources', 'Operations Management', 'Business Ethics'],
-    'BCA': ['Programming in C', 'Data Structures', 'Database Management', 'Web Development', 'Software Engineering', 'Computer Networks'],
-    'PCMB': ['Physics', 'Chemistry', 'Mathematics', 'Biology'],
-    'PCMC': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science'],
-    'EBAC': ['Economics', 'Business Studies', 'Accountancy', 'Computer Science'],
-    'EBAS': ['Economics', 'Business Studies', 'Accountancy', 'Statistics']
-  };
 
   useEffect(() => {
     fetchData();
@@ -339,7 +317,7 @@ export function Attendance() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap hidden sm:table-cell">
                           <span className="inline-flex px-2 py-1 text-xs font-semibold bg-purple-100 text-purple-800 rounded-full">
-                            {record.year || 'N/A'}
+                            {record.year}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.subject}</td>

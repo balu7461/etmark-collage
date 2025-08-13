@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { useAuth } from '../../contexts/AuthContext';
-import { Student, StudentAchievement } from '../../types';
+import { Student, StudentAchievement, classes } from '../../types';
 import { Award, Plus, User, Calendar, MapPin, Trophy, Camera } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
@@ -32,7 +32,7 @@ export function StudentAchievementForm() {
     { value: 'Other', label: 'Other' }
   ];
 
-  const branches = ['B.Com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
+  const branches = classes;
 
   const outcomes = [
     'Participation Certificate',
