@@ -3,7 +3,7 @@ import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, query, where, w
 import { db } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { Header } from '../components/Layout/Header';
-import { Student, getYearsForClass, classes, subjectsByClass } from '../types';
+import { Student } from '../types';
 import { Users, Plus, Edit2, Trash2, Search, Mail, Phone, GraduationCap, Building, Upload, Download, FileSpreadsheet, AlertCircle, CheckCircle, Filter } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
