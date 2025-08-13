@@ -547,7 +547,7 @@ export function Students() {
                     className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   >
                     <option value="">All Classes</option>
-                    {(selectedClass ? getYearsForClass(selectedClass) : ['1st Year', '2nd Year', '3rd Year']).map(year => (
+                    {classes.map(cls => (
                       <option key={cls} value={cls}>{cls}</option>
                     ))}
                   </select>
