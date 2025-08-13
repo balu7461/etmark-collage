@@ -19,7 +19,7 @@ export function StudentOverallAttendance() {
 
   const searchStudentAttendance = async () => {
     if (!usn.trim()) {
-      toast.error('Please enter a valid USN/Roll Number');
+      toast.error('Please enter a valid Sats No.');
       return;
     }
 
@@ -34,7 +34,7 @@ export function StudentOverallAttendance() {
       const studentSnapshot = await getDocs(studentQuery);
 
       if (studentSnapshot.empty) {
-        toast.error('Student not found with this USN/Roll Number');
+        toast.error('Student not found with this Sats No.');
         setStudentData(null);
         setAttendanceData(null);
         return;
@@ -108,7 +108,7 @@ export function StudentOverallAttendance() {
           <div className="mb-6">
             <h1 className="text-xl lg:text-2xl font-bold text-gray-900 mb-2">Student Overall Attendance</h1>
             <p className="text-sm lg:text-base text-gray-600">
-              Search for a student's complete attendance record by entering their USN/Roll Number
+              Search for a student's complete attendance record by entering their Sats No.
             </p>
           </div>
 
@@ -126,7 +126,7 @@ export function StudentOverallAttendance() {
                   value={usn}
                   onChange={(e) => setUsn(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Enter USN/Roll Number (e.g., BCA001, COM123)"
+                  placeholder="Enter Sats No. (e.g., BCA001, COM123)"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm lg:text-base"
                 />
               </div>
@@ -161,7 +161,7 @@ export function StudentOverallAttendance() {
                   <p className="text-sm lg:text-base font-semibold text-gray-900">{studentData.name}</p>
                 </div>
                 <div>
-                  <p className="text-xs lg:text-sm font-medium text-gray-600">USN/Roll Number</p>
+                  <p className="text-xs lg:text-sm font-medium text-gray-600">Sats No.</p>
                   <p className="text-sm lg:text-base font-semibold text-gray-900">{studentData.rollNumber}</p>
                 </div>
                 <div>
@@ -310,7 +310,7 @@ export function StudentOverallAttendance() {
             <div className="text-center py-12 bg-white rounded-xl shadow-sm border border-gray-100">
               <GraduationCap className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-base lg:text-lg font-medium text-gray-900 mb-2">Search for Student Attendance</h3>
-              <p className="text-sm lg:text-base text-gray-600">Enter a student's USN/Roll Number to view their complete attendance record.</p>
+              <p className="text-sm lg:text-base text-gray-600">Enter a student's Sats No. to view their complete attendance record.</p>
             </div>
           )}
         </div>
