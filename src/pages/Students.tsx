@@ -58,6 +58,7 @@ export function Students() {
   }, [currentUser]);
 
   const fetchStudents = async () => {
+    console.log('🔄 Fetching students from Firestore...');
     try {
       // Fetch only approved students for real-time data
       const q = query(
@@ -65,11 +66,16 @@ export function Students() {
         where('isApproved', '==', true)
       );
       
+      console.log('📡 Executing Firestore query with server source...');
       const querySnapshot = await getDocs(q, { source: 'server' });
+      console.log('📊 Query completed. Documents found:', querySnapshot.size);
+      
       const studentsData = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       })) as Student[];
+      
+      console.log('📋 Students data processed:', studentsData.length, 'students');
       
       // Sort by class and then by roll number
       studentsData.sort((a, b) => {
@@ -79,10 +85,23 @@ export function Students() {
         return a.rollNumber.localeCompare(b.rollNumber);
       });
       
+      console.log('✅ Students sorted and ready to display');
       setStudents(studentsData);
     } catch (error) {
-      console.error('Error fetching students:', error);
-      toast.error('Failed to fetch students');
+      console.error('❌ DETAILED ERROR fetching students:', {
+        error,
+        errorMessage: error.message,
+        errorCode: error.code,
+        errorStack: error.stack
+      });
+      
+      if (error.code === 'permission-denied') {
+        toast.error('Cannot fetch students: Check your Firestore security rules');
+      } else if (error.code === 'unavailable') {
+        toast.error('Cannot fetch students: Database unavailable');
+      } else {
+        toast.error(`Failed to fetch students: ${error.message}`);
+      }
     } finally {
       setLoading(false);
     }
@@ -96,6 +115,12 @@ export function Students() {
       return;
     }
 
+    console.log('🔄 Starting student save operation...', {
+      isEditing: !!editingStudent,
+      formData,
+      currentUser: currentUser?.name
+    });
+
     try {
       const studentData = {
         ...formData,
@@ -105,19 +130,45 @@ export function Students() {
         registrationDate: format(new Date(), 'yyyy-MM-dd HH:mm:ss')
       };
 
+      console.log('📝 Student data to be saved:', studentData);
+
       if (editingStudent) {
+        console.log('✏️ Updating existing student with ID:', editingStudent.id);
         await updateDoc(doc(db, 'students', editingStudent.id), formData);
+        console.log('✅ Student updated successfully in Firestore');
         toast.success('Student updated successfully');
       } else {
-        await addDoc(collection(db, 'students'), studentData);
+        console.log('➕ Adding new student to Firestore...');
+        const docRef = await addDoc(collection(db, 'students'), studentData);
+        console.log('✅ New student added successfully with ID:', docRef.id);
         toast.success('Student added successfully');
       }
       
+      console.log('🔄 Refreshing student list...');
       resetForm();
       fetchStudents();
+      console.log('✅ Student operation completed successfully');
     } catch (error) {
-      console.error('Error saving student:', error);
-      toast.error('Failed to save student');
+      console.error('❌ DETAILED ERROR saving student:', {
+        error,
+        errorMessage: error.message,
+        errorCode: error.code,
+        errorStack: error.stack,
+        formData,
+        editingStudent: editingStudent?.id,
+        currentUser: currentUser?.name
+      });
+      
+      // More specific error messages
+      if (error.code === 'permission-denied') {
+        toast.error('Permission denied: Check your Firestore security rules');
+      } else if (error.code === 'unavailable') {
+        toast.error('Database unavailable: Check your internet connection');
+      } else if (error.code === 'invalid-argument') {
+        toast.error('Invalid data format: Please check all fields');
+      } else {
+        toast.error(`Failed to save student: ${error.message}`);
+      }
     }
   };
 
@@ -224,10 +275,16 @@ export function Students() {
       return;
     }
 
+    console.log('🔄 Starting bulk upload operation...', {
+      totalStudents: validStudents.length,
+      currentUser: currentUser?.name
+    });
     setUploadLoading(true);
     
     try {
       const batch = writeBatch(db);
+      
+      console.log('📝 Preparing batch write for', validStudents.length, 'students');
       
       validStudents.forEach((student) => {
         const docRef = doc(collection(db, 'students'));
@@ -245,20 +302,40 @@ export function Students() {
           registrationDate: format(new Date(), 'yyyy-MM-dd HH:mm:ss')
         };
         
+        console.log('📄 Adding student to batch:', student.name, student.rollNumber);
         batch.set(docRef, studentData);
       });
       
+      console.log('🚀 Committing batch write to Firestore...');
       await batch.commit();
+      console.log('✅ Batch write completed successfully');
       
       toast.success(`Successfully uploaded ${validStudents.length} students`);
       setShowUploadModal(false);
       setUploadFile(null);
       setUploadPreview([]);
+      console.log('🔄 Refreshing student list after bulk upload...');
       fetchStudents();
+      console.log('✅ Bulk upload operation completed');
       
     } catch (error) {
-      console.error('Error uploading students:', error);
-      toast.error('Failed to upload students');
+      console.error('❌ DETAILED ERROR during bulk upload:', {
+        error,
+        errorMessage: error.message,
+        errorCode: error.code,
+        errorStack: error.stack,
+        validStudentsCount: validStudents.length,
+        currentUser: currentUser?.name
+      });
+      
+      // More specific error messages for bulk upload
+      if (error.code === 'permission-denied') {
+        toast.error('Bulk upload failed: Check your Firestore security rules');
+      } else if (error.code === 'unavailable') {
+        toast.error('Bulk upload failed: Database unavailable');
+      } else {
+        toast.error(`Bulk upload failed: ${error.message}`);
+      }
     } finally {
       setUploadLoading(false);
     }
