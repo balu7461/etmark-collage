@@ -41,7 +41,7 @@ export function AttendanceForm() {
         where('class', '==', selectedClass),
         where('isApproved', '==', true)
       );
-      const querySnapshot = await getDocs(q);
+      const querySnapshot = await getDocs(q, { source: 'server' });
       const studentsData = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
