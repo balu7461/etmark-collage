@@ -670,10 +670,13 @@ export function Students() {
                             Student
                           </th>
                           <th className="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Sats No.
+                          <th className="px-2 lg:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Program</th>
                           </th>
                           <th className="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Class
+                            Program
+                          </th>
+                          <th className="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Year
                           </th>
                           <th className="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
                             Contact
@@ -702,11 +705,11 @@ export function Students() {
                               <span className="inline-flex px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded-full">
                                 {student.class}
                               </span>
-                              {student.year && (
-                                <span className="inline-flex px-2 py-1 text-xs font-semibold bg-purple-100 text-purple-800 rounded-full ml-1">
-                                  {student.year}
-                                </span>
-                              )}
+                            </td>
+                            <td className="px-4 lg:px-6 py-4 whitespace-nowrap">
+                              <span className="inline-flex px-2 py-1 text-xs font-semibold bg-purple-100 text-purple-800 rounded-full">
+                                {student.year || 'N/A'}
+                              </span>
                             </td>
                             <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell">
                               {student.parentEmail && (
@@ -852,7 +855,7 @@ export function Students() {
                               <td className="px-2 lg:px-4 py-2 text-xs lg:text-sm truncate max-w-24 lg:max-w-none hidden sm:table-cell">{student.email}</td>
                               <td className="px-2 lg:px-4 py-2 whitespace-nowrap text-xs lg:text-sm">{student.rollNumber}</td>
                               <td className="px-2 lg:px-4 py-2 whitespace-nowrap text-xs lg:text-sm">{student.class}</td>
-                              <td className="px-2 lg:px-4 py-2 whitespace-nowrap text-xs lg:text-sm">{student.year}</td>
+                              <td className="px-2 lg:px-4 py-2 whitespace-nowrap text-xs lg:text-sm">{student.year || 'N/A'}</td>
                             </tr>
                           ))}
                         </tbody>
