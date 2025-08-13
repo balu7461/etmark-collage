@@ -52,7 +52,7 @@ export function Attendance() {
         collection(db, 'attendance'),
         orderBy('date', 'desc')
       );
-      const attendanceSnapshot = await getDocs(attendanceQuery);
+      const attendanceSnapshot = await getDocs(attendanceQuery, { source: 'server' });
       const attendanceData = attendanceSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
@@ -63,7 +63,7 @@ export function Attendance() {
         collection(db, 'students'),
         where('isApproved', '==', true)
       );
-      const studentsSnapshot = await getDocs(studentsQuery);
+      const studentsSnapshot = await getDocs(studentsQuery, { source: 'server' });
       const studentsData = studentsSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
