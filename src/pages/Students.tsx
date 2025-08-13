@@ -32,6 +32,20 @@ export function Students() {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedClass, setSelectedClass] = useState('');
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    rollNumber: '',
+    class: '',
+    year: '',
+    parentEmail: '',
+    parentPhone: ''
+  });
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploadPreview, setUploadPreview] = useState<any[]>([]);
+  const [uploadLoading, setUploadLoading] = useState(false);
+
   useEffect(() => {
     fetchStudents();
   }, [currentUser]);
