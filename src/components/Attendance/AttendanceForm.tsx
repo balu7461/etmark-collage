@@ -12,6 +12,7 @@ export function AttendanceForm() {
   const { currentUser } = useAuth();
   const [students, setStudents] = useState<Student[]>([]);
   const [selectedClass, setSelectedClass] = useState('');
+  const [selectedYear, setSelectedYear] = useState('');
   const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [attendance, setAttendance] = useState<Record<string, { status: 'present' | 'absent'; reason?: string }>>({});
   const [loading, setLoading] = useState(false);
@@ -29,16 +30,17 @@ export function AttendanceForm() {
   };
 
   useEffect(() => {
-    if (selectedClass) {
+    if (selectedClass && selectedYear) {
       fetchStudents();
     }
-  }, [selectedClass]);
+  }, [selectedClass, selectedYear]);
 
   const fetchStudents = async () => {
     try {
       const q = query(
         collection(db, 'students'), 
         where('class', '==', selectedClass),
+        where('year', '==', selectedYear),
         where('isApproved', '==', true)
       );
       const querySnapshot = await getDocs(q, { source: 'server' });
@@ -49,7 +51,7 @@ export function AttendanceForm() {
       
       setStudents(studentsData);
       
-      // Initialize attendance state
+      // Initialize attendance state - ALL STUDENTS DEFAULT TO PRESENT
       const attendanceState: Record<string, { status: 'present' | 'absent'; reason?: string }> = {};
       studentsData.forEach(student => {
         attendanceState[student.id] = { status: 'present' };
@@ -112,8 +114,8 @@ export function AttendanceForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!selectedClass || !currentUser) {
-      toast.error('Please fill in all required fields');
+    if (!selectedClass || !selectedYear || !currentUser) {
+      toast.error('Please select class, year, and date');
       return;
     }
 
@@ -123,11 +125,12 @@ export function AttendanceForm() {
         studentId: student.id,
         date: selectedDate,
         status: attendance[student.id]?.status || 'present',
-        subject: `Class Attendance - ${selectedClass}`,
+        subject: `Class Attendance - ${selectedClass} (${selectedYear})`,
         facultyId: currentUser.id,
         facultyName: currentUser.name,
         reason: attendance[student.id]?.reason || '',
-        class: selectedClass
+        class: selectedClass,
+        year: selectedYear
       }));
 
       // Save attendance records
@@ -155,6 +158,9 @@ export function AttendanceForm() {
       
       // Reset form
       setAttendance({});
+      setSelectedClass('');
+      setSelectedYear('');
+      setStudents([]);
       
     } catch (error) {
       console.error('Error saving attendance:', error);
@@ -198,8 +204,8 @@ export function AttendanceForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="md:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="transform transition-all duration-200 hover:scale-105">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Date
@@ -215,17 +221,39 @@ export function AttendanceForm() {
 
             <div className="transform transition-all duration-200 hover:scale-105">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Class
+                Class *
               </label>
               <select
                 value={selectedClass}
-                onChange={(e) => setSelectedClass(e.target.value)}
+                onChange={(e) => {
+                  setSelectedClass(e.target.value);
+                  setSelectedYear(''); // Reset year when class changes
+                  setStudents([]); // Clear students when class changes
+                }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 required
               >
                 <option value="">Select Class</option>
                 {classes.map(cls => (
                   <option key={cls} value={cls}>{cls}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="transform transition-all duration-200 hover:scale-105">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Year *
+              </label>
+              <select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                required
+                disabled={!selectedClass}
+              >
+                <option value="">Select Year</option>
+                {getYearsForClass(selectedClass).map(year => (
+                  <option key={year} value={year}>{year}</option>
                 ))}
               </select>
             </div>
@@ -241,6 +269,7 @@ export function AttendanceForm() {
                   <div>
                     <p className="text-sm font-medium text-blue-600">Total Students</p>
                     <p className="text-2xl font-bold text-blue-900">{stats.totalStudents}</p>
+                    <p className="text-xs text-blue-700">{selectedClass} - {selectedYear}</p>
                   </div>
                   <Users className="h-6 w-6 text-blue-600" />
                 </div>
@@ -250,6 +279,7 @@ export function AttendanceForm() {
                   <div>
                     <p className="text-sm font-medium text-green-600">Present</p>
                     <p className="text-2xl font-bold text-green-900">{stats.presentCount}</p>
+                    <p className="text-xs text-green-700">Default: All Present</p>
                   </div>
                   <CheckCircle className="h-6 w-6 text-green-600" />
                 </div>
@@ -259,6 +289,7 @@ export function AttendanceForm() {
                   <div>
                     <p className="text-sm font-medium text-red-600">Absent</p>
                     <p className="text-2xl font-bold text-red-900">{stats.absentCount}</p>
+                    <p className="text-xs text-red-700">Mark as needed</p>
                   </div>
                   <XCircle className="h-6 w-6 text-red-600" />
                 </div>
@@ -269,8 +300,11 @@ export function AttendanceForm() {
               <div className="flex items-center space-x-3 mb-4">
                 <Users className="h-5 w-5 text-gray-600" />
                 <h3 className="text-lg font-medium text-gray-900">
-                  Students ({students.length})
+                  Students - {selectedClass} {selectedYear} ({students.length})
                 </h3>
+                <div className="ml-auto text-sm text-green-600 font-medium">
+                  ✓ All students default to PRESENT
+                </div>
               </div>
 
               <div className="space-y-3 max-h-96 overflow-y-auto">
