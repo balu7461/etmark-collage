@@ -189,13 +189,14 @@ export function Students() {
             email: row['Email'] || row['Email Address'] || '',
             rollNumber: row['Sats No.'] || row['Roll Number'] || row['Roll'] || '',
             class: row['Class'] || '',
+            year: row['Year'] || '',
             parentEmail: row['Parent Email'] || '',
             parentPhone: row['Parent Phone'] || '',
             rowIndex: index + 2 // Excel row number (starting from 2)
           };
           
           // Validate required fields
-          student.isValid = !!(student.name && student.email && student.rollNumber && student.class);
+          student.isValid = !!(student.name && student.email && student.rollNumber && student.class && student.year);
           
           return student;
         });
@@ -235,6 +236,7 @@ export function Students() {
           email: student.email,
           rollNumber: student.rollNumber,
           class: student.class,
+          year: student.year,
           parentEmail: student.parentEmail || '',
           parentPhone: student.parentPhone || '',
           isApproved: true, // Auto-approve bulk uploads
@@ -269,6 +271,7 @@ export function Students() {
         'Email': 'john.doe@student.edu',
         'Sats No.': 'BCA001',
         'Class': 'BCA',
+        'Year': '1st Year',
         'Parent Email': 'parent@email.com',
         'Parent Phone': '+1234567890'
       }
@@ -287,6 +290,7 @@ export function Students() {
       'Email': student.email,
       'Sats No.': student.rollNumber,
       'Class': student.class,
+      'Year': student.year || '',
       'Parent Email': student.parentEmail || '',
       'Parent Phone': student.parentPhone || '',
       'Registration Date': student.registrationDate || 'N/A'
@@ -695,7 +699,7 @@ export function Students() {
                       <h4 className="font-medium text-blue-900 mb-2">Upload Instructions</h4>
                       <ul className="text-xs lg:text-sm text-blue-800 space-y-1">
                         <li>• Upload an Excel file (.xlsx or .xls) with student data</li>
-                        <li>• Required columns: Name, Email, Sats No., Class</li>
+                        <li>• Required columns: Name, Email, Sats No., Class, Year</li>
                         <li>• Optional columns: Parent Email, Parent Phone</li>
                         <li>• Download the template below for the correct format</li>
                       </ul>
@@ -754,6 +758,7 @@ export function Students() {
                             <th className="px-2 lg:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">Email</th>
                             <th className="px-2 lg:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Sats No.</th>
                             <th className="px-2 lg:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Class</th>
+                            <th className="px-2 lg:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Year</th>
                           </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
@@ -770,6 +775,7 @@ export function Students() {
                               <td className="px-2 lg:px-4 py-2 text-xs lg:text-sm truncate max-w-24 lg:max-w-none hidden sm:table-cell">{student.email}</td>
                               <td className="px-2 lg:px-4 py-2 whitespace-nowrap text-xs lg:text-sm">{student.rollNumber}</td>
                               <td className="px-2 lg:px-4 py-2 whitespace-nowrap text-xs lg:text-sm">{student.class}</td>
+                              <td className="px-2 lg:px-4 py-2 whitespace-nowrap text-xs lg:text-sm">{student.year}</td>
                             </tr>
                           ))}
                         </tbody>
