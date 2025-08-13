@@ -21,7 +21,15 @@ export function Attendance() {
 
   // Updated classes to match the ones used throughout the application
   const classes = ['B.com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
-  const years = ['1st Year', '2nd Year', '3rd Year'];
+  
+  const getYearsForClass = (selectedClass: string) => {
+    if (['B.com', 'BBA', 'BCA'].includes(selectedClass)) {
+      return ['1st Year', '2nd Year', '3rd Year'];
+    } else if (['PCMB', 'PCMC', 'EBAC', 'EBAS'].includes(selectedClass)) {
+      return ['1st Year', '2nd Year'];
+    }
+    return [];
+  };
 
   const subjectsByClass = {
     'B.com': ['Accountancy', 'Business Studies', 'Economics', 'English', 'Mathematics', 'Computer Applications'],
@@ -234,7 +242,7 @@ export function Attendance() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">All Years</option>
-                  {years.map(year => (
+                  {(filters.class ? getYearsForClass(filters.class) : ['1st Year', '2nd Year', '3rd Year']).map(year => (
                     <option key={year} value={year}>{year}</option>
                   ))}
                 </select>

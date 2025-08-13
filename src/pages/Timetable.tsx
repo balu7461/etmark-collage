@@ -18,8 +18,16 @@ export function Timetable() {
   const [searchTerm, setSearchTerm] = useState('');
 
   const classes = ['B.com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
-  const years = ['1st Year', '2nd Year', '3rd Year'];
   const semesters = ['1', '2', '3', '4', '5', '6'];
+
+  const getYearsForClass = (selectedClass: string) => {
+    if (['B.com', 'BBA', 'BCA'].includes(selectedClass)) {
+      return ['1st Year', '2nd Year', '3rd Year'];
+    } else if (['PCMB', 'PCMC', 'EBAC', 'EBAS'].includes(selectedClass)) {
+      return ['1st Year', '2nd Year'];
+    }
+    return [];
+  };
 
   const subjectsByClass = {
     'B.com': ['Accountancy', 'Business Studies', 'Economics', 'English', 'Mathematics', 'Computer Applications'],
@@ -230,7 +238,7 @@ export function Timetable() {
                     className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="">All Years</option>
-                    {years.map(year => (
+                    {(selectedClass ? getYearsForClass(selectedClass) : ['1st Year', '2nd Year', '3rd Year']).map(year => (
                       <option key={year} value={year}>{year}</option>
                     ))}
                   </select>

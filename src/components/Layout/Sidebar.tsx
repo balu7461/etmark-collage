@@ -46,6 +46,7 @@ export function Sidebar({ isSidebarOpen, toggleSidebar, closeSidebar }: SidebarP
     { to: '/student-attendance', icon: FileCheck, label: 'Student Attendance' },
     { to: '/timetable', icon: CalendarDays, label: 'Timetable' },
     { to: '/achievements', icon: Award, label: 'Achievements' },
+    { to: '/student-achievements', icon: Award, label: 'Student Achievements' },
     { to: '/leave-management', icon: FileText, label: 'Leave Management' },
     { to: '/reports', icon: BarChart3, label: 'Reports' },
     { to: '/settings', icon: Settings, label: 'Settings' },

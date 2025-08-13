@@ -33,7 +33,15 @@ export function Students() {
   });
 
   const classes = ['B.com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
-  const years = ['1st Year', '2nd Year', '3rd Year'];
+  
+  const getYearsForClass = (selectedClass: string) => {
+    if (['B.com', 'BBA', 'BCA'].includes(selectedClass)) {
+      return ['1st Year', '2nd Year', '3rd Year'];
+    } else if (['PCMB', 'PCMC', 'EBAC', 'EBAS'].includes(selectedClass)) {
+      return ['1st Year', '2nd Year'];
+    }
+    return [];
+  };
 
   const subjectsByClass = {
     'B.com': ['Accountancy', 'Business Studies', 'Economics', 'English', 'Mathematics', 'Computer Applications'],
@@ -465,7 +473,7 @@ export function Students() {
                     required
                   >
                     <option value="">Select Year</option>
-                    {years.map(year => (
+                    {getYearsForClass(formData.class).map(year => (
                       <option key={year} value={year}>{year}</option>
                     ))}
                   </select>
@@ -539,7 +547,7 @@ export function Students() {
                     className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   >
                     <option value="">All Classes</option>
-                    {classes.map(cls => (
+                    {(selectedClass ? getYearsForClass(selectedClass) : ['1st Year', '2nd Year', '3rd Year']).map(year => (
                       <option key={cls} value={cls}>{cls}</option>
                     ))}
                   </select>

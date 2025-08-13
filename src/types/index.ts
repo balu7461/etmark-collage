@@ -75,6 +75,23 @@ export interface Achievement {
   submittedDate: string;
 }
 
+export interface StudentAchievement {
+  id: string;
+  studentId: string;
+  studentName: string;
+  firstName: string;
+  lastName: string;
+  category: 'Sports' | 'Cultural' | 'Academic' | 'Other';
+  title: string;
+  description: string;
+  date: string;
+  location: string;
+  outcome: string;
+  highlightPhotosLink: string;
+  branch: string;
+  submittedDate: string;
+}
+
 export interface TimeSlot {
   id: string;
   day: 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday';

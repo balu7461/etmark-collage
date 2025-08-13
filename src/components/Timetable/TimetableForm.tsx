@@ -30,8 +30,16 @@ export function TimetableForm({ onSuccess }: TimetableFormProps) {
 
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const classes = ['B.com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
-  const years = ['1st Year', '2nd Year', '3rd Year'];
   const semesters = ['1', '2', '3', '4', '5', '6'];
+  
+  const getYearsForClass = (selectedClass: string) => {
+    if (['B.com', 'BBA', 'BCA'].includes(selectedClass)) {
+      return ['1st Year', '2nd Year', '3rd Year'];
+    } else if (['PCMB', 'PCMC', 'EBAC', 'EBAS'].includes(selectedClass)) {
+      return ['1st Year', '2nd Year'];
+    }
+    return [];
+  };
   
   const subjectsByClass = {
     'B.com': ['Accountancy', 'Business Studies', 'Economics', 'English', 'Mathematics', 'Computer Applications'],
@@ -272,7 +280,7 @@ export function TimetableForm({ onSuccess }: TimetableFormProps) {
               required
             >
               <option value="">Select Year</option>
-              {years.map(year => (
+              {getYearsForClass(formData.class).map(year => (
                 <option key={year} value={year}>{year}</option>
               ))}
             </select>

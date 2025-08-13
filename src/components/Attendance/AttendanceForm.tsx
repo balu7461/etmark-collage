@@ -13,21 +13,19 @@ export function AttendanceForm() {
   const [students, setStudents] = useState<Student[]>([]);
   const [selectedClass, setSelectedClass] = useState('');
   const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
-  const [subject, setSubject] = useState('');
   const [attendance, setAttendance] = useState<Record<string, { status: 'present' | 'absent'; reason?: string }>>({});
   const [loading, setLoading] = useState(false);
   const [sendingEmails, setSendingEmails] = useState(false);
 
   const classes = ['B.com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
   
-  const subjectsByClass = {
-    'B.com': ['Accountancy', 'Business Studies', 'Economics', 'English', 'Mathematics', 'Computer Applications'],
-    'BBA': ['Business Administration', 'Marketing', 'Finance', 'Human Resources', 'Operations Management', 'Business Ethics'],
-    'BCA': ['Programming in C', 'Data Structures', 'Database Management', 'Web Development', 'Software Engineering', 'Computer Networks'],
-    'PCMB': ['Physics', 'Chemistry', 'Mathematics', 'Biology'],
-    'PCMC': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science'],
-    'EBAC': ['Economics', 'Business Studies', 'Accountancy', 'Computer Science'],
-    'EBAS': ['Economics', 'Business Studies', 'Accountancy', 'Statistics']
+  const getYearsForClass = (selectedClass: string) => {
+    if (['B.com', 'BBA', 'BCA'].includes(selectedClass)) {
+      return ['1st Year', '2nd Year', '3rd Year'];
+    } else if (['PCMB', 'PCMC', 'EBAC', 'EBAS'].includes(selectedClass)) {
+      return ['1st Year', '2nd Year'];
+    }
+    return [];
   };
 
   useEffect(() => {
@@ -89,7 +87,7 @@ export function AttendanceForm() {
             student.parentEmail,
             student.name,
             selectedDate,
-            subject,
+            `Class Attendance - ${selectedClass}`,
             currentUser?.name || 'Faculty',
             attendance[student.id]?.reason
           );
@@ -114,7 +112,7 @@ export function AttendanceForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!selectedClass || !subject || !currentUser) {
+    if (!selectedClass || !currentUser) {
       toast.error('Please fill in all required fields');
       return;
     }
@@ -125,7 +123,7 @@ export function AttendanceForm() {
         studentId: student.id,
         date: selectedDate,
         status: attendance[student.id]?.status || 'present',
-        subject,
+        subject: `Class Attendance - ${selectedClass}`,
         facultyId: currentUser.id,
         facultyName: currentUser.name,
         reason: attendance[student.id]?.reason || '',
@@ -157,7 +155,6 @@ export function AttendanceForm() {
       
       // Reset form
       setAttendance({});
-      setSubject('');
       
     } catch (error) {
       console.error('Error saving attendance:', error);
@@ -202,60 +199,36 @@ export function AttendanceForm() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="transform transition-all duration-200 hover:scale-105">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Date
-            </label>
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-              required
-            />
-          </div>
+          <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="transform transition-all duration-200 hover:scale-105">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Date
+              </label>
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                required
+              />
+            </div>
 
-          <div className="transform transition-all duration-200 hover:scale-105">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Class
-            </label>
-            <select
-              value={selectedClass}
-              onChange={(e) => setSelectedClass(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-              required
-            >
-              <option value="">Select Class</option>
-              {classes.map(cls => (
-                <option key={cls} value={cls}>{cls}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="transform transition-all duration-200 hover:scale-105">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Subject
-            </label>
-            {selectedClass ? (
+            <div className="transform transition-all duration-200 hover:scale-105">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Class
+              </label>
               <select
-                value={subject}
-                onChange={(e) => setSubject(e.target.value)}
+                value={selectedClass}
+                onChange={(e) => setSelectedClass(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 required
               >
-                <option value="">Select Subject</option>
-                {subjectsByClass[selectedClass as keyof typeof subjectsByClass]?.map(subj => (
-                  <option key={subj} value={subj}>{subj}</option>
+                <option value="">Select Class</option>
+                {classes.map(cls => (
+                  <option key={cls} value={cls}>{cls}</option>
                 ))}
               </select>
-            ) : (
-              <select
-                disabled
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500"
-              >
-                <option value="">Select Class First</option>
-              </select>
-            )}
+            </div>
           </div>
         </div>
 

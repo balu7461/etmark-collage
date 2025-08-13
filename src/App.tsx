@@ -21,6 +21,7 @@ import { Achievements } from './pages/Achievements';
 import { MyAchievements } from './pages/MyAchievements';
 import { Reports } from './pages/Reports';
 import { Settings } from './pages/Settings';
+import { StudentAchievements } from './pages/StudentAchievements';
 import { Toaster } from 'react-hot-toast';
 
 function AppContent() {
@@ -100,6 +101,7 @@ function AppContent() {
                 <Route path="/student-attendance" element={<StudentOverallAttendance />} />
                 <Route path="/timetable" element={<Timetable />} />
                 <Route path="/achievements" element={<Achievements />} />
+                <Route path="/student-achievements" element={<StudentAchievements />} />
                 <Route path="/leave-management" element={<LeaveManagement />} />
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/settings" element={<Settings />} />
