@@ -9,6 +9,21 @@ import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 import * as XLSX from 'xlsx';
 
+// Define classes at module level to ensure they're always available
+const ALL_CLASSES = ['B.com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'PCMCS', 'COMMERCE', 'ARTS'];
+
+const getYearsForClass = (className: string): string[] => {
+  const undergradClasses = ['B.com', 'BBA', 'BCA'];
+  const plus2Classes = ['PCMB', 'PCMC', 'PCMCS', 'COMMERCE', 'ARTS'];
+  
+  if (undergradClasses.includes(className)) {
+    return ['1st Year', '2nd Year', '3rd Year'];
+  } else if (plus2Classes.includes(className)) {
+    return ['1st Year', '2nd Year'];
+  }
+  return [];
+};
+
 export function Students() {
   const { currentUser } = useAuth();
   const [students, setStudents] = useState<Student[]>([]);
@@ -17,21 +32,6 @@ export function Students() {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedClass, setSelectedClass] = useState('');
-  const [selectedDepartment, setSelectedDepartment] = useState('');
-  const [uploadFile, setUploadFile] = useState<File | null>(null);
-  const [uploadPreview, setUploadPreview] = useState<any[]>([]);
-  const [uploadLoading, setUploadLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    rollNumber: '',
-    class: '',
-    year: '',
-    parentEmail: '',
-    parentPhone: ''
-  });
-
   useEffect(() => {
     fetchStudents();
   }, [currentUser]);
@@ -375,7 +375,7 @@ export function Students() {
 
   const getStudentStats = () => {
     const totalStudents = filteredStudents.length;
-    const byClass = classes.reduce((acc, cls) => {
+    const byClass = ALL_CLASSES.reduce((acc, cls) => {
       acc[cls] = filteredStudents.filter(s => s.class === cls).length;
       return acc;
     }, {} as Record<string, number>);
@@ -521,7 +521,7 @@ export function Students() {
                     required
                   >
                     <option value="">Select Class</option>
-                    {classes.map(cls => (
+                    {ALL_CLASSES.map(cls => (
                       <option key={cls} value={cls}>{cls}</option>
                     ))}
                   </select>
@@ -612,7 +612,7 @@ export function Students() {
                     className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   >
                     <option value="">All Classes</option>
-                    {classes.map(cls => (
+                    {ALL_CLASSES.map(cls => (
                       <option key={cls} value={cls}>{cls}</option>
                     ))}
                   </select>
