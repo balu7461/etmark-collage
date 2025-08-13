@@ -15,7 +15,6 @@ export function Attendance() {
     endDate: format(new Date(), 'yyyy-MM-dd'),
     class: '',
     year: '',
-    subject: '',
     faculty: ''
   });
 
@@ -92,10 +91,9 @@ export function Attendance() {
     const matchesDateRange = record.date >= filters.startDate && record.date <= filters.endDate;
     const matchesClass = !filters.class || record.class === filters.class;
     const matchesYear = !filters.year || record.year === filters.year;
-    const matchesSubject = !filters.subject || record.subject.toLowerCase().includes(filters.subject.toLowerCase());
     const matchesFaculty = !filters.faculty || record.facultyName.toLowerCase().includes(filters.faculty.toLowerCase());
     
-    return matchesDateRange && matchesClass && matchesYear && matchesSubject && matchesFaculty;
+    return matchesDateRange && matchesClass && matchesYear && matchesFaculty;
   });
 
   const exportToExcel = () => {
@@ -249,23 +247,6 @@ export function Attendance() {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
-                <select
-                  value={filters.subject}
-                  onChange={(e) => setFilters(prev => ({ ...prev, subject: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">All Subjects</option>
-                  {filters.class && subjectsByClass[filters.class as keyof typeof subjectsByClass]?.map(subj => (
-                    <option key={subj} value={subj}>{subj}</option>
-                  ))}
-                  {!filters.class && Object.values(subjectsByClass).flat().map(subj => (
-                    <option key={subj} value={subj}>{subj}</option>
-                  ))}
-                </select>
-              </div>
-              
-              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Faculty</label>
                 <input
                   type="text"
@@ -274,6 +255,21 @@ export function Attendance() {
                   onChange={(e) => setFilters(prev => ({ ...prev, faculty: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
+              </div>
+              
+              <div className="flex items-end">
+                <button
+                  onClick={() => setFilters({
+                    startDate: format(new Date(), 'yyyy-MM-dd'),
+                    endDate: format(new Date(), 'yyyy-MM-dd'),
+                    class: '',
+                    year: '',
+                    faculty: ''
+                  })}
+                  className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  Clear Filters
+                </button>
               </div>
             </div>
           </div>

@@ -32,10 +32,16 @@ export function AttendanceForm() {
   useEffect(() => {
     if (selectedClass && selectedYear) {
       fetchStudents();
+    } else {
+      // Clear students if class or year is not selected
+      setStudents([]);
+      setAttendance({});
     }
   }, [selectedClass, selectedYear]);
 
   const fetchStudents = async () => {
+    console.log('🔍 Fetching students for:', { selectedClass, selectedYear });
+    
     try {
       const q = query(
         collection(db, 'students'), 
@@ -43,11 +49,27 @@ export function AttendanceForm() {
         where('year', '==', selectedYear),
         where('isApproved', '==', true)
       );
+      
+      console.log('📡 Executing Firestore query with filters:', {
+        class: selectedClass,
+        year: selectedYear,
+        isApproved: true
+      });
+      
       const querySnapshot = await getDocs(q, { source: 'server' });
+      console.log('📊 Query completed. Documents found:', querySnapshot.size);
+      
       const studentsData = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       })) as Student[];
+      
+      console.log('📋 Students data:', studentsData.map(s => ({ 
+        name: s.name, 
+        class: s.class, 
+        year: s.year,
+        rollNumber: s.rollNumber 
+      })));
       
       setStudents(studentsData);
       
@@ -57,9 +79,30 @@ export function AttendanceForm() {
         attendanceState[student.id] = { status: 'present' };
       });
       setAttendance(attendanceState);
+      
+      if (studentsData.length === 0) {
+        console.log('⚠️ No students found for the selected class and year combination');
+        toast.info(`No students found for ${selectedClass} - ${selectedYear}`);
+      } else {
+        console.log(`✅ Successfully loaded ${studentsData.length} students`);
+      }
+      
     } catch (error) {
-      console.error('Error fetching students:', error);
-      toast.error('Failed to fetch students');
+      console.error('❌ Error fetching students:', {
+        error,
+        selectedClass,
+        selectedYear,
+        errorMessage: error.message,
+        errorCode: error.code
+      });
+      
+      if (error.code === 'permission-denied') {
+        toast.error('Permission denied: Check Firestore security rules');
+      } else if (error.code === 'unavailable') {
+        toast.error('Database unavailable: Check internet connection');
+      } else {
+        toast.error(`Failed to fetch students: ${error.message}`);
+      }
     }
   };
 
@@ -229,6 +272,7 @@ export function AttendanceForm() {
                   setSelectedClass(e.target.value);
                   setSelectedYear(''); // Reset year when class changes
                   setStudents([]); // Clear students when class changes
+                  setAttendance({}); // Clear attendance when class changes
                 }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 required
@@ -246,7 +290,12 @@ export function AttendanceForm() {
               </label>
               <select
                 value={selectedYear}
-                onChange={(e) => setSelectedYear(e.target.value)}
+                onChange={(e) => {
+                  setSelectedYear(e.target.value);
+                  // Clear students and attendance when year changes
+                  setStudents([]);
+                  setAttendance({});
+                }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 required
                 disabled={!selectedClass}
