@@ -87,8 +87,13 @@ export function StudentAchievementForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!currentUser || !formData.studentId || !formData.firstName || !formData.category || !formData.title || !formData.date || !formData.branch) {
+    if (!currentUser || !formData.studentId || !formData.firstName || !formData.category || !formData.title || !formData.date) {
       toast.error('Please fill in all required fields');
+      return;
+    }
+
+    if (!formData.branch) {
+      toast.error('Please select a branch for the student');
       return;
     }
 

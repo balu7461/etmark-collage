@@ -89,8 +89,13 @@ export function Students() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.email || !formData.rollNumber || !formData.class || !formData.year) {
+    if (!formData.name || !formData.email || !formData.rollNumber || !formData.class) {
       toast.error('Please fill in all required fields');
+      return;
+    }
+
+    if (!formData.year) {
+      toast.error('Please select a year for the student');
       return;
     }
 

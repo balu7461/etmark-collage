@@ -18,19 +18,42 @@ export function AttendanceForm() {
   const [attendance, setAttendance] = useState<Record<string, { status: 'present' | 'absent'; reason?: string }>>({});
   const [loading, setLoading] = useState(false);
   const [sendingEmails, setSendingEmails] = useState(false);
+  const [studentsLoading, setStudentsLoading] = useState(false);
 
+  // Reset dependent fields when class changes
+  useEffect(() => {
+    if (selectedClass) {
+      setSelectedYear(''); // Reset year when class changes
+      setSelectedSubject(''); // Reset subject when class changes
+      setStudents([]); // Clear students when class changes
+      setAttendance({}); // Clear attendance when class changes
+    }
+  }, [selectedClass]);
+
+  // Reset dependent fields when year changes
+  useEffect(() => {
+    if (selectedYear && selectedClass) {
+      setSelectedSubject(''); // Reset subject when year changes
+      setStudents([]); // Clear students when year changes
+      setAttendance({}); // Clear attendance when year changes
+    }
+  }, [selectedYear]);
+
+  // Fetch students when both class and year are selected
   useEffect(() => {
     if (selectedClass && selectedYear && selectedSubject) {
       fetchStudents();
-    } else {
-      // Clear students if class or year is not selected
-      setStudents([]);
-      setAttendance({});
     }
   }, [selectedClass, selectedYear, selectedSubject]);
 
   const fetchStudents = async () => {
+    if (!selectedClass || !selectedYear) {
+      console.log('⚠️ Cannot fetch students: Class or Year not selected');
+      return;
+    }
+
     console.log('🔍 Fetching students for:', { selectedClass, selectedYear });
+    setStudentsLoading(true);
     
     try {
       const q = query(
@@ -60,6 +83,9 @@ export function AttendanceForm() {
         year: s.year,
         rollNumber: s.rollNumber 
       })));
+      
+      // Sort students by roll number
+      studentsData.sort((a, b) => a.rollNumber.localeCompare(b.rollNumber));
       
       setStudents(studentsData);
       
@@ -94,6 +120,8 @@ export function AttendanceForm() {
       } else {
         toast.error(`Failed to fetch students: ${error.message}`);
       }
+    } finally {
+      setStudentsLoading(false);
     }
   };
 
@@ -148,10 +176,24 @@ export function AttendanceForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!selectedClass || !selectedYear || !currentUser) {
-      toast.error('Please select class, year, and date');
+    if (!selectedClass || !selectedYear || !selectedSubject || !currentUser) {
+      toast.error('Please select class, year, subject, and date');
       return;
     }
+
+    if (students.length === 0) {
+      toast.error('No students found for the selected class and year');
+      return;
+    }
+
+    console.log('🔄 Starting attendance save operation...', {
+      selectedClass,
+      selectedYear,
+      selectedSubject,
+      selectedDate,
+      studentsCount: students.length,
+      currentUser: currentUser?.name
+    });
 
     setLoading(true);
     try {
@@ -164,17 +206,31 @@ export function AttendanceForm() {
         facultyName: currentUser.name,
         reason: attendance[student.id]?.reason || '',
         class: selectedClass,
-        year: selectedYear
+        year: selectedYear // Ensure year is always saved
       }));
+
+      console.log('📝 Attendance records to be saved:', attendanceRecords.length);
 
       // Save attendance records
       for (const record of attendanceRecords) {
+        console.log('💾 Saving attendance record:', {
+          studentId: record.studentId,
+          class: record.class,
+          year: record.year,
+          subject: record.subject,
+          status: record.status
+        });
         await addDoc(collection(db, 'attendance'), record);
       }
 
       const absentStudents = students.filter(student => 
         attendance[student.id]?.status === 'absent'
       );
+
+      console.log('✅ Attendance saved successfully!', {
+        totalRecords: attendanceRecords.length,
+        absentCount: absentStudents.length
+      });
 
       toast.success(`Attendance marked successfully! ${absentStudents.length} students marked absent.`);
       
@@ -184,7 +240,7 @@ export function AttendanceForm() {
         
         if (studentsWithParentEmail.length > 0) {
           toast.loading(`Sending notifications to ${studentsWithParentEmail.length} parent(s)...`);
-          await sendParentNotifications(studentsWithParentEmail);
+          await sendParentNotifications(studentsWithParentEmail, selectedSubject);
         } else {
           toast.info('No parent email addresses found for absent students');
         }
@@ -194,11 +250,26 @@ export function AttendanceForm() {
       setAttendance({});
       setSelectedClass('');
       setSelectedYear('');
+      setSelectedSubject('');
       setStudents([]);
       
     } catch (error) {
-      console.error('Error saving attendance:', error);
-      toast.error('Failed to save attendance');
+      console.error('❌ Error saving attendance:', {
+        error,
+        errorMessage: error.message,
+        errorCode: error.code,
+        selectedClass,
+        selectedYear,
+        selectedSubject
+      });
+      
+      if (error.code === 'permission-denied') {
+        toast.error('Permission denied: Check Firestore security rules');
+      } else if (error.code === 'unavailable') {
+        toast.error('Database unavailable: Check internet connection');
+      } else {
+        toast.error(`Failed to save attendance: ${error.message}`);
+      }
     } finally {
       setLoading(false);
     }
@@ -259,13 +330,7 @@ export function AttendanceForm() {
               </label>
               <select
                 value={selectedClass}
-                onChange={(e) => {
-                  setSelectedClass(e.target.value);
-                  setSelectedYear(''); // Reset year when class changes
-                  setSelectedSubject(''); // Reset subject when class changes
-                  setStudents([]); // Clear students when class changes
-                  setAttendance({}); // Clear attendance when class changes
-                }}
+                onChange={(e) => setSelectedClass(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 required
               >
@@ -284,25 +349,69 @@ export function AttendanceForm() {
               </label>
               <select
                 value={selectedYear}
-                onChange={(e) => {
-                  setSelectedYear(e.target.value);
-                  setSelectedSubject(''); // Reset subject when year changes
-                  // Clear students and attendance when year changes
-                  setStudents([]);
-                  setAttendance({});
-                }}
+                onChange={(e) => setSelectedYear(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 required
                 disabled={!selectedClass}
               >
                 <option value="">Select Year</option>
-                {getYearsForClass(selectedClass).map(year => (
+                {selectedClass && getYearsForClass(selectedClass).map(year => (
                   <option key={year} value={year}>{year}</option>
                 ))}
               </select>
+              {!selectedClass && (
+                <p className="text-xs text-gray-500 mt-1">Select a class first</p>
+              )}
+            </div>
+
+            <div className="transform transition-all duration-200 hover:scale-105">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Subject *
+              </label>
+              <select
+                value={selectedSubject}
+                onChange={(e) => setSelectedSubject(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                required
+                disabled={!selectedClass}
+              >
+                <option value="">Select Subject</option>
+                {selectedClass && subjectsByClass[selectedClass as keyof typeof subjectsByClass]?.map(subject => (
+                  <option key={subject} value={subject}>{subject}</option>
+                ))}
+              </select>
+              {!selectedClass && (
+                <p className="text-xs text-gray-500 mt-1">Select a class first</p>
+              )}
             </div>
           </div>
         </div>
+
+        {/* Students Loading State */}
+        {studentsLoading && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-center space-x-3">
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+              <p className="text-blue-800">Loading students for {selectedClass} - {selectedYear}...</p>
+            </div>
+          </div>
+        )}
+
+        {/* No Students Found Message */}
+        {!studentsLoading && selectedClass && selectedYear && selectedSubject && students.length === 0 && (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <div className="flex items-center space-x-3">
+              <Users className="h-5 w-5 text-yellow-600" />
+              <div>
+                <p className="text-yellow-800 font-medium">No students found</p>
+                <p className="text-yellow-700 text-sm">
+                  No approved students found for {selectedClass} - {selectedYear}. 
+                  Please check if students are registered and approved for this class and year combination.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {students.length > 0 && (
           <>
@@ -340,28 +449,6 @@ export function AttendanceForm() {
               </div>
             </div>
 
-            <div className="transform transition-all duration-200 hover:scale-105">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Subject *
-              </label>
-              <select
-                value={selectedSubject}
-                onChange={(e) => {
-                  setSelectedSubject(e.target.value);
-                  // Clear students and attendance when subject changes
-                  setStudents([]);
-                  setAttendance({});
-                }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                required
-                disabled={!selectedClass}
-              >
-                <option value="">Select Subject</option>
-                {selectedClass && subjectsByClass[selectedClass as keyof typeof subjectsByClass]?.map(subject => (
-                  <option key={subject} value={subject}>{subject}</option>
-                ))}
-              </select>
-            </div>
             <div>
               <div className="flex items-center space-x-3 mb-4">
                 <Users className="h-5 w-5 text-gray-600" />
