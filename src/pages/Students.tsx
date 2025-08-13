@@ -3,7 +3,7 @@ import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, query, where, w
 import { db } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { Header } from '../components/Layout/Header';
-import { Student, getYearsForClass, classes, subjectsByClass } from '../types';
+import { Student } from '../types';
 import { Users, Plus, Edit2, Trash2, Search, Mail, Phone, GraduationCap, Building, Upload, Download, FileSpreadsheet, AlertCircle, CheckCircle, Filter } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
@@ -31,6 +31,27 @@ export function Students() {
     parentEmail: '',
     parentPhone: ''
   });
+
+  const classes = ['B.com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
+  
+  const getYearsForClass = (selectedClass: string) => {
+    if (['B.com', 'BBA', 'BCA'].includes(selectedClass)) {
+      return ['1st Year', '2nd Year', '3rd Year'];
+    } else if (['PCMB', 'PCMC', 'EBAC', 'EBAS'].includes(selectedClass)) {
+      return ['1st Year', '2nd Year'];
+    }
+    return [];
+  };
+
+  const subjectsByClass = {
+    'B.com': ['Accountancy', 'Business Studies', 'Economics', 'English', 'Mathematics', 'Computer Applications'],
+    'BBA': ['Business Administration', 'Marketing', 'Finance', 'Human Resources', 'Operations Management', 'Business Ethics'],
+    'BCA': ['Programming in C', 'Data Structures', 'Database Management', 'Web Development', 'Software Engineering', 'Computer Networks'],
+    'PCMB': ['Physics', 'Chemistry', 'Mathematics', 'Biology'],
+    'PCMC': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science'],
+    'EBAC': ['Economics', 'Business Studies', 'Accountancy', 'Computer Science'],
+    'EBAS': ['Economics', 'Business Studies', 'Accountancy', 'Statistics']
+  };
 
   useEffect(() => {
     fetchStudents();
@@ -89,13 +110,8 @@ export function Students() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.email || !formData.rollNumber || !formData.class) {
+    if (!formData.name || !formData.email || !formData.rollNumber || !formData.class || !formData.year) {
       toast.error('Please fill in all required fields');
-      return;
-    }
-
-    if (!formData.year) {
-      toast.error('Please select a year for the student');
       return;
     }
 

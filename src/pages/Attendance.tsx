@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
 import { db } from '../lib/firebase';
-import { AttendanceRecord, Student, getYearsForClass, classes, subjectsByClass } from '../types';
+import { AttendanceRecord, Student } from '../types';
 import { Calendar, Users, Filter, Download, Search } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { format } from 'date-fns';
@@ -15,8 +15,31 @@ export function Attendance() {
     endDate: format(new Date(), 'yyyy-MM-dd'),
     class: '',
     year: '',
+    subject: '',
     faculty: ''
   });
+
+  // Updated classes to match the ones used throughout the application
+  const classes = ['B.com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
+  
+  const getYearsForClass = (selectedClass: string) => {
+    if (['B.com', 'BBA', 'BCA'].includes(selectedClass)) {
+      return ['1st Year', '2nd Year', '3rd Year'];
+    } else if (['PCMB', 'PCMC', 'EBAC', 'EBAS'].includes(selectedClass)) {
+      return ['1st Year', '2nd Year'];
+    }
+    return [];
+  };
+
+  const subjectsByClass = {
+    'B.com': ['Accountancy', 'Business Studies', 'Economics', 'English', 'Mathematics', 'Computer Applications'],
+    'BBA': ['Business Administration', 'Marketing', 'Finance', 'Human Resources', 'Operations Management', 'Business Ethics'],
+    'BCA': ['Programming in C', 'Data Structures', 'Database Management', 'Web Development', 'Software Engineering', 'Computer Networks'],
+    'PCMB': ['Physics', 'Chemistry', 'Mathematics', 'Biology'],
+    'PCMC': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science'],
+    'EBAC': ['Economics', 'Business Studies', 'Accountancy', 'Computer Science'],
+    'EBAS': ['Economics', 'Business Studies', 'Accountancy', 'Statistics']
+  };
 
   useEffect(() => {
     fetchData();
@@ -24,8 +47,6 @@ export function Attendance() {
 
   const fetchData = async () => {
     try {
-      console.log('🔄 Fetching attendance and student data...');
-      
       // Fetch attendance records
       const attendanceQuery = query(
         collection(db, 'attendance'),
@@ -36,8 +57,6 @@ export function Attendance() {
         id: doc.id,
         ...doc.data()
       })) as AttendanceRecord[];
-
-      console.log('📊 Attendance records fetched:', attendanceData.length);
 
       // Fetch students
       const studentsQuery = query(
@@ -50,12 +69,10 @@ export function Attendance() {
         ...doc.data()
       })) as Student[];
 
-      console.log('👥 Students fetched:', studentsData.length);
-
       setAttendanceRecords(attendanceData);
       setStudents(studentsData);
     } catch (error) {
-      console.error('❌ Error fetching data:', error);
+      console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
     }
@@ -71,45 +88,27 @@ export function Attendance() {
     return student ? student.rollNumber : 'N/A';
   };
 
-  const getStudentYear = (studentId: string) => {
-    const student = students.find(s => s.id === studentId);
-    return student ? student.year : null;
-  };
-
   const filteredRecords = attendanceRecords.filter(record => {
     const matchesDateRange = record.date >= filters.startDate && record.date <= filters.endDate;
     const matchesClass = !filters.class || record.class === filters.class;
-    
-    // Enhanced year filtering - check both record year and student year
-    let matchesYear = true;
-    if (filters.year) {
-      const recordYear = record.year;
-      const studentYear = getStudentYear(record.studentId);
-      matchesYear = recordYear === filters.year || studentYear === filters.year;
-    }
-    
+    const matchesYear = !filters.year || record.year === filters.year;
+    const matchesSubject = !filters.subject || record.subject.toLowerCase().includes(filters.subject.toLowerCase());
     const matchesFaculty = !filters.faculty || record.facultyName.toLowerCase().includes(filters.faculty.toLowerCase());
     
-    return matchesDateRange && matchesClass && matchesYear && matchesFaculty;
+    return matchesDateRange && matchesClass && matchesYear && matchesSubject && matchesFaculty;
   });
 
   const exportToExcel = () => {
-    const exportData = filteredRecords.map(record => {
-      const studentYear = getStudentYear(record.studentId);
-      const displayYear = record.year || studentYear || 'No Year';
-      
-      return {
-        'Date': record.date,
-        'Student Name': getStudentName(record.studentId),
-        'Sats No.': getStudentRollNumber(record.studentId),
-        'Class': record.class,
-        'Year': displayYear,
-        'Subject': record.subject,
-        'Status': record.status,
-        'Reason': record.reason || '',
-        'Faculty': record.facultyName
-      };
-    });
+    const exportData = filteredRecords.map(record => ({
+      'Date': record.date,
+      'Student Name': getStudentName(record.studentId),
+      'Sats No.': getStudentRollNumber(record.studentId),
+      'Class': record.class,
+      'Subject': record.subject,
+      'Status': record.status,
+      'Reason': record.reason || '',
+      'Faculty': record.facultyName
+    }));
 
     const ws = XLSX.utils.json_to_sheet(exportData);
     const wb = XLSX.utils.book_new();
@@ -126,19 +125,6 @@ export function Attendance() {
     const attendanceRate = totalRecords > 0 ? ((presentCount / totalRecords) * 100).toFixed(1) : '0';
 
     return { totalRecords, presentCount, absentCount, attendanceRate };
-  };
-
-  const getAvailableYears = () => {
-    if (filters.class) {
-      return getYearsForClass(filters.class);
-    }
-    
-    // Get all unique years from both attendance records and students
-    const recordYears = new Set(attendanceRecords.map(r => r.year).filter(Boolean));
-    const studentYears = new Set(students.map(s => s.year).filter(Boolean));
-    const allYears = new Set([...recordYears, ...studentYears]);
-    
-    return Array.from(allYears).sort();
   };
 
   const stats = getAttendanceStats();
@@ -238,7 +224,7 @@ export function Attendance() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Class</label>
                 <select
                   value={filters.class}
-                  onChange={(e) => setFilters(prev => ({ ...prev, class: e.target.value, year: '' }))}
+                  onChange={(e) => setFilters(prev => ({ ...prev, class: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">All Classes</option>
@@ -256,8 +242,25 @@ export function Attendance() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">All Years</option>
-                  {getAvailableYears().map(year => (
+                  {(filters.class ? getYearsForClass(filters.class) : ['1st Year', '2nd Year', '3rd Year']).map(year => (
                     <option key={year} value={year}>{year}</option>
+                  ))}
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+                <select
+                  value={filters.subject}
+                  onChange={(e) => setFilters(prev => ({ ...prev, subject: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">All Subjects</option>
+                  {filters.class && subjectsByClass[filters.class as keyof typeof subjectsByClass]?.map(subj => (
+                    <option key={subj} value={subj}>{subj}</option>
+                  ))}
+                  {!filters.class && Object.values(subjectsByClass).flat().map(subj => (
+                    <option key={subj} value={subj}>{subj}</option>
                   ))}
                 </select>
               </div>
@@ -271,21 +274,6 @@ export function Attendance() {
                   onChange={(e) => setFilters(prev => ({ ...prev, faculty: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
-              </div>
-              
-              <div className="flex items-end">
-                <button
-                  onClick={() => setFilters({
-                    startDate: format(new Date(), 'yyyy-MM-dd'),
-                    endDate: format(new Date(), 'yyyy-MM-dd'),
-                    class: '',
-                    year: '',
-                    faculty: ''
-                  })}
-                  className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-                >
-                  Clear Filters
-                </button>
               </div>
             </div>
           </div>
@@ -331,7 +319,7 @@ export function Attendance() {
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Class</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Year</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Faculty</th>
@@ -339,48 +327,39 @@ export function Attendance() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredRecords.map((record) => {
-                      const studentYear = getStudentYear(record.studentId);
-                      const displayYear = record.year || studentYear || 'No Year';
-                      
-                      return (
-                        <tr key={record.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.date}</td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div>
-                              <div className="text-sm font-medium text-gray-900">{getStudentName(record.studentId)}</div>
-                              <div className="text-sm text-gray-500">{getStudentRollNumber(record.studentId)}</div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="inline-flex px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded-full">
-                              {record.class}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                              displayYear === 'No Year' 
-                                ? 'bg-gray-100 text-gray-600' 
-                                : 'bg-purple-100 text-purple-800'
-                            }`}>
-                              {displayYear}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.subject}</td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                              record.status === 'present' 
-                                ? 'bg-green-100 text-green-800' 
-                                : 'bg-red-100 text-red-800'
-                            }`}>
-                              {record.status}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.facultyName}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{record.reason || '-'}</td>
-                        </tr>
-                      );
-                    })}
+                    {filteredRecords.map((record) => (
+                      <tr key={record.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.date}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">{getStudentName(record.studentId)}</div>
+                            <div className="text-sm text-gray-500">{getStudentRollNumber(record.studentId)}</div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="inline-flex px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded-full">
+                            {record.class}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap hidden sm:table-cell">
+                          <span className="inline-flex px-2 py-1 text-xs font-semibold bg-purple-100 text-purple-800 rounded-full">
+                            {record.year || 'N/A'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.subject}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            record.status === 'present' 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-red-100 text-red-800'
+                          }`}>
+                            {record.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.facultyName}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{record.reason || '-'}</td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>

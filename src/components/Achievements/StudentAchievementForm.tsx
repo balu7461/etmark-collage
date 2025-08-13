@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { useAuth } from '../../contexts/AuthContext';
-import { Student, StudentAchievement, classes } from '../../types';
+import { Student, StudentAchievement } from '../../types';
 import { Award, Plus, User, Calendar, MapPin, Trophy, Camera } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
@@ -32,7 +32,7 @@ export function StudentAchievementForm() {
     { value: 'Other', label: 'Other' }
   ];
 
-  const branches = classes;
+  const branches = ['B.Com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
 
   const outcomes = [
     'Participation Certificate',
@@ -87,13 +87,8 @@ export function StudentAchievementForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!currentUser || !formData.studentId || !formData.firstName || !formData.category || !formData.title || !formData.date) {
+    if (!currentUser || !formData.studentId || !formData.firstName || !formData.category || !formData.title || !formData.date || !formData.branch) {
       toast.error('Please fill in all required fields');
-      return;
-    }
-
-    if (!formData.branch) {
-      toast.error('Please select a branch for the student');
       return;
     }
 
