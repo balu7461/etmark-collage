@@ -266,7 +266,9 @@ export function Attendance() {
                   <div key={cls} className="text-center p-3 bg-gray-50 rounded-lg transform transition-all duration-200 hover:scale-105">
                     <p className="text-sm font-medium text-gray-900">{cls}</p>
                     <p className="text-lg font-bold text-blue-600">{classTotal}</p>
-                    <p className="text-xs text-gray-600">{classRate}% present</p>
+                    <p className="text-xs text-gray-600">
+                      {classTotal > 0 ? `${classRate}% present` : 'No records'}
+                    </p>
                   </div>
                 );
               })}

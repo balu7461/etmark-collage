@@ -72,9 +72,10 @@ export function AttendanceForm() {
       
       if (studentsData.length === 0) {
         console.log('⚠️ No students found for the selected class and year combination');
-        toast.info(`No students found for ${selectedClass} - ${selectedYear}`);
+        toast.warning(`No students found for ${selectedClass} - ${selectedYear}. Please check if students are registered for this class and year.`);
       } else {
         console.log(`✅ Successfully loaded ${studentsData.length} students`);
+        toast.success(`Loaded ${studentsData.length} students for ${selectedClass} - ${selectedYear}`);
       }
       
     } catch (error) {
