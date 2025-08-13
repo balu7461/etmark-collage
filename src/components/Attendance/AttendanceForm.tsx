@@ -13,6 +13,7 @@ export function AttendanceForm() {
   const [students, setStudents] = useState<Student[]>([]);
   const [selectedClass, setSelectedClass] = useState('');
   const [selectedYear, setSelectedYear] = useState('');
+  const [selectedSubject, setSelectedSubject] = useState('');
   const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [attendance, setAttendance] = useState<Record<string, { status: 'present' | 'absent'; reason?: string }>>({});
   const [loading, setLoading] = useState(false);
@@ -29,15 +30,24 @@ export function AttendanceForm() {
     return [];
   };
 
+  const subjectsByClass = {
+    'B.com': ['Accountancy', 'Business Studies', 'Economics', 'English', 'Mathematics', 'Computer Applications'],
+    'BBA': ['Business Administration', 'Marketing', 'Finance', 'Human Resources', 'Operations Management', 'Business Ethics'],
+    'BCA': ['Programming in C', 'Data Structures', 'Database Management', 'Web Development', 'Software Engineering', 'Computer Networks'],
+    'PCMB': ['Physics', 'Chemistry', 'Mathematics', 'Biology'],
+    'PCMC': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science'],
+    'EBAC': ['Economics', 'Business Studies', 'Accountancy', 'Computer Science'],
+    'EBAS': ['Economics', 'Business Studies', 'Accountancy', 'Statistics']
+  };
   useEffect(() => {
-    if (selectedClass && selectedYear) {
+    if (selectedClass && selectedYear && selectedSubject) {
       fetchStudents();
     } else {
       // Clear students if class or year is not selected
       setStudents([]);
       setAttendance({});
     }
-  }, [selectedClass, selectedYear]);
+  }, [selectedClass, selectedYear, selectedSubject]);
 
   const fetchStudents = async () => {
     console.log('🔍 Fetching students for:', { selectedClass, selectedYear });
@@ -120,7 +130,7 @@ export function AttendanceForm() {
     }));
   };
 
-  const sendParentNotifications = async (absentStudents: Student[]) => {
+  const sendParentNotifications = async (absentStudents: Student[], subject: string) => {
     setSendingEmails(true);
     let successCount = 0;
     let failureCount = 0;
@@ -132,7 +142,7 @@ export function AttendanceForm() {
             student.parentEmail,
             student.name,
             selectedDate,
-            `Class Attendance - ${selectedClass}`,
+            subject,
             currentUser?.name || 'Faculty',
             attendance[student.id]?.reason
           );
@@ -247,11 +257,11 @@ export function AttendanceForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="md:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="transform transition-all duration-200 hover:scale-105">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Date
+                Date *
               </label>
               <input
                 type="date"
@@ -271,6 +281,7 @@ export function AttendanceForm() {
                 onChange={(e) => {
                   setSelectedClass(e.target.value);
                   setSelectedYear(''); // Reset year when class changes
+                  setSelectedSubject(''); // Reset subject when class changes
                   setStudents([]); // Clear students when class changes
                   setAttendance({}); // Clear attendance when class changes
                 }}
@@ -283,7 +294,9 @@ export function AttendanceForm() {
                 ))}
               </select>
             </div>
+          </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="transform transition-all duration-200 hover:scale-105">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Year *
@@ -292,6 +305,7 @@ export function AttendanceForm() {
                 value={selectedYear}
                 onChange={(e) => {
                   setSelectedYear(e.target.value);
+                  setSelectedSubject(''); // Reset subject when year changes
                   // Clear students and attendance when year changes
                   setStudents([]);
                   setAttendance({});
@@ -345,11 +359,33 @@ export function AttendanceForm() {
               </div>
             </div>
 
+            <div className="transform transition-all duration-200 hover:scale-105">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Subject *
+              </label>
+              <select
+                value={selectedSubject}
+                onChange={(e) => {
+                  setSelectedSubject(e.target.value);
+                  // Clear students and attendance when subject changes
+                  setStudents([]);
+                  setAttendance({});
+                }}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                required
+                disabled={!selectedClass}
+              >
+                <option value="">Select Subject</option>
+                {selectedClass && subjectsByClass[selectedClass as keyof typeof subjectsByClass]?.map(subject => (
+                  <option key={subject} value={subject}>{subject}</option>
+                ))}
+              </select>
+            </div>
             <div>
               <div className="flex items-center space-x-3 mb-4">
                 <Users className="h-5 w-5 text-gray-600" />
                 <h3 className="text-lg font-medium text-gray-900">
-                  Students - {selectedClass} {selectedYear} ({students.length})
+                  Students - {selectedClass} {selectedYear} - {selectedSubject} ({students.length})
                 </h3>
                 <div className="ml-auto text-sm text-green-600 font-medium">
                   ✓ All students default to PRESENT
@@ -422,7 +458,7 @@ export function AttendanceForm() {
             ) : (
               <>
                 <Save className="h-5 w-5" />
-                <span>Save Attendance & Send Notifications</span>
+                <span>Save {selectedSubject} Attendance & Send Notifications</span>
               </>
             )}
           </button>
