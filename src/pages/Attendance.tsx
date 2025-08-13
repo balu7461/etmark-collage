@@ -68,7 +68,7 @@ export function Attendance() {
   const filteredRecords = attendanceRecords.filter(record => {
     const matchesDateRange = record.date >= filters.startDate && record.date <= filters.endDate;
     const matchesClass = !filters.class || record.class === filters.class;
-    const matchesYear = !filters.year || record.year === filters.year;
+    const matchesYear = !filters.year || (record.year && record.year === filters.year);
     const matchesFaculty = !filters.faculty || record.facultyName.toLowerCase().includes(filters.faculty.toLowerCase());
     
     return matchesDateRange && matchesClass && matchesYear && matchesFaculty;
@@ -317,7 +317,7 @@ export function Attendance() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap hidden sm:table-cell">
                           <span className="inline-flex px-2 py-1 text-xs font-semibold bg-purple-100 text-purple-800 rounded-full">
-                            {record.year}
+                            {record.year || 'No Year'}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.subject}</td>

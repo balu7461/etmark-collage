@@ -158,7 +158,7 @@ export function AttendanceForm() {
         studentId: student.id,
         date: selectedDate,
         status: attendance[student.id]?.status || 'present',
-        subject: `Class Attendance - ${selectedClass} (${selectedYear})`,
+        subject: selectedSubject,
         facultyId: currentUser.id,
         facultyName: currentUser.name,
         reason: attendance[student.id]?.reason || '',
