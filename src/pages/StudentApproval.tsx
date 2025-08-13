@@ -266,7 +266,7 @@ export function StudentApproval() {
                         </div>
                         <div className="flex items-center space-x-2 text-sm text-gray-600">
                           <GraduationCap className="h-4 w-4" />
-                          <span>Roll: {student.rollNumber}</span>
+                          <span>Sats No.: {student.rollNumber}</span>
                         </div>
                         <div className="flex items-center space-x-2 text-sm text-gray-600">
                           <Users className="h-4 w-4" />

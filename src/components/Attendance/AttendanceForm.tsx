@@ -305,7 +305,7 @@ export function AttendanceForm() {
                   <div key={student.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:shadow-md transition-all duration-200">
                     <div className="flex-1">
                       <p className="font-medium text-gray-900">{student.name}</p>
-                      <p className="text-sm text-gray-600">{student.rollNumber}</p>
+                      <p className="text-sm text-gray-600">Sats No.: {student.rollNumber}</p>
                       {student.parentEmail && (
                         <div className="flex items-center space-x-1 text-xs text-blue-600 mt-1">
                           <Mail className="h-3 w-3" />

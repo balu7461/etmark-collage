@@ -179,7 +179,7 @@ export function Students() {
           const student = {
             name: row['Name'] || row['Student Name'] || '',
             email: row['Email'] || row['Email Address'] || '',
-            rollNumber: row['Roll Number'] || row['Roll'] || '',
+            rollNumber: row['Sats No.'] || row['Roll Number'] || row['Roll'] || '',
             class: row['Class'] || '',
             parentEmail: row['Parent Email'] || '',
             parentPhone: row['Parent Phone'] || '',
@@ -259,7 +259,7 @@ export function Students() {
       {
         'Name': 'John Doe',
         'Email': 'john.doe@student.edu',
-        'Roll Number': 'BCA001',
+        'Sats No.': 'BCA001',
         'Class': 'BCA',
         'Parent Email': 'parent@email.com',
         'Parent Phone': '+1234567890'
@@ -277,7 +277,7 @@ export function Students() {
     const exportData = filteredStudents.map(student => ({
       'Name': student.name,
       'Email': student.email,
-      'Roll Number': student.rollNumber,
+      'Sats No.': student.rollNumber,
       'Class': student.class,
       'Parent Email': student.parentEmail || '',
       'Parent Phone': student.parentPhone || '',
@@ -426,7 +426,7 @@ export function Students() {
 
                 <div className="transform transition-all duration-200 hover:scale-105">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Roll Number *
+                    Sats No. *
                   </label>
                   <input
                     type="text"
@@ -581,7 +581,7 @@ export function Students() {
                             Student
                           </th>
                           <th className="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Roll Number
+                            Sats No.
                           </th>
                           <th className="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Class
@@ -687,7 +687,7 @@ export function Students() {
                       <h4 className="font-medium text-blue-900 mb-2">Upload Instructions</h4>
                       <ul className="text-xs lg:text-sm text-blue-800 space-y-1">
                         <li>• Upload an Excel file (.xlsx or .xls) with student data</li>
-                        <li>• Required columns: Name, Email, Roll Number, Class</li>
+                        <li>• Required columns: Name, Email, Sats No., Class</li>
                         <li>• Optional columns: Parent Email, Parent Phone</li>
                         <li>• Download the template below for the correct format</li>
                       </ul>
@@ -744,7 +744,7 @@ export function Students() {
                             <th className="px-2 lg:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                             <th className="px-2 lg:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
                             <th className="px-2 lg:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">Email</th>
-                            <th className="px-2 lg:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Roll</th>
+                            <th className="px-2 lg:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Sats No.</th>
                             <th className="px-2 lg:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Class</th>
                           </tr>
                         </thead>

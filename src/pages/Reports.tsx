@@ -43,7 +43,7 @@ export function Reports() {
       const exportData = attendanceData.map(record => ({
         'Date': record.date,
         'Student Name': studentLookup[record.studentId]?.name || 'Unknown',
-        'Roll Number': studentLookup[record.studentId]?.rollNumber || 'N/A',
+        'Sats No.': studentLookup[record.studentId]?.rollNumber || 'N/A',
         'Class': record.class,
         'Status': record.status,
         'Reason': record.reason || '',
@@ -142,7 +142,7 @@ export function Reports() {
 
       const exportData = studentsData.map(student => ({
         'Student Name': student.name,
-        'Roll Number': student.rollNumber,
+        'Sats No.': student.rollNumber,
         'Email': student.email,
         'Class': student.class,
         'Parent Email': student.parentEmail || '',

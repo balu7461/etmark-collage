@@ -94,7 +94,7 @@ export function Attendance() {
     const exportData = filteredRecords.map(record => ({
       'Date': record.date,
       'Student Name': getStudentName(record.studentId),
-      'Roll Number': getStudentRollNumber(record.studentId),
+      'Sats No.': getStudentRollNumber(record.studentId),
       'Class': record.class,
       'Subject': record.subject,
       'Status': record.status,
