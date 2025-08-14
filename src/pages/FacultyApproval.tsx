@@ -3,7 +3,7 @@ import { collection, getDocs, updateDoc, doc, deleteDoc, query, where } from 'fi
 import { db } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { User } from '../types';
-import { UserCheck, UserX, Clock, CheckCircle, XCircle, Mail, Phone, Building, Calendar, Crown, AlertTriangle, Shield } from 'lucide-react';
+import { UserCheck, UserX, Clock, CheckCircle, XCircle, Mail, Phone, Building, Calendar, Crown, AlertTriangle, Shield, Award } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 
