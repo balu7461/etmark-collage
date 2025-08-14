@@ -41,9 +41,9 @@ export function LoginForm({ onShowSignup }: LoginFormProps) {
                 <GraduationCap className="h-8 w-8 text-white" />
               </div>
             </div>
-            <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">CollegeConnect</h1>
+            <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">Trinity Track</h1>
             <p className="text-sm lg:text-base text-gray-600 mb-2">Student & Faculty Management System</p>
-            <p className="text-xs lg:text-sm text-gray-500 font-medium">Powered by Doutly</p>
+            <p className="text-xs lg:text-sm text-gray-500 font-medium">Powered by Advanced Technology</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">

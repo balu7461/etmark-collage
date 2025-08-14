@@ -139,7 +139,7 @@ export function Sidebar({ isSidebarOpen, toggleSidebar, closeSidebar }: SidebarP
             <GraduationCap className="h-8 w-8 animate-pulse" />
           </div>
           <div>
-            <h1 className="text-lg lg:text-xl font-bold">Trinity College</h1>
+            <h1 className="text-lg lg:text-xl font-bold">Trinity Track</h1>
             <p className="text-blue-300 text-xs lg:text-sm">{getRoleLabel()}</p>
           </div>
         </div>

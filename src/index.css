@@ -49,7 +49,7 @@ body.sidebar-open {
   max-height: 90vh;
 }
 
-/* Mobile responsive utilities */
+/* Enhanced Mobile responsive utilities */
 @media (max-width: 640px) {
   .table-container {
     font-size: 0.875rem;
@@ -59,13 +59,262 @@ body.sidebar-open {
     margin: 1rem;
     max-height: calc(100vh - 2rem);
   }
+  
+  /* Improve mobile text readability */
+  body {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  /* Better mobile spacing */
+  .p-6 {
+    padding: 1rem !important;
+  }
+  
+  .p-4 {
+    padding: 0.75rem !important;
+  }
+  
+  /* Mobile-friendly buttons */
+  button {
+    min-height: 44px;
+    padding: 0.75rem 1rem;
+  }
+  
+  /* Mobile form improvements */
+  input, select, textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+    min-height: 44px;
+  }
+  
+  /* Mobile table improvements */
+  table {
+    font-size: 0.75rem;
+  }
+  
+  th, td {
+    padding: 0.5rem 0.25rem;
+  }
 }
 
-/* Ensure touch targets are large enough on mobile */
+/* Enhanced touch targets for mobile */
 @media (max-width: 768px) {
   button, .btn, input[type="button"], input[type="submit"] {
     min-height: 44px;
     min-width: 44px;
+    padding: 0.75rem 1rem;
+  }
+  
+  /* Mobile navigation improvements */
+  .sidebar {
+    width: 280px;
+  }
+  
+  /* Mobile card improvements */
+  .card {
+    margin: 0.5rem;
+    padding: 1rem;
+  }
+  
+  /* Mobile grid improvements */
+  .grid {
+    gap: 0.75rem;
+  }
+  
+  /* Mobile text sizing */
+  h1 {
+    font-size: 1.5rem;
+  }
+  
+  h2 {
+    font-size: 1.25rem;
+  }
+  
+  h3 {
+    font-size: 1.125rem;
+  }
+}
+
+/* Tablet responsive improvements */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .container {
+    padding: 0 1.5rem;
+  }
+  
+  /* Tablet grid improvements */
+  .grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+  
+  .md\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  
+  .lg\:grid-cols-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  
+  .lg\:grid-cols-4 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Desktop improvements */
+@media (min-width: 1025px) {
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  /* Better desktop spacing */
+  .desktop-spacing {
+    padding: 2rem;
+  }
+}
+
+/* Ultra-wide screen improvements */
+@media (min-width: 1440px) {
+  .container {
+    max-width: 1400px;
+  }
+  
+  /* Larger text for ultra-wide screens */
+  body {
+    font-size: 16px;
+  }
+  
+  h1 {
+    font-size: 2.5rem;
+  }
+  
+  h2 {
+    font-size: 2rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  body {
+    font-size: 12pt;
+    line-height: 1.4;
+  }
+  
+  .print-break {
+    page-break-before: always;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .bg-gray-50 {
+    background-color: white;
+  }
+  
+  .text-gray-600 {
+    color: black;
+  }
+  
+  .border-gray-200 {
+    border-color: black;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Dark mode support preparation */
+@media (prefers-color-scheme: dark) {
+  /* Future dark mode styles can be added here */
+}
+
+/* Focus improvements for accessibility */
+*:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Skip link for accessibility */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: #000;
+  color: #fff;
+  padding: 8px;
+  text-decoration: none;
+  z-index: 1000;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* Loading states */
+.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive images */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Responsive videos */
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Responsive iframes */
+iframe {
+  max-width: 100%;
+}
+
+/* Utility classes for responsive design */
+.responsive-padding {
+  padding: 1rem;
+}
+
+@media (min-width: 640px) {
+  .responsive-padding {
+    padding: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .responsive-padding {
+    padding: 2rem;
   }
 }
 

@@ -33,43 +33,43 @@ export function Header({ toggleSidebar }: HeaderProps) {
           {/* Mobile menu button */}
           <button
             onClick={toggleSidebar}
-            className="lg:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+            className="lg:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
           >
             <Menu className="h-6 w-6" />
           </button>
           
-          <h2 className="text-lg lg:text-2xl font-semibold text-gray-900 truncate">
+          <h2 className="text-base sm:text-lg lg:text-2xl font-semibold text-gray-900 truncate">
             {getRoleDisplay()}
           </h2>
         </div>
         
-        <div className="flex items-center space-x-2 lg:space-x-4">
+        <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-4">
           {/* Search - hidden on mobile, shown on larger screens */}
-          <div className="relative hidden md:block">
+          <div className="relative hidden lg:block">
             <Search className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               placeholder="Search..."
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-48 lg:w-64"
+              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-48 lg:w-64 text-sm"
             />
           </div>
           
           {/* Mobile search button */}
-          <button className="md:hidden p-2 text-gray-400 hover:text-gray-600 transition-colors">
+          <button className="lg:hidden p-2 text-gray-400 hover:text-gray-600 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center">
             <Search className="h-5 w-5" />
           </button>
           
-          <button className="relative p-2 text-gray-400 hover:text-gray-600 transition-colors">
+          <button className="relative p-2 text-gray-400 hover:text-gray-600 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center">
             <Bell className="h-5 w-5" />
             <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
           </button>
 
-          <div className="flex items-center space-x-2 lg:space-x-3">
+          <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-3">
             <div className="p-2 bg-[#002e5d] rounded-full">
               <User className="h-5 w-5 text-white" />
             </div>
             <div className="text-sm hidden sm:block">
-              <p className="font-medium text-gray-900 truncate max-w-32 lg:max-w-none">{currentUser?.name}</p>
+              <p className="font-medium text-gray-900 truncate max-w-24 sm:max-w-32 lg:max-w-none text-xs sm:text-sm">{currentUser?.name}</p>
               <p className="text-gray-500 capitalize text-xs lg:text-sm">{currentUser?.role?.replace('_', ' ')}</p>
             </div>
           </div>
