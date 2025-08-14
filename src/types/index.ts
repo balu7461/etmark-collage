@@ -2,7 +2,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: 'admin' | 'faculty' | 'timetable_committee' | 'examination_committee';
+  role: 'admin' | 'faculty' | 'timetable_committee' | 'examination_committee' | 'achievements_committee';
   phone?: string;
   isApproved?: boolean;
   approvedBy?: string;

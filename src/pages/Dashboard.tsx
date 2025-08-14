@@ -4,7 +4,7 @@ import { db } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { StatsCard } from '../components/Dashboard/StatsCard';
 import { Header } from '../components/Layout/Header';
-import { Department } from '../types';
+import { StudentAchievement } from '../types';
 import { 
   Users, 
   Calendar, 
@@ -21,7 +21,9 @@ import {
   UserCheck,
   GraduationCap,
   Clock3,
-  FileCheck
+  FileCheck,
+  Trophy,
+  Star
 } from 'lucide-react';
 
 export function Dashboard() {
@@ -34,6 +36,7 @@ export function Dashboard() {
     presentToday: 0,
     pendingLeaves: 0,
     totalAchievements: 0,
+    totalStudentAchievements: 0,
     totalTimeSlots: 0,
     attendanceRate: 0,
     departmentStats: {} as Record<string, { faculty: number; students: number }>
@@ -104,6 +107,9 @@ export function Dashboard() {
         const achievementsSnapshot = await getDocs(collection(db, 'achievements'));
         const totalAchievements = achievementsSnapshot.size;
 
+        const studentAchievementsSnapshot = await getDocs(collection(db, 'studentAchievements'));
+        const totalStudentAchievements = studentAchievementsSnapshot.size;
+
         const timeSlotsSnapshot = await getDocs(collection(db, 'timeSlots'));
         const totalTimeSlots = timeSlotsSnapshot.size;
 
@@ -117,6 +123,7 @@ export function Dashboard() {
           presentToday,
           pendingLeaves,
           totalAchievements,
+          totalStudentAchievements,
           totalTimeSlots,
           attendanceRate,
           departmentStats: {}
@@ -410,17 +417,40 @@ export function Dashboard() {
                   color="yellow"
                 />
                 <StatsCard
-                  title="Total Achievements"
+                  title="Faculty Achievements"
                   value={stats.totalAchievements}
                   icon={Award}
-                  color="yellow"
+                  color="purple"
                 />
+                <StatsCard
+                  title="Student Achievements"
+                  value={stats.totalStudentAchievements}
+                  icon={Award}
+                  color="green"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 lg:gap-6 mb-4 lg:mb-6">
                 <StatsCard
                   title="Time Slots"
                   value={stats.totalTimeSlots}
                   icon={CalendarDays}
                   color="blue"
                 />
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 lg:p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Student Achievements Overview</p>
+                      <p className="text-lg font-bold text-gray-900">Managed by Achievements Committee</p>
+                    </div>
+                    <Trophy className="h-8 w-8 text-yellow-600" />
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    <p>• Total student achievements: {stats.totalStudentAchievements}</p>
+                    <p>• Managed by dedicated committee</p>
+                    <p>• Separate dashboard for detailed management</p>
+                  </div>
+                </div>
               </div>
 
               {/* Approval Alerts */}
@@ -499,9 +529,19 @@ export function Dashboard() {
                     <div className="text-xl lg:text-2xl font-bold text-blue-600 mb-2">
                       {stats.totalAchievements}
                     </div>
-                    <p className="text-xs lg:text-sm text-gray-600">Total Achievements</p>
+                    <p className="text-xs lg:text-sm text-gray-600">Faculty Achievements</p>
                     <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
                       <div className="bg-blue-600 h-2 rounded-full w-3/4"></div>
+                    </div>
+                  </div>
+                  
+                  <div className="text-center">
+                    <div className="text-xl lg:text-2xl font-bold text-yellow-600 mb-2">
+                      {stats.totalStudentAchievements}
+                    </div>
+                    <p className="text-xs lg:text-sm text-gray-600">Student Achievements</p>
+                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                      <div className="bg-yellow-600 h-2 rounded-full w-2/3"></div>
                     </div>
                   </div>
                   
@@ -515,15 +555,6 @@ export function Dashboard() {
                     </div>
                   </div>
 
-                  <div className="text-center">
-                    <div className="text-xl lg:text-2xl font-bold text-orange-600 mb-2">
-                      {stats.totalTimeSlots}
-                    </div>
-                    <p className="text-xs lg:text-sm text-gray-600">Scheduled Classes</p>
-                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                      <div className="bg-orange-600 h-2 rounded-full w-4/5"></div>
-                    </div>
-                  </div>
                 </div>
               </div>
             </>

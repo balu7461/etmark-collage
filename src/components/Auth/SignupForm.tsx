@@ -18,7 +18,7 @@ export function SignupForm({ onBackToLogin }: SignupFormProps) {
     password: '',
     confirmPassword: '',
     phone: '',
-    role: 'faculty' as 'faculty' | 'timetable_committee' | 'examination_committee'
+    role: 'faculty' as 'faculty' | 'timetable_committee' | 'examination_committee' | 'achievements_committee'
   });
   const [loading, setLoading] = useState(false);
   const [showApprovalModal, setShowApprovalModal] = useState(false);
@@ -87,6 +87,8 @@ export function SignupForm({ onBackToLogin }: SignupFormProps) {
         return 'Timetable Committee';
       case 'examination_committee':
         return 'Examination Committee';
+      case 'achievements_committee':
+        return 'Achievements Committee';
       default:
         return role.charAt(0).toUpperCase() + role.slice(1);
     }
@@ -175,6 +177,7 @@ export function SignupForm({ onBackToLogin }: SignupFormProps) {
                   <option value="faculty">Faculty</option>
                   <option value="timetable_committee">Timetable Committee</option>
                   <option value="examination_committee">Examination Committee</option>
+                  <option value="achievements_committee">Achievements Committee</option>
                 </select>
               </div>
 
@@ -213,7 +216,7 @@ export function SignupForm({ onBackToLogin }: SignupFormProps) {
               </div>
 
               {/* Role-specific information */}
-              {(formData.role === 'timetable_committee' || formData.role === 'examination_committee') && (
+              {(formData.role === 'timetable_committee' || formData.role === 'examination_committee' || formData.role === 'achievements_committee') && (
                 <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
                   <div className="flex items-start space-x-3">
                     <Crown className="h-5 w-5 text-blue-600 mt-0.5" />
@@ -226,6 +229,8 @@ export function SignupForm({ onBackToLogin }: SignupFormProps) {
                           ? 'Timetable Committee members can review leave applications and manage timetables.'
                           : formData.role === 'examination_committee'
                           ? 'Examination Committee members can review leave applications and manage examination schedules.'
+                          : formData.role === 'achievements_committee'
+                          ? 'Achievements Committee members can manage student achievements and recognition programs.'
                           : 'Committee members have special privileges and can review leave applications.'
                         }
                       </p>
@@ -286,6 +291,8 @@ export function SignupForm({ onBackToLogin }: SignupFormProps) {
                     <p className="text-xs lg:text-sm text-blue-800">
                       {formData.role === 'timetable_committee' || formData.role === 'examination_committee'
                         ? 'Committee accounts require special verification. You will be notified once approved.'
+                        : formData.role === 'achievements_committee'
+                        ? 'Achievements Committee accounts require special verification. You will be notified once approved.'
                         : 'Your account will be reviewed by the administrator. You will be notified once approved.'
                       }
                     </p>

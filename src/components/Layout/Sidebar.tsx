@@ -15,7 +15,8 @@ import {
   Users,
   GraduationCapIcon,
   FileCheck,
-  X
+  X,
+  Trophy
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -46,7 +47,6 @@ export function Sidebar({ isSidebarOpen, toggleSidebar, closeSidebar }: SidebarP
     { to: '/student-attendance', icon: FileCheck, label: 'Student Attendance' },
     { to: '/timetable', icon: CalendarDays, label: 'Timetable' },
     { to: '/achievements', icon: Award, label: 'Achievements' },
-    { to: '/student-achievements', icon: Award, label: 'Student Achievements' },
     { to: '/leave-management', icon: FileText, label: 'Leave Management' },
     { to: '/reports', icon: BarChart3, label: 'Reports' },
     { to: '/settings', icon: Settings, label: 'Settings' },
@@ -68,6 +68,13 @@ export function Sidebar({ isSidebarOpen, toggleSidebar, closeSidebar }: SidebarP
     { to: '/my-achievements', icon: Award, label: 'My Achievements' },
   ];
 
+  const achievementsCommitteeLinks = [
+    { to: '/achievements-dashboard', icon: Trophy, label: 'Dashboard' },
+    { to: '/student-achievements', icon: Award, label: 'Student Achievements' },
+    { to: '/my-leaves', icon: FileText, label: 'My Leaves' },
+    { to: '/my-achievements', icon: Award, label: 'My Achievements' },
+  ];
+
   const facultyLinks = [
     { to: '/dashboard', icon: BarChart3, label: 'Dashboard' },
     { to: '/mark-attendance', icon: Clock, label: 'Mark Attendance' },
@@ -84,6 +91,8 @@ export function Sidebar({ isSidebarOpen, toggleSidebar, closeSidebar }: SidebarP
         return timetableCommitteeLinks;
       case 'examination_committee':
         return examinationCommitteeLinks;
+      case 'achievements_committee':
+        return achievementsCommitteeLinks;
       case 'faculty':
         return facultyLinks;
       default:
@@ -99,6 +108,8 @@ export function Sidebar({ isSidebarOpen, toggleSidebar, closeSidebar }: SidebarP
         return 'Timetable Committee Panel';
       case 'examination_committee':
         return 'Examination Committee Panel';
+      case 'achievements_committee':
+        return 'Achievements Committee Panel';
       case 'faculty':
         return 'Faculty Panel';
       default:

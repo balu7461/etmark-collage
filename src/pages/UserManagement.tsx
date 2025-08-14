@@ -10,14 +10,14 @@ export function UserManagement() {
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterRole, setFilterRole] = useState<'all' | 'admin' | 'faculty' | 'timetable_committee' | 'examination_committee'>('all');
+  const [filterRole, setFilterRole] = useState<'all' | 'admin' | 'faculty' | 'timetable_committee' | 'examination_committee' | 'achievements_committee'>('all');
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editFormData, setEditFormData] = useState({
     name: '',
     email: '',
     phone: '',
-    role: 'faculty' as 'admin' | 'faculty' | 'timetable_committee' | 'examination_committee'
+    role: 'faculty' as 'admin' | 'faculty' | 'timetable_committee' | 'examination_committee' | 'achievements_committee'
   });
 
   useEffect(() => {
@@ -115,6 +115,8 @@ export function UserManagement() {
         return 'Timetable Committee';
       case 'examination_committee':
         return 'Examination Committee';
+      case 'achievements_committee':
+        return 'Achievements Committee';
       default:
         return role.charAt(0).toUpperCase() + role.slice(1);
     }
@@ -131,6 +133,7 @@ export function UserManagement() {
       faculty: users.filter(u => u.role === 'faculty').length,
       timetable_committee: users.filter(u => u.role === 'timetable_committee').length,
       examination_committee: users.filter(u => u.role === 'examination_committee').length,
+      achievements_committee: users.filter(u => u.role === 'achievements_committee').length,
     };
 
     return { totalUsers, totalStudents, approvedUsers, pendingUsers, roleStats };
@@ -198,7 +201,7 @@ export function UserManagement() {
           {/* Role Statistics */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Role Distribution</h3>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-blue-600">{stats.roleStats.admin}</div>
                 <p className="text-sm text-gray-600">Administrators</p>
@@ -214,6 +217,10 @@ export function UserManagement() {
               <div className="text-center">
                 <div className="text-2xl font-bold text-red-600">{stats.roleStats.examination_committee}</div>
                 <p className="text-sm text-gray-600">Examination Committee</p>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-600">{stats.roleStats.achievements_committee}</div>
+                <p className="text-sm text-gray-600">Achievements Committee</p>
               </div>
             </div>
           </div>
@@ -252,6 +259,8 @@ export function UserManagement() {
                   <option value="faculty">Faculty</option>
                   <option value="timetable_committee">Timetable Committee</option>
                   <option value="examination_committee">Examination Committee</option>
+                  <option value="achievements_committee">Achievements Committee</option>
+                 <option value="achievements_committee">Achievements Committee</option>
                 </select>
               </div>
             </div>

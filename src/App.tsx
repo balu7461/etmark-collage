@@ -22,6 +22,7 @@ import { MyAchievements } from './pages/MyAchievements';
 import { Reports } from './pages/Reports';
 import { Settings } from './pages/Settings';
 import { StudentAchievements } from './pages/StudentAchievements';
+import { AchievementsCommitteeDashboard } from './pages/AchievementsCommitteeDashboard';
 import { Toaster } from 'react-hot-toast';
 
 function AppContent() {
@@ -88,7 +89,11 @@ function AppContent() {
         <div className="flex-1 overflow-y-auto main-content">
           <Routes>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/dashboard" element={<Dashboard />} />
+            {currentUser.role === 'achievements_committee' ? (
+              <Route path="/dashboard" element={<Navigate to="/achievements-dashboard" replace />} />
+            ) : (
+              <Route path="/dashboard" element={<Dashboard />} />
+            )}
             
             {/* Admin-only routes */}
             {currentUser.role === 'admin' && (
@@ -101,7 +106,6 @@ function AppContent() {
                 <Route path="/student-attendance" element={<StudentOverallAttendance />} />
                 <Route path="/timetable" element={<Timetable />} />
                 <Route path="/achievements" element={<Achievements />} />
-                <Route path="/student-achievements" element={<StudentAchievements />} />
                 <Route path="/leave-management" element={<LeaveManagement />} />
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/settings" element={<Settings />} />
@@ -123,6 +127,16 @@ function AppContent() {
               <>
                 <Route path="/my-timetable" element={<MyTimetable />} />
                 <Route path="/leave-management" element={<LeaveManagement />} />
+                <Route path="/my-leaves" element={<MyLeaves />} />
+                <Route path="/my-achievements" element={<MyAchievements />} />
+              </>
+            )}
+            
+            {/* Achievements Committee routes */}
+            {currentUser.role === 'achievements_committee' && (
+              <>
+                <Route path="/achievements-dashboard" element={<AchievementsCommitteeDashboard />} />
+                <Route path="/student-achievements" element={<StudentAchievements />} />
                 <Route path="/my-leaves" element={<MyLeaves />} />
                 <Route path="/my-achievements" element={<MyAchievements />} />
               </>

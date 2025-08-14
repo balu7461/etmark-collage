@@ -121,6 +121,8 @@ export function FacultyApproval() {
         return 'Timetable Committee';
       case 'examination_committee':
         return 'Examination Committee';
+      case 'achievements_committee':
+        return 'Achievements Committee';
       default:
         return role.charAt(0).toUpperCase() + role.slice(1);
     }
@@ -134,6 +136,8 @@ export function FacultyApproval() {
         return <Calendar className="h-4 w-4" />;
       case 'examination_committee':
         return <Crown className="h-4 w-4" />;
+      case 'achievements_committee':
+        return <Award className="h-4 w-4" />;
       default:
         return <UserCheck className="h-4 w-4" />;
     }
@@ -147,6 +151,8 @@ export function FacultyApproval() {
         return 'bg-green-100 text-green-800 border-green-200';
       case 'examination_committee':
         return 'bg-orange-100 text-orange-800 border-orange-200';
+      case 'achievements_committee':
+        return 'bg-purple-100 text-purple-800 border-purple-200';
       default:
         return 'bg-gray-100 text-gray-800 border-gray-200';
     }
@@ -156,6 +162,7 @@ export function FacultyApproval() {
     switch (role) {
       case 'timetable_committee':
       case 'examination_committee':
+      case 'achievements_committee':
         return (
           <span className="inline-flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200">
             <AlertTriangle className="h-3 w-3" />

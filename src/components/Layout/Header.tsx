@@ -17,6 +17,8 @@ export function Header({ toggleSidebar }: HeaderProps) {
         return 'Timetable Committee';
       case 'examination_committee':
         return 'Examination Committee';
+      case 'achievements_committee':
+        return 'Achievements Committee';
       case 'faculty':
         return 'Faculty Dashboard';
       default:
