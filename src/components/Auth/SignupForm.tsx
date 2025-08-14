@@ -102,7 +102,11 @@ export function SignupForm({ onBackToLogin }: SignupFormProps) {
             <div className="text-center mb-8">
               <div className="flex justify-center mb-4">
                 <div className="bg-[#002e5d] p-3 rounded-full animate-pulse">
-                  <GraduationCap className="h-8 w-8 text-white" />
+                  <img 
+                    src="/src/assets/New_Triity_Logo.pdf-removebg-preview.png" 
+                    alt="Trinity Track Logo" 
+                    className="h-8 w-8"
+                  />
                 </div>
               </div>
               <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">Join Faculty Management</h1>

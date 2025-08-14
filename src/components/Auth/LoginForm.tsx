@@ -41,13 +41,8 @@ export function LoginForm({ onShowSignup }: LoginFormProps) {
                 <img 
                   src="/src/assets/New_Triity_Logo.pdf-removebg-preview.png" 
                   alt="Trinity Track Logo" 
-                  className="h-8 w-8 animate-pulse"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                    e.currentTarget.nextElementSibling.style.display = 'block';
-                  }}
+                  className="h-8 w-8"
                 />
-                <GraduationCap className="h-8 w-8 text-white hidden" />
               </div>
             </div>
             <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">Trinity Track</h1>
