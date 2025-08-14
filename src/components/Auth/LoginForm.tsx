@@ -39,7 +39,15 @@ export function LoginForm({ onShowSignup }: LoginFormProps) {
             <div className="flex justify-center mb-4">
               <div className="bg-[#002e5d] p-3 rounded-full animate-pulse">
                 <div className="h-8 w-8 flex items-center justify-center">
-                  <div className="text-white text-sm font-bold">TT</div>
+                  <img 
+                    src="/src/assets/New_Triity_Logo.pdf-removebg-preview.png" 
+                    alt="Trinity Track Logo" 
+                    className="h-6 w-6 object-contain"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      e.currentTarget.parentElement!.innerHTML = '<div class="text-white text-sm font-bold">TT</div>';
+                    }}
+                  />
                 </div>
               </div>
             </div>

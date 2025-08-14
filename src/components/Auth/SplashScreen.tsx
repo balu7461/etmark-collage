@@ -48,7 +48,15 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
               <div className="relative">
                 {/* Trinity Track Logo */}
                 <div className="h-16 w-16 sm:h-20 sm:w-20 lg:h-28 lg:w-28 mx-auto bg-white/20 rounded-full flex items-center justify-center">
-                  <div className="text-white text-2xl sm:text-3xl lg:text-4xl font-bold">TT</div>
+                  <img 
+                    src="/src/assets/New_Triity_Logo.pdf-removebg-preview.png" 
+                    alt="Trinity Track Logo" 
+                    className="h-12 w-12 sm:h-16 sm:w-16 lg:h-20 lg:w-20 object-contain"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      e.currentTarget.parentElement!.innerHTML = '<div class="text-white text-2xl sm:text-3xl lg:text-4xl font-bold">TT</div>';
+                    }}
+                  />
                 </div>
                 {/* Pulsing rings around logo */}
                 <div className="absolute inset-0 rounded-full border-2 border-white/30"></div>
