@@ -311,27 +311,29 @@ export function AttendanceForm() {
                 {students.map((student) => (
                   <div key={student.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:shadow-md transition-all duration-200">
                     <div className="flex-1">
-                      <p className="font-medium text-gray-900">{student.name}</p>
-                      <p className="text-sm text-gray-600">Sats No.: {student.rollNumber}</p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
+                        <p className="font-medium text-gray-900 text-sm sm:text-base truncate">{student.name}</p>
+                        <p className="text-xs sm:text-sm text-gray-600">Sats No.: {student.rollNumber}</p>
+                      </div>
                       {student.parentEmail && (
-                        <div className="flex items-center space-x-1 text-xs text-blue-600 mt-1">
+                        <div className="flex items-center space-x-1 text-xs text-blue-600">
                           <Mail className="h-3 w-3" />
-                          <span>Parent: {student.parentEmail}</span>
+                          <span className="truncate max-w-48 sm:max-w-none">Parent: {student.parentEmail}</span>
                         </div>
                       )}
                     </div>
 
-                    <div className="flex items-center space-x-4">
-                      <div className="flex space-x-2">
+                    <div className="flex flex-col sm:flex-row items-end sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 ml-4">
+                      <div className="flex space-x-2 flex-shrink-0">
                         <label className="flex items-center transform transition-all duration-200 hover:scale-105">
                           <input
                             type="radio"
                             name={`attendance-${student.id}`}
                             checked={attendance[student.id]?.status === 'present'}
                             onChange={() => handleAttendanceChange(student.id, 'present')}
-                            className="mr-2 text-green-600 focus:ring-green-500"
+                            className="mr-1 sm:mr-2 text-green-600 focus:ring-green-500"
                           />
-                          <span className="text-green-600 font-medium">Present</span>
+                          <span className="text-green-600 font-medium text-xs sm:text-sm">Present</span>
                         </label>
                         <label className="flex items-center transform transition-all duration-200 hover:scale-105">
                           <input
@@ -339,9 +341,9 @@ export function AttendanceForm() {
                             name={`attendance-${student.id}`}
                             checked={attendance[student.id]?.status === 'absent'}
                             onChange={() => handleAttendanceChange(student.id, 'absent')}
-                            className="mr-2 text-red-600 focus:ring-red-500"
+                            className="mr-1 sm:mr-2 text-red-600 focus:ring-red-500"
                           />
-                          <span className="text-red-600 font-medium">Absent</span>
+                          <span className="text-red-600 font-medium text-xs sm:text-sm">Absent</span>
                         </label>
                       </div>
 
@@ -351,7 +353,7 @@ export function AttendanceForm() {
                           placeholder="Reason (optional)"
                           value={attendance[student.id]?.reason || ''}
                           onChange={(e) => handleReasonChange(student.id, e.target.value)}
-                          className="w-32 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                          className="w-full sm:w-32 px-2 py-1 text-xs sm:text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                         />
                       )}
                     </div>

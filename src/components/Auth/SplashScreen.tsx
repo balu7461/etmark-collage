@@ -41,12 +41,23 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
       </div>
 
       <div className="text-center z-10 px-4 sm:px-6 lg:px-8">
-        {/* Logo Animation */}
+        {/* Logo Animation with Trinity Logo */}
         <div className="mb-6 sm:mb-8 relative">
           <div className={`transition-all duration-1000 ${showLogo ? 'scale-100 opacity-100' : 'scale-50 opacity-0'}`}>
             <div className="bg-white/20 backdrop-blur-sm p-4 sm:p-6 lg:p-8 rounded-full inline-block animate-pulse">
               <div className="relative">
-                <GraduationCap className="h-12 w-12 sm:h-16 sm:w-16 lg:h-24 lg:w-24 text-white animate-bounce" />
+                {/* Trinity College Logo */}
+                <img 
+                  src="/src/assets/New_Triity_Logo.pdf-removebg-preview.png" 
+                  alt="Trinity Track Logo" 
+                  className="h-16 w-16 sm:h-20 sm:w-20 lg:h-28 lg:w-28 animate-bounce mx-auto"
+                  onError={(e) => {
+                    // Fallback to graduation cap icon if image fails to load
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.nextElementSibling.style.display = 'block';
+                  }}
+                />
+                <GraduationCap className="h-16 w-16 sm:h-20 sm:w-20 lg:h-28 lg:w-28 text-white animate-bounce hidden" />
                 {/* Pulsing rings around logo */}
                 <div className="absolute inset-0 rounded-full border-2 border-white/30 animate-ping"></div>
                 <div className="absolute inset-0 rounded-full border border-white/20 animate-pulse delay-500"></div>
@@ -82,9 +93,36 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
           <p className="text-base sm:text-lg lg:text-xl text-blue-100 mb-6 sm:mb-8 animate-fade-in-delay">
             Student & Faculty Management System
           </p>
-          <p className="text-xs sm:text-sm text-blue-200 mb-6 sm:mb-8 animate-fade-in-delay-2">
-            Powered by Advanced Technology
-          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-4 text-xs sm:text-sm text-blue-200 mb-6 sm:mb-8 animate-fade-in-delay-2">
+            <span>Powered by</span>
+            <div className="flex items-center space-x-4">
+              <a 
+                href="https://doutly.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-yellow-300 hover:text-yellow-200 font-semibold transition-colors duration-200 hover:scale-105 transform"
+              >
+                Doutly
+              </a>
+              <span className="text-blue-300">&</span>
+              <a 
+                href="https://sugarsaltmedia.in" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center space-x-2 text-yellow-300 hover:text-yellow-200 font-semibold transition-colors duration-200 hover:scale-105 transform"
+              >
+                <img 
+                  src="/src/assets/New Triity Logo.pdf.png" 
+                  alt="Sugarsaltmedia" 
+                  className="h-4 w-4 sm:h-5 sm:w-5"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+                <span>Sugarsaltmedia</span>
+              </a>
+            </div>
+          </div>
         </div>
 
         {/* Enhanced Progress Bar */}

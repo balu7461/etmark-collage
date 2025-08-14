@@ -43,7 +43,36 @@ export function LoginForm({ onShowSignup }: LoginFormProps) {
             </div>
             <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">Trinity Track</h1>
             <p className="text-sm lg:text-base text-gray-600 mb-2">Student & Faculty Management System</p>
-            <p className="text-xs lg:text-sm text-gray-500 font-medium">Powered by Advanced Technology</p>
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-xs lg:text-sm text-gray-500 font-medium">
+              <span>Powered by</span>
+              <div className="flex items-center space-x-2">
+                <a 
+                  href="https://doutly.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-[#002e5d] hover:text-blue-800 font-semibold transition-colors duration-200"
+                >
+                  Doutly
+                </a>
+                <span className="text-gray-400">&</span>
+                <a 
+                  href="https://sugarsaltmedia.in" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center space-x-1 text-[#002e5d] hover:text-blue-800 font-semibold transition-colors duration-200"
+                >
+                  <img 
+                    src="/src/assets/New Triity Logo.pdf.png" 
+                    alt="Sugarsaltmedia" 
+                    className="h-3 w-3 sm:h-4 sm:w-4"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                  <span>Sugarsaltmedia</span>
+                </a>
+              </div>
+            </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
