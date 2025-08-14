@@ -44,7 +44,7 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
         {/* Logo Animation with Trinity Logo */}
         <div className="mb-6 sm:mb-8 relative">
           <div className={`transition-all duration-1000 ${showLogo ? 'scale-100 opacity-100' : 'scale-50 opacity-0'}`}>
-            <div className="bg-white/20 backdrop-blur-sm p-4 sm:p-6 lg:p-8 rounded-full inline-block animate-pulse">
+            <div className="bg-white/20 p-4 sm:p-6 lg:p-8 rounded-full inline-block animate-pulse">
               <div className="relative">
                 {/* Trinity College Logo */}
                 <img 

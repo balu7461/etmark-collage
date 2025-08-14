@@ -51,25 +51,59 @@ body.sidebar-open {
 
 /* Enhanced Mobile responsive utilities */
 @media (max-width: 640px) {
-  /* Better mobile spacing for attendance form */
+  /* Mark Attendance specific mobile styles */
+  .attendance-form {
+    padding: 0.75rem;
+  }
+  
   .attendance-student-card {
     padding: 0.75rem;
     margin-bottom: 0.5rem;
+    flex-direction: column;
+    align-items: stretch;
   }
   
   .attendance-student-info {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+    width: 100%;
   }
   
   .attendance-controls {
+    width: 100%;
     flex-direction: column;
-    align-items: stretch;
-    gap: 0.5rem;
+    gap: 0.75rem;
   }
   
   .attendance-radio-group {
     justify-content: center;
-    gap: 1rem;
+    gap: 2rem;
+    width: 100%;
+  }
+  
+  .attendance-reason-input {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+  
+  /* Better mobile spacing for attendance form */
+  .student-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+  }
+  
+  .student-details {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+  
+  .attendance-summary-cards {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .attendance-summary-card {
+    padding: 0.75rem;
   }
   
   .table-container {

@@ -199,7 +199,7 @@ export function AttendanceForm() {
               Parents will automatically receive email notifications from <strong>hiddencave168@gmail.com</strong> when their child is marked absent.
               Make sure parent email addresses are correctly entered in student records.
             </p>
-          </div>
+              <div className="ml-auto text-xs sm:text-sm text-green-600 font-medium hidden sm:block">
         </div>
       </div>
 
@@ -228,9 +228,9 @@ export function AttendanceForm() {
                 onChange={(e) => {
                   setSelectedClass(e.target.value);
                   setSelectedYear(''); // Reset year when class changes
-                  setStudents([]); // Clear students when class changes
+                          className="mr-2 text-green-600 focus:ring-green-500"
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        <span className="text-green-600 font-medium text-sm">Present</span>
                 required
               >
                 <option value="">Select Class</option>
@@ -238,9 +238,9 @@ export function AttendanceForm() {
                   <option key={cls} value={cls}>{cls}</option>
                 ))}
               </select>
-            </div>
+                          className="mr-2 text-red-600 focus:ring-red-500"
 
-            <div className="transform transition-all duration-200 hover:scale-105">
+                        <span className="text-red-600 font-medium text-sm">Absent</span>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Year *
               </label>
@@ -250,7 +250,7 @@ export function AttendanceForm() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 required
                 disabled={!selectedClass}
-              >
+                        className="w-full sm:w-40 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 <option value="">Select Year</option>
                 {getYearsForClass(selectedClass).map(year => (
                   <option key={year} value={year}>{year}</option>
@@ -296,7 +296,7 @@ export function AttendanceForm() {
               </div>
             </div>
 
-            <div>
+            <div className="space-y-2 sm:space-y-3 max-h-96 overflow-y-auto">
               <div className="flex items-center space-x-3 mb-4">
                 <Users className="h-5 w-5 text-gray-600" />
                 <h3 className="text-lg font-medium text-gray-900">
@@ -345,16 +345,16 @@ export function AttendanceForm() {
                           />
                           <span className="text-red-600 font-medium text-xs sm:text-sm">Absent</span>
                         </label>
-                      </div>
-
-                      {attendance[student.id]?.status === 'absent' && (
-                        <input
-                          type="text"
+                <div key={student.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 border border-gray-200 rounded-lg hover:shadow-md transition-all duration-200 space-y-3 sm:space-y-0">
+                  <div className="flex-1 min-w-0">
+                    <div className="space-y-1 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-2 mb-2">
+                      <p className="font-medium text-gray-900 text-sm sm:text-base truncate pr-2">{student.name}</p>
+                      <p className="text-xs sm:text-sm text-gray-600 truncate">Sats No.: {student.rollNumber}</p>
                           placeholder="Reason (optional)"
                           value={attendance[student.id]?.reason || ''}
-                          onChange={(e) => handleReasonChange(student.id, e.target.value)}
+                      <div className="flex items-center space-x-1 text-xs text-blue-600 truncate">
                           className="w-full sm:w-32 px-2 py-1 text-xs sm:text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                        />
+                        <span className="truncate">Parent: {student.parentEmail}</span>
                       )}
                     </div>
                   </div>
@@ -364,8 +364,8 @@ export function AttendanceForm() {
           </>
         )}
 
-        {students.length > 0 && (
-          <button
+                  <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-4 sm:ml-4">
+                    <div className="flex justify-center sm:justify-start space-x-4 sm:space-x-2 flex-shrink-0">
             type="submit"
             disabled={loading || sendingEmails}
             className="w-full bg-[#002e5d] text-white py-3 px-4 rounded-lg hover:bg-blue-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 transform hover:scale-105"
