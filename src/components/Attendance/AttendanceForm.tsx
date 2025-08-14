@@ -200,6 +200,8 @@ export function AttendanceForm() {
               Make sure parent email addresses are correctly entered in student records.
             </p>
               <div className="ml-auto text-xs sm:text-sm text-green-600 font-medium hidden sm:block">
+              </div>
+          </div>
         </div>
       </div>
 
@@ -214,17 +216,141 @@ export function AttendanceForm() {
                 type="date"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                      </div>
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                required
+              />
+            </div>
 
-                      {attendance[student.id]?.status === 'absent' && (
-                        <input
-                          type="text"
-                          placeholder="Reason (optional)"
-                          value={attendance[student.id]?.reason || ''}
-                          onChange={(e) => handleReasonChange(student.id, e.target.value)}
-                          className="w-full sm:w-32 px-2 py-1 text-xs sm:text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                        />
-                      )}
+            <div className="transform transition-all duration-200 hover:scale-105">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Class
+              </label>
+              <select
+                value={selectedClass}
+                onChange={(e) => setSelectedClass(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                required
+              >
+                <option value="">Select Class</option>
+                {classes.map(cls => (
+                  <option key={cls} value={cls}>{cls}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="transform transition-all duration-200 hover:scale-105">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Year
+              </label>
+              <select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                required
+                disabled={!selectedClass}
+              >
+                <option value="">Select Year</option>
+                {getYearsForClass(selectedClass).map(year => (
+                  <option key={year} value={year}>{year}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Stats Card */}
+          {students.length > 0 && (
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-100">
+              <div className="flex items-center space-x-2 mb-3">
+                <Users className="h-5 w-5 text-blue-600" />
+                <h3 className="font-medium text-blue-900">Attendance Summary</h3>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Total Students:</span>
+                  <span className="font-semibold text-gray-900">{stats.totalStudents}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-green-600 flex items-center">
+                    <CheckCircle className="h-4 w-4 mr-1" />
+                    Present:
+                  </span>
+                  <span className="font-semibold text-green-700">{stats.presentCount}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-red-600 flex items-center">
+                    <XCircle className="h-4 w-4 mr-1" />
+                    Absent:
+                  </span>
+                  <span className="font-semibold text-red-700">{stats.absentCount}</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {students.length > 0 && (
+          <>
+            <div className="bg-gray-50 rounded-lg p-4">
+              <div className="flex items-center space-x-2 mb-4">
+                <BookOpen className="h-5 w-5 text-gray-600" />
+                <h3 className="font-medium text-gray-900">
+                  Students - {selectedClass} ({selectedYear})
+                </h3>
+              </div>
+              
+              <div className="space-y-3">
+                {students.map((student) => (
+                  <div key={student.id} className="bg-white rounded-lg p-4 border border-gray-200 hover:shadow-md transition-all">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-3 sm:space-y-0">
+                      <div className="flex-1">
+                        <h4 className="font-medium text-gray-900">{student.name}</h4>
+                        <p className="text-sm text-gray-600">Roll No: {student.rollNumber}</p>
+                        {student.parentEmail && (
+                          <p className="text-xs text-gray-500 flex items-center mt-1">
+                            <Mail className="h-3 w-3 mr-1" />
+                            {student.parentEmail}
+                          </p>
+                        )}
+                      </div>
+                      
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+                        <div className="flex space-x-2">
+                          <button
+                            type="button"
+                            onClick={() => handleAttendanceChange(student.id, 'present')}
+                            className={`px-3 py-1 rounded-full text-sm font-medium transition-all ${
+                              attendance[student.id]?.status === 'present'
+                                ? 'bg-green-100 text-green-800 border-2 border-green-300'
+                                : 'bg-gray-100 text-gray-600 border-2 border-transparent hover:bg-green-50'
+                            }`}
+                          >
+                            <CheckCircle className="h-4 w-4 inline mr-1" />
+                            Present
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleAttendanceChange(student.id, 'absent')}
+                            className={`px-3 py-1 rounded-full text-sm font-medium transition-all ${
+                              attendance[student.id]?.status === 'absent'
+                                ? 'bg-red-100 text-red-800 border-2 border-red-300'
+                                : 'bg-gray-100 text-gray-600 border-2 border-transparent hover:bg-red-50'
+                            }`}
+                          >
+                            <XCircle className="h-4 w-4 inline mr-1" />
+                            Absent
+                          </button>
+                        </div>
+
+                        {attendance[student.id]?.status === 'absent' && (
+                          <input
+                            type="text"
+                            placeholder="Reason (optional)"
+                            value={attendance[student.id]?.reason || ''}
+                            onChange={(e) => handleReasonChange(student.id, e.target.value)}
+                            className="w-full sm:w-32 px-2 py-1 text-xs sm:text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                          />
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}
