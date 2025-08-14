@@ -50,17 +50,17 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
                 <img 
                   src="/src/assets/New_Triity_Logo.pdf-removebg-preview.png" 
                   alt="Trinity Track Logo" 
-                  className="h-16 w-16 sm:h-20 sm:w-20 lg:h-28 lg:w-28 animate-ink-effect logo-glow mx-auto"
+                  className="h-16 w-16 sm:h-20 sm:w-20 lg:h-28 lg:w-28 mx-auto"
                   onError={(e) => {
                     // Fallback to graduation cap icon if image fails to load
                     e.currentTarget.style.display = 'none';
                     e.currentTarget.nextElementSibling.style.display = 'block';
                   }}
                 />
-                <GraduationCap className="h-16 w-16 sm:h-20 sm:w-20 lg:h-28 lg:w-28 text-white animate-ink-effect logo-glow hidden" />
+                <GraduationCap className="h-16 w-16 sm:h-20 sm:w-20 lg:h-28 lg:w-28 text-white hidden" />
                 {/* Pulsing rings around logo */}
-                <div className="absolute inset-0 rounded-full border-2 border-white/30 animate-ping"></div>
-                <div className="absolute inset-0 rounded-full border border-white/20 animate-pulse delay-500"></div>
+                <div className="absolute inset-0 rounded-full border-2 border-white/30"></div>
+                <div className="absolute inset-0 rounded-full border border-white/20"></div>
               </div>
             </div>
           </div>
