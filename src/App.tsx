@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { SplashScreen } from './components/Auth/SplashScreen';
 import { AuthContainer } from './components/Auth/AuthContainer';
 import { Sidebar } from './components/Layout/Sidebar';
 import { Header } from './components/Layout/Header';
@@ -27,7 +26,6 @@ import { Toaster } from 'react-hot-toast';
 
 function AppContent() {
   const { currentUser, loading } = useAuth();
-  const [showSplash, setShowSplash] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -37,19 +35,6 @@ function AppContent() {
   const closeSidebar = () => {
     setIsSidebarOpen(false);
   };
-
-  useEffect(() => {
-    // Show splash screen for 5 seconds
-    const timer = setTimeout(() => {
-      setShowSplash(false);
-    }, 5000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (showSplash) {
-    return <SplashScreen onComplete={() => setShowSplash(false)} />;
-  }
 
   if (loading) {
     return (
