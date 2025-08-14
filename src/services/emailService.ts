@@ -10,7 +10,7 @@ import emailjs from 'emailjs-com';
 
 const EMAILJS_SERVICE_ID = 'service_trinity_track'; // Your actual service ID
 const EMAILJS_TEMPLATE_ID = 'template_attendance_not'; // Your actual template ID
-const EMAILJS_PUBLIC_KEY = 'YnZGll11JWgqyC5P3'; // Your actual public key
+const EMAILJS_PUBLIC_KEY = '-y_uC_hdYZR-Trd1F'; // Your actual public key
 
 interface EmailData {
   to_email: string;
@@ -33,7 +33,9 @@ export const sendAbsenteeNotification = async (
   reason?: string
 ) => {
   // Check if EmailJS is properly configured
-  if (EMAILJS_PUBLIC_KEY === 'YnZGll11JWgqyC5P3') {
+  if (EMAILJS_PUBLIC_KEY === '-y_uC_hdYZR-Trd1F') {
+    console.log('EmailJS is properly configured and ready to send emails');
+  } else {
     console.warn('EmailJS not configured. Please set up EmailJS credentials.');
     // For development, we'll just log the email instead of sending
     console.log('Email would be sent to:', {
@@ -106,7 +108,7 @@ export const sendBulkParentNotifications = async (
 
 // Initialize EmailJS
 export const initializeEmailJS = () => {
-  if (EMAILJS_PUBLIC_KEY !== 'YnZGll11JWgqyC5P3') {
+  if (EMAILJS_PUBLIC_KEY !== '-y_uC_hdYZR-Trd1F') {
     emailjs.init(EMAILJS_PUBLIC_KEY);
     console.log('EmailJS initialized successfully');
   } else {
