@@ -233,12 +233,22 @@ export function Students() {
         
         // Validate and format the data
         const formattedData = jsonData.map((row: any, index) => {
+          // Convert numeric year to string format
+          let yearValue = row['Year'] || '';
+          if (yearValue === '1' || yearValue === 1) {
+            yearValue = '1st Year';
+          } else if (yearValue === '2' || yearValue === 2) {
+            yearValue = '2nd Year';
+          } else if (yearValue === '3' || yearValue === 3) {
+            yearValue = '3rd Year';
+          }
+          
           const student = {
             name: row['Name'] || row['Student Name'] || '',
             email: row['Email'] || row['Email Address'] || '',
             rollNumber: row['Sats No.'] || row['Roll Number'] || row['Roll'] || '',
             class: row['Class'] || '',
-            year: row['Year'] || '',
+            year: yearValue,
             parentEmail: row['Parent Email'] || '',
             parentPhone: row['Parent Phone'] || '',
             rowIndex: index + 2 // Excel row number (starting from 2)
