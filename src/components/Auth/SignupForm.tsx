@@ -112,14 +112,6 @@ export function SignupForm({ onBackToLogin }: SignupFormProps) {
                         e.currentTarget.parentElement!.innerHTML = '<div class="text-white text-sm font-bold">TT</div>';
                       }}
                     />
-                      src="/New_Triity_Logo.pdf-removebg-preview.png" 
-                      alt="Trinity Track Logo" 
-                      className="h-6 w-6"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                        e.currentTarget.parentElement.innerHTML = '<div class="text-white text-sm font-bold">TT</div>';
-                      }}
-                    />
                   </div>
                 </div>
               </div>
