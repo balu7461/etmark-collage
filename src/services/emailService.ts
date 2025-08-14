@@ -8,9 +8,9 @@ import emailjs from 'emailjs-com';
 // 4. Get your Service ID, Template ID, and Public Key from the dashboard
 // 5. Update the values below with your actual EmailJS credentials
 
-const EMAILJS_SERVICE_ID = 'service_college_connect'; // Replace with your actual service ID
-const EMAILJS_TEMPLATE_ID = 'template_attendance_notification'; // Replace with your actual template ID
-const EMAILJS_PUBLIC_KEY = 'YOUR_EMAILJS_PUBLIC_KEY_HERE'; // Replace with your actual public key
+const EMAILJS_SERVICE_ID = 'service_trinity_track'; // Your actual service ID
+const EMAILJS_TEMPLATE_ID = 'template_attendance_not'; // Your actual template ID
+const EMAILJS_PUBLIC_KEY = 'YnZGll11JWgqyC5P3'; // Your actual public key
 
 interface EmailData {
   to_email: string;
@@ -33,7 +33,7 @@ export const sendAbsenteeNotification = async (
   reason?: string
 ) => {
   // Check if EmailJS is properly configured
-  if (EMAILJS_PUBLIC_KEY === 'YOUR_EMAILJS_PUBLIC_KEY_HERE') {
+  if (EMAILJS_PUBLIC_KEY === 'YnZGll11JWgqyC5P3') {
     console.warn('EmailJS not configured. Please set up EmailJS credentials.');
     // For development, we'll just log the email instead of sending
     console.log('Email would be sent to:', {
@@ -106,7 +106,7 @@ export const sendBulkParentNotifications = async (
 
 // Initialize EmailJS
 export const initializeEmailJS = () => {
-  if (EMAILJS_PUBLIC_KEY !== 'YOUR_EMAILJS_PUBLIC_KEY_HERE') {
+  if (EMAILJS_PUBLIC_KEY !== 'YnZGll11JWgqyC5P3') {
     emailjs.init(EMAILJS_PUBLIC_KEY);
     console.log('EmailJS initialized successfully');
   } else {

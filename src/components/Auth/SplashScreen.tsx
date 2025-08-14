@@ -47,11 +47,17 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
             <div className="bg-white/20 p-4 sm:p-6 lg:p-8 rounded-full inline-block animate-pulse">
               <div className="relative">
                 {/* Trinity Track Logo */}
-                <img 
-                  src="/src/assets/New_Triity_Logo.pdf-removebg-preview.png" 
-                  alt="Trinity Track Logo" 
-                  className="h-16 w-16 sm:h-20 sm:w-20 lg:h-28 lg:w-28 mx-auto"
-                />
+                <div className="h-16 w-16 sm:h-20 sm:w-20 lg:h-28 lg:w-28 mx-auto bg-white/20 rounded-full flex items-center justify-center">
+                  <img 
+                    src="/New_Triity_Logo.pdf-removebg-preview.png" 
+                    alt="Trinity Track Logo" 
+                    className="h-12 w-12 sm:h-16 sm:w-16 lg:h-20 lg:w-20"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      e.currentTarget.parentElement.innerHTML = '<div class="text-white text-2xl font-bold">TT</div>';
+                    }}
+                  />
+                </div>
                 {/* Pulsing rings around logo */}
                 <div className="absolute inset-0 rounded-full border-2 border-white/30"></div>
                 <div className="absolute inset-0 rounded-full border border-white/20"></div>
@@ -105,14 +111,6 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
                 rel="noopener noreferrer"
                 className="flex items-center space-x-2 text-yellow-300 hover:text-yellow-200 font-semibold transition-colors duration-200 hover:scale-105 transform"
               >
-                <img 
-                  src="/src/assets/New Triity Logo.pdf.png" 
-                  alt="Sugarsaltmedia" 
-                  className="h-4 w-4 sm:h-5 sm:w-5"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
                 <span>Sugarsaltmedia</span>
               </a>
             </div>
