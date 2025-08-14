@@ -38,7 +38,16 @@ export function LoginForm({ onShowSignup }: LoginFormProps) {
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
               <div className="bg-[#002e5d] p-3 rounded-full animate-pulse">
-                <GraduationCap className="h-8 w-8 text-white" />
+                <img 
+                  src="/src/assets/New_Triity_Logo.pdf-removebg-preview.png" 
+                  alt="Trinity Track Logo" 
+                  className="h-8 w-8 animate-pulse"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.nextElementSibling.style.display = 'block';
+                  }}
+                />
+                <GraduationCap className="h-8 w-8 text-white hidden" />
               </div>
             </div>
             <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">Trinity Track</h1>
@@ -56,7 +65,7 @@ export function LoginForm({ onShowSignup }: LoginFormProps) {
                 </a>
                 <span className="text-gray-400">&</span>
                 <a 
-                  href="https://sugarsaltmedia.in" 
+                  href="https://sugarsaltmedia.com" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="flex items-center space-x-1 text-[#002e5d] hover:text-blue-800 font-semibold transition-colors duration-200"

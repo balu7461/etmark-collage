@@ -50,14 +50,14 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
                 <img 
                   src="/src/assets/New_Triity_Logo.pdf-removebg-preview.png" 
                   alt="Trinity Track Logo" 
-                  className="h-16 w-16 sm:h-20 sm:w-20 lg:h-28 lg:w-28 animate-bounce mx-auto"
+                  className="h-16 w-16 sm:h-20 sm:w-20 lg:h-28 lg:w-28 animate-ink-effect logo-glow mx-auto"
                   onError={(e) => {
                     // Fallback to graduation cap icon if image fails to load
                     e.currentTarget.style.display = 'none';
                     e.currentTarget.nextElementSibling.style.display = 'block';
                   }}
                 />
-                <GraduationCap className="h-16 w-16 sm:h-20 sm:w-20 lg:h-28 lg:w-28 text-white animate-bounce hidden" />
+                <GraduationCap className="h-16 w-16 sm:h-20 sm:w-20 lg:h-28 lg:w-28 text-white animate-ink-effect logo-glow hidden" />
                 {/* Pulsing rings around logo */}
                 <div className="absolute inset-0 rounded-full border-2 border-white/30 animate-ping"></div>
                 <div className="absolute inset-0 rounded-full border border-white/20 animate-pulse delay-500"></div>
@@ -106,7 +106,7 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
               </a>
               <span className="text-blue-300">&</span>
               <a 
-                href="https://sugarsaltmedia.in" 
+                href="https://sugarsaltmedia.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="flex items-center space-x-2 text-yellow-300 hover:text-yellow-200 font-semibold transition-colors duration-200 hover:scale-105 transform"

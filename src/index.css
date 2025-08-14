@@ -369,3 +369,33 @@ iframe {
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 #f1f5f9;
 }
+/* Trinity Track Logo Ink Effect */
+@keyframes ink-drop {
+  0% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0 rgba(0, 46, 93, 0));
+  }
+  50% {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 10px rgba(0, 46, 93, 0.3));
+  }
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 5px rgba(0, 46, 93, 0.1));
+  }
+}
+
+.animate-ink-effect {
+  animation: ink-drop 2s ease-in-out infinite;
+}
+
+/* Enhanced logo glow effect */
+.logo-glow {
+  filter: drop-shadow(0 0 8px rgba(0, 46, 93, 0.4));
+  transition: all 0.3s ease;
+}
+
+.logo-glow:hover {
+  filter: drop-shadow(0 0 15px rgba(0, 46, 93, 0.6));
+  transform: scale(1.02);
+}
