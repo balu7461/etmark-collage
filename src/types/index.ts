@@ -45,21 +45,28 @@ export interface LeaveApplication {
   facultyName: string;
   startDate: string;
   endDate: string;
-  leaveType: 'medical' | 'personal';
+  leaveType: 'OD' | 'casual';
   subject: string;
   description: string;
-  status: 'pending_committee_approval' | 'pending_principal_approval' | 'approved' | 'rejected';
+  status: 'pending_examination_committee_approval' | 'pending_timetable_committee_approval' | 'pending_principal_approval' | 'approved' | 'rejected_by_examination_committee' | 'rejected_by_timetable_committee' | 'rejected_by_principal';
   appliedDate: string;
   reviewedBy?: string;
   reviewedDate?: string;
   comments?: string;
-  committeeApproved?: boolean;
+  // Examination Committee Review
+  examCommitteeApproved?: boolean;
+  examCommitteeReviewedBy?: string;
+  examCommitteeReviewedDate?: string;
+  examCommitteeComments?: string;
+  // Timetable Committee Review
+  timetableCommitteeApproved?: boolean;
+  timetableCommitteeReviewedBy?: string;
+  timetableCommitteeReviewedDate?: string;
+  timetableCommitteeComments?: string;
+  // Principal Review
   principalApproved?: boolean;
-  committeeReviewedBy?: string;
-  committeeReviewedDate?: string;
   principalReviewedBy?: string;
   principalReviewedDate?: string;
-  committeeComments?: string;
   principalComments?: string;
 }
 

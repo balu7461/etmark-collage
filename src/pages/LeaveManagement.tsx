@@ -23,14 +23,20 @@ export function LeaveManagement() {
     try {
       let q;
       
-      if (currentUser?.role === 'timetable_committee' || currentUser?.role === 'examination_committee') {
-        // Committee members see leaves pending their approval
+      if (currentUser?.role === 'examination_committee') {
+        // Examination Committee sees leaves pending their approval (first stage)
         q = query(
           collection(db, 'leaveApplications'),
-          where('status', '==', 'pending_committee_approval')
+          where('status', '==', 'pending_examination_committee_approval')
+        );
+      } else if (currentUser?.role === 'timetable_committee') {
+        // Timetable Committee sees leaves pending their approval (second stage)
+        q = query(
+          collection(db, 'leaveApplications'),
+          where('status', '==', 'pending_timetable_committee_approval')
         );
       } else if (currentUser?.role === 'admin') {
-        // Admin (Principal) sees leaves pending final approval
+        // Admin (Principal) sees leaves pending final approval (third stage)
         q = query(
           collection(db, 'leaveApplications'),
           where('status', '==', 'pending_principal_approval')
@@ -64,27 +70,40 @@ export function LeaveManagement() {
 
   const handleLeaveAction = async (leaveId: string, action: 'approved' | 'rejected') => {
     try {
-      const updateData: any = {
-        reviewedBy: currentUser?.name,
-        reviewedDate: format(new Date(), 'yyyy-MM-dd'),
-        comments: reviewComments
-      };
+      const updateData: any = {};
 
-      if (currentUser?.role === 'timetable_committee' || currentUser?.role === 'examination_committee') {
+      if (currentUser?.role === 'examination_committee') {
+        // First stage: Examination Committee approval
+        if (action === 'approved') {
+          updateData.status = 'pending_timetable_committee_approval';
+          updateData.examCommitteeApproved = true;
+          updateData.examCommitteeReviewedBy = currentUser.name;
+          updateData.examCommitteeReviewedDate = format(new Date(), 'yyyy-MM-dd');
+          updateData.examCommitteeComments = reviewComments;
+        } else {
+          updateData.status = 'rejected_by_examination_committee';
+          updateData.examCommitteeApproved = false;
+          updateData.examCommitteeReviewedBy = currentUser.name;
+          updateData.examCommitteeReviewedDate = format(new Date(), 'yyyy-MM-dd');
+          updateData.examCommitteeComments = reviewComments;
+        }
+      } else if (currentUser?.role === 'timetable_committee') {
+        // Second stage: Timetable Committee approval
         if (action === 'approved') {
           updateData.status = 'pending_principal_approval';
-          updateData.committeeApproved = true;
-          updateData.committeeReviewedBy = currentUser.name;
-          updateData.committeeReviewedDate = format(new Date(), 'yyyy-MM-dd');
-          updateData.committeeComments = reviewComments;
+          updateData.timetableCommitteeApproved = true;
+          updateData.timetableCommitteeReviewedBy = currentUser.name;
+          updateData.timetableCommitteeReviewedDate = format(new Date(), 'yyyy-MM-dd');
+          updateData.timetableCommitteeComments = reviewComments;
         } else {
-          updateData.status = 'rejected';
-          updateData.committeeApproved = false;
-          updateData.committeeReviewedBy = currentUser.name;
-          updateData.committeeReviewedDate = format(new Date(), 'yyyy-MM-dd');
-          updateData.committeeComments = reviewComments;
+          updateData.status = 'rejected_by_timetable_committee';
+          updateData.timetableCommitteeApproved = false;
+          updateData.timetableCommitteeReviewedBy = currentUser.name;
+          updateData.timetableCommitteeReviewedDate = format(new Date(), 'yyyy-MM-dd');
+          updateData.timetableCommitteeComments = reviewComments;
         }
       } else if (currentUser?.role === 'admin') {
+        // Third stage: Principal (final) approval
         if (action === 'approved') {
           updateData.status = 'approved';
           updateData.principalApproved = true;
@@ -92,7 +111,7 @@ export function LeaveManagement() {
           updateData.principalReviewedDate = format(new Date(), 'yyyy-MM-dd');
           updateData.principalComments = reviewComments;
         } else {
-          updateData.status = 'rejected';
+          updateData.status = 'rejected_by_principal';
           updateData.principalApproved = false;
           updateData.principalReviewedBy = currentUser.name;
           updateData.principalReviewedDate = format(new Date(), 'yyyy-MM-dd');
@@ -121,10 +140,14 @@ export function LeaveManagement() {
     switch (status) {
       case 'approved':
         return 'bg-green-100 text-green-800 border-green-200';
-      case 'rejected':
+      case 'rejected_by_examination_committee':
+      case 'rejected_by_timetable_committee':
+      case 'rejected_by_principal':
         return 'bg-red-100 text-red-800 border-red-200';
-      case 'pending_committee_approval':
+      case 'pending_examination_committee_approval':
         return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'pending_timetable_committee_approval':
+        return 'bg-orange-100 text-orange-800 border-orange-200';
       case 'pending_principal_approval':
         return 'bg-blue-100 text-blue-800 border-blue-200';
       default:
@@ -136,9 +159,12 @@ export function LeaveManagement() {
     switch (status) {
       case 'approved':
         return <CheckCircle className="h-4 w-4" />;
-      case 'rejected':
+      case 'rejected_by_examination_committee':
+      case 'rejected_by_timetable_committee':
+      case 'rejected_by_principal':
         return <XCircle className="h-4 w-4" />;
-      case 'pending_committee_approval':
+      case 'pending_examination_committee_approval':
+      case 'pending_timetable_committee_approval':
         return <Clock className="h-4 w-4" />;
       case 'pending_principal_approval':
         return <Clock className="h-4 w-4" />;
@@ -150,22 +176,28 @@ export function LeaveManagement() {
   const getLeaveStats = () => {
     const total = filteredLeaves.length;
     const pending = filteredLeaves.filter(l => 
-      l.status === 'pending_committee_approval' || l.status === 'pending_principal_approval'
+      l.status === 'pending_examination_committee_approval' || 
+      l.status === 'pending_timetable_committee_approval' || 
+      l.status === 'pending_principal_approval'
     ).length;
     const approved = filteredLeaves.filter(l => l.status === 'approved').length;
-    const rejected = filteredLeaves.filter(l => l.status === 'rejected').length;
+    const rejected = filteredLeaves.filter(l => 
+      l.status === 'rejected_by_examination_committee' || 
+      l.status === 'rejected_by_timetable_committee' || 
+      l.status === 'rejected_by_principal'
+    ).length;
     
     return { total, pending, approved, rejected };
   };
 
   const getRoleDisplayName = () => {
     switch (currentUser?.role) {
-      case 'timetable_committee':
-        return 'Timetable Committee Review';
       case 'examination_committee':
-        return 'Examination Committee Review';
+        return 'Examination Committee Review (Stage 1)';
+      case 'timetable_committee':
+        return 'Timetable Committee Review (Stage 2)';
       case 'admin':
-        return 'Principal Approval';
+        return 'Principal Approval (Final Stage)';
       default:
         return 'Leave Management';
     }
@@ -182,10 +214,12 @@ export function LeaveManagement() {
               Leave Management - {getRoleDisplayName()}
             </h1>
             <p className="text-gray-600">
-              {currentUser?.role === 'timetable_committee' || currentUser?.role === 'examination_committee'
-                ? 'Review leave applications for committee approval'
+              {currentUser?.role === 'examination_committee'
+                ? 'First stage: Review leave applications for examination committee approval'
+                : currentUser?.role === 'timetable_committee'
+                ? 'Second stage: Review leave applications for timetable committee approval'
                 : currentUser?.role === 'admin'
-                ? 'Final approval of leave applications as Principal'
+                ? 'Final stage: Principal approval of leave applications'
                 : 'Review and manage all faculty leave applications'
               }
             </p>
@@ -319,7 +353,7 @@ export function LeaveManagement() {
 
                       {leave.comments && (
                         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                          <p className="text-sm font-medium text-blue-900 mb-1">Review Comments:</p>
+                          <p className="text-sm font-medium text-blue-900 mb-1">Legacy Review Comments:</p>
                           <p className="text-sm text-blue-800">{leave.comments}</p>
                           {leave.reviewedBy && (
                             <p className="text-xs text-blue-600 mt-2">
@@ -329,13 +363,25 @@ export function LeaveManagement() {
                         </div>
                       )}
 
-                      {leave.committeeComments && (
-                        <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 mb-4">
-                          <p className="text-sm font-medium text-purple-900 mb-1">Committee Comments:</p>
-                          <p className="text-sm text-purple-800">{leave.committeeComments}</p>
-                          {leave.committeeReviewedBy && (
-                            <p className="text-xs text-purple-600 mt-2">
-                              Reviewed by {leave.committeeReviewedBy} on {leave.committeeReviewedDate}
+                      {leave.examCommitteeComments && (
+                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
+                          <p className="text-sm font-medium text-yellow-900 mb-1">Examination Committee Comments:</p>
+                          <p className="text-sm text-yellow-800">{leave.examCommitteeComments}</p>
+                          {leave.examCommitteeReviewedBy && (
+                            <p className="text-xs text-yellow-600 mt-2">
+                              Reviewed by {leave.examCommitteeReviewedBy} on {leave.examCommitteeReviewedDate}
+                            </p>
+                          )}
+                        </div>
+                      )}
+
+                      {leave.timetableCommitteeComments && (
+                        <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-4">
+                          <p className="text-sm font-medium text-orange-900 mb-1">Timetable Committee Comments:</p>
+                          <p className="text-sm text-orange-800">{leave.timetableCommitteeComments}</p>
+                          {leave.timetableCommitteeReviewedBy && (
+                            <p className="text-xs text-orange-600 mt-2">
+                              Reviewed by {leave.timetableCommitteeReviewedBy} on {leave.timetableCommitteeReviewedDate}
                             </p>
                           )}
                         </div>
@@ -353,7 +399,9 @@ export function LeaveManagement() {
                         </div>
                       )}
 
-                      {(leave.status === 'pending_committee_approval' || leave.status === 'pending_principal_approval') && (
+                      {(leave.status === 'pending_examination_committee_approval' || 
+                        leave.status === 'pending_timetable_committee_approval' || 
+                        leave.status === 'pending_principal_approval') && (
                         <div className="ml-6 flex space-x-2">
                           <button
                             onClick={() => setSelectedLeave(leave)}
@@ -392,12 +440,16 @@ export function LeaveManagement() {
 
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {currentUser?.role === 'timetable_committee' || currentUser?.role === 'examination_committee' ? 'Committee Comments' : 'Principal Comments'} (Optional)
+                  {currentUser?.role === 'examination_committee' ? 'Examination Committee Comments' : 
+                   currentUser?.role === 'timetable_committee' ? 'Timetable Committee Comments' : 
+                   'Principal Comments'} (Optional)
                 </label>
                 <textarea
                   value={reviewComments}
                   onChange={(e) => setReviewComments(e.target.value)}
-                  placeholder={`Add your ${currentUser?.role === 'timetable_committee' || currentUser?.role === 'examination_committee' ? 'committee' : 'principal'} comments...`}
+                  placeholder={`Add your ${currentUser?.role === 'examination_committee' ? 'examination committee' : 
+                                           currentUser?.role === 'timetable_committee' ? 'timetable committee' : 
+                                           'principal'} comments...`}
                   rows={4}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />

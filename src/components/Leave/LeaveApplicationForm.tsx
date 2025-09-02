@@ -46,7 +46,7 @@ export function LeaveApplicationForm() {
         leaveType: formData.leaveType,
         subject: formData.subject,
         description: formData.description,
-        status: 'pending_committee_approval',
+        status: 'pending_examination_committee_approval',
         appliedDate: format(new Date(), 'yyyy-MM-dd'),
       };
 
