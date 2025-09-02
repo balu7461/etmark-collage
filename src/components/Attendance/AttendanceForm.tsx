@@ -262,7 +262,6 @@ export function AttendanceForm() {
                 required
               >
                 <option value="">Select Time</option>
-                {timeSlots.map(slot => (
                 {TIME_SLOTS.map(slot => (
                   <option key={slot.label} value={slot.label}>{slot.label}</option>
                 ))}
