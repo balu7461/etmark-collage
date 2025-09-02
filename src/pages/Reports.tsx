@@ -320,10 +320,11 @@ export function Reports() {
                 <h4 className="font-medium text-gray-900 mb-2">Attendance Reports Include:</h4>
                 <ul className="text-sm text-gray-600 space-y-1">
                   <li>• Student-wise attendance records</li>
-                  <li>• Class-wise attendance summary</li>
+                  <li>• Class-wise attendance summary (all {ALL_CLASSES.length} classes)</li>
                   <li>• Faculty-wise attendance data</li>
                   <li>• Date range filtering</li>
                   <li>• Absence reasons tracking</li>
+                  <li>• Parent notification tracking</li>
                 </ul>
               </div>
               
@@ -333,8 +334,9 @@ export function Reports() {
                   <li>• Faculty leave status tracking</li>
                   <li>• Achievement categorization</li>
                   <li>• Top performer identification</li>
-                  <li>• Student contact information</li>
+                  <li>• Student & parent contact information</li>
                   <li>• Parent notification data</li>
+                  <li>• Multi-class support and analytics</li>
                 </ul>
               </div>
             </div>

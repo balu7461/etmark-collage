@@ -260,7 +260,6 @@ export function UserManagement() {
                   <option value="timetable_committee">Timetable Committee</option>
                   <option value="examination_committee">Examination Committee</option>
                   <option value="achievements_committee">Achievements Committee</option>
-                 <option value="achievements_committee">Achievements Committee</option>
                 </select>
               </div>
             </div>
@@ -382,6 +381,7 @@ export function UserManagement() {
                     <option value="faculty">Faculty</option>
                     <option value="timetable_committee">Timetable Committee</option>
                     <option value="examination_committee">Examination Committee</option>
+                    <option value="achievements_committee">Achievements Committee</option>
                     <option value="admin">Administrator</option>
                   </select>
                 </div>

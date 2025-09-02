@@ -169,10 +169,13 @@ export function StudentApproval() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transform transition-all duration-200 hover:scale-105">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Classes</p>
+                  <p className="text-sm font-medium text-gray-600">Available Classes</p>
                   <p className="text-3xl font-bold text-purple-600">{ALL_CLASSES.length}</p>
                 </div>
                 <Building className="h-8 w-8 text-purple-600" />
+              </div>
+              <div className="mt-2">
+                <p className="text-xs text-gray-500">All {ALL_CLASSES.length} classes supported</p>
               </div>
             </div>
           </div>

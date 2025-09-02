@@ -286,7 +286,10 @@ export function StudentAchievementForm() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Branch *
+              <div className="flex items-center space-x-2">
+                <Building className="h-4 w-4 text-[#002e5d]" />
+                <span>Branch/Class *</span>
+              </div>
             </label>
             <select
               value={formData.branch}
@@ -294,7 +297,7 @@ export function StudentAchievementForm() {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             >
-              <option value="">Select Branch</option>
+              <option value="">Select Branch/Class</option>
               {ALL_CLASSES.map(branch => (
                 <option key={branch} value={branch}>{branch}</option>
               ))}

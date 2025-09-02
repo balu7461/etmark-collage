@@ -26,6 +26,19 @@ import {
   Star
 } from 'lucide-react';
 
+const ALL_CLASSES = [
+  'B.com 1st Year', 'B.com 2nd Year', 'B.com 3rd Year',
+  'BBA 1st Year', 'BBA 2nd Year', 'BBA 3rd Year',
+  'BCA 1st Year', 'BCA 2nd Year', 'BCA 3rd Year',
+  'PCMB 1st Year', 'PCMB 2nd Year',
+  'PCMC 1st Year', 'PCMC 2nd Year',
+  'PCMCS 1st Year', 'PCMCS 2nd Year',
+  'COMMERCE 1st Year', 'COMMERCE 2nd Year',
+  'ARTS 1st Year', 'ARTS 2nd Year',
+  'EBAC 1st Year', 'EBAC 2nd Year',
+  'EBAS 1st Year', 'EBAS 2nd Year'
+];
+
 export function Dashboard() {
   const { currentUser } = useAuth();
   const [stats, setStats] = useState({
@@ -440,15 +453,15 @@ export function Dashboard() {
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 lg:p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Student Achievements Overview</p>
-                      <p className="text-lg font-bold text-gray-900">Managed by Achievements Committee</p>
+                      <p className="text-sm font-medium text-gray-600">All Classes Active</p>
+                      <p className="text-lg font-bold text-gray-900">{ALL_CLASSES.length} Classes Available</p>
                     </div>
                     <Trophy className="h-8 w-8 text-yellow-600" />
                   </div>
                   <div className="text-sm text-gray-600">
-                    <p>• Total student achievements: {stats.totalStudentAchievements}</p>
-                    <p>• Managed by dedicated committee</p>
-                    <p>• Separate dashboard for detailed management</p>
+                    <p>• B.com, BBA, BCA (3-year programs)</p>
+                    <p>• PCMB, PCMC, PCMCS (2-year programs)</p>
+                    <p>• COMMERCE, ARTS, EBAC, EBAS (2-year programs)</p>
                   </div>
                 </div>
               </div>
