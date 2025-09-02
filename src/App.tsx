@@ -23,6 +23,7 @@ import { Reports } from './pages/Reports';
 import { Settings } from './pages/Settings';
 import { StudentAchievements } from './pages/StudentAchievements';
 import { AchievementsCommitteeDashboard } from './pages/AchievementsCommitteeDashboard';
+import { ParentAttendanceCheck } from './pages/ParentAttendanceCheck';
 import { Toaster } from 'react-hot-toast';
 
 function AppContent() {
@@ -160,6 +161,9 @@ function AppContent() {
                 <Route path="/my-achievements" element={<MyAchievements />} />
               </>
             )}
+            
+            {/* Public Parent Attendance Route - No authentication required */}
+            <Route path="/parent-attendance" element={<ParentAttendanceCheck />} />
             
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>

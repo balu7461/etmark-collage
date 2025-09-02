@@ -134,6 +134,16 @@ export function LoginForm({ onShowSignup }: LoginFormProps) {
               <UserPlus className="h-4 w-4" />
               <span>Create Faculty Account</span>
             </button>
+            
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <a
+                href="/parent-attendance"
+                className="text-green-600 hover:text-green-800 font-medium flex items-center justify-center space-x-2 mx-auto transition-colors text-sm lg:text-base min-h-[44px] px-4"
+              >
+                <GraduationCap className="h-4 w-4" />
+                <span>Check Child's Attendance</span>
+              </a>
+            </div>
           </div>
         </div>
       </div>
