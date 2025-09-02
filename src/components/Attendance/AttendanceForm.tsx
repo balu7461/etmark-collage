@@ -160,8 +160,8 @@ export function AttendanceForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!selectedClass || !selectedYear || !selectedTimeSlot || !selectedSubject || !currentUser) {
-      toast.error('Please select class, year, time slot, subject, and date');
+    if (!selectedClass || !selectedYear || !currentUser) {
+      toast.error('Please select class, year, and date');
       return;
     }
 
@@ -171,8 +171,7 @@ export function AttendanceForm() {
         studentId: student.id,
         date: selectedDate,
         status: attendance[student.id]?.status || 'present',
-        subject: selectedSubject,
-        timeSlot: selectedTimeSlot,
+        subject: `Class Attendance - ${selectedClass} (${selectedYear})`,
         facultyId: currentUser.id,
         facultyName: currentUser.name,
         reason: attendance[student.id]?.reason || '',
