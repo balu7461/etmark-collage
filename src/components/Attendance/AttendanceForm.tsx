@@ -6,7 +6,6 @@ import { Student, AttendanceRecord } from '../../types';
 import { Calendar, Users, BookOpen, Save, CheckCircle, XCircle, Mail, Send, Clock } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
-import { sendAbsenteeNotification } from '../../services/emailService';
 import { ALL_CLASSES, TIME_SLOTS, getYearsForClass, subjectsByClassAndYear } from '../../utils/constants';
 
 export function AttendanceForm() {
@@ -19,7 +18,6 @@ export function AttendanceForm() {
   const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [attendance, setAttendance] = useState<Record<string, { status: 'present' | 'absent'; reason?: string }>>({});
   const [loading, setLoading] = useState(false);
-  const [sendingEmails, setSendingEmails] = useState(false);
 
   useEffect(() => {
     if (selectedClass && selectedYear) {
@@ -113,39 +111,6 @@ export function AttendanceForm() {
     }));
   };
 
-  const sendParentNotifications = async (absentStudents: Student[]) => {
-    setSendingEmails(true);
-    let successCount = 0;
-    let failureCount = 0;
-
-    for (const student of absentStudents) {
-      if (student.parentEmail) {
-        try {
-          await sendAbsenteeNotification(
-            student.parentEmail,
-            student.name,
-            selectedDate,
-            selectedSubject,
-            currentUser?.name || 'Faculty',
-            attendance[student.id]?.reason
-          );
-          successCount++;
-        } catch (error) {
-          console.error(`Failed to send email to ${student.parentEmail}:`, error);
-          failureCount++;
-        }
-      }
-    }
-
-    setSendingEmails(false);
-
-    if (successCount > 0) {
-      toast.success(`${successCount} parent notification(s) sent successfully!`);
-    }
-    if (failureCount > 0) {
-      toast.error(`Failed to send ${failureCount} notification(s)`);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -179,19 +144,7 @@ export function AttendanceForm() {
         attendance[student.id]?.status === 'absent'
       );
 
-      toast.success(`Attendance marked successfully! ${absentStudents.length} students marked absent.`);
-      
-      // Send parent notifications for absent students
-      if (absentStudents.length > 0) {
-        const studentsWithParentEmail = absentStudents.filter(student => student.parentEmail);
-        
-        if (studentsWithParentEmail.length > 0) {
-          toast.loading(`Sending notifications to ${studentsWithParentEmail.length} parent(s)...`);
-          await sendParentNotifications(studentsWithParentEmail);
-        } else {
-          toast.info('No parent email addresses found for absent students');
-        }
-      }
+      toast.success(`Attendance marked successfully! ${absentStudents.length} students marked absent. Data saved to database.`);
       
       // Reset form
       setAttendance({});
@@ -226,22 +179,6 @@ export function AttendanceForm() {
       <div className="flex items-center space-x-3 mb-6">
         <Calendar className="h-6 w-6 text-[#002e5d]" />
         <h2 className="text-xl font-semibold text-gray-900">Mark Attendance</h2>
-      </div>
-
-      {/* Email Service Notice */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-        <div className="flex items-start space-x-3">
-          <Mail className="h-5 w-5 text-blue-600 mt-0.5" />
-          <div>
-            <h4 className="font-medium text-blue-900 mb-1">Automatic Parent Notifications</h4>
-            <p className="text-sm text-blue-800">
-              Parents will automatically receive email notifications from <strong>hiddencave168@gmail.com</strong> when their child is marked absent.
-              Make sure parent email addresses are correctly entered in student records.
-            </p>
-              <div className="ml-auto text-xs sm:text-sm text-green-600 font-medium hidden sm:block">
-              </div>
-          </div>
-        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -461,15 +398,15 @@ export function AttendanceForm() {
 
         <button
           type="submit"
-          disabled={loading || sendingEmails}
+          disabled={loading}
           className="w-full bg-[#002e5d] text-white py-3 px-4 rounded-lg hover:bg-blue-800 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 transform hover:scale-105"
         >
-          {loading || sendingEmails ? (
+          {loading ? (
             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
           ) : (
             <>
               <Save className="h-5 w-5" />
-              <span>Save Attendance & Send Notifications</span>
+              <span>Save Attendance</span>
             </>
           )}
         </button>

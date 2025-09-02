@@ -69,26 +69,6 @@ export function LandingPage() {
                 For administrators, faculty, and committee members to manage students, attendance, timetables, and achievements.
               </p>
               
-              {/* Features List */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8 text-left">
-                <div className="flex items-center space-x-2 sm:space-x-3 text-blue-200">
-                  <Users className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
-                  <span className="text-xs sm:text-sm lg:text-base">Student Management</span>
-                </div>
-                <div className="flex items-center space-x-2 sm:space-x-3 text-blue-200">
-                  <Calendar className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
-                  <span className="text-xs sm:text-sm lg:text-base">Attendance Tracking</span>
-                </div>
-                <div className="flex items-center space-x-2 sm:space-x-3 text-blue-200">
-                  <Award className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
-                  <span className="text-xs sm:text-sm lg:text-base">Achievement Records</span>
-                </div>
-                <div className="flex items-center space-x-2 sm:space-x-3 text-blue-200">
-                  <Shield className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
-                  <span className="text-xs sm:text-sm lg:text-base">Leave Management</span>
-                </div>
-              </div>
-              
               <button
                 onClick={handleManagementClick}
                 className="w-full bg-white text-[#002e5d] py-3 sm:py-4 lg:py-5 px-6 sm:px-8 rounded-xl sm:rounded-2xl font-semibold text-base sm:text-lg lg:text-xl hover:bg-blue-50 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
@@ -113,26 +93,6 @@ export function LandingPage() {
               <p className="text-blue-100 text-sm sm:text-base lg:text-lg mb-6 sm:mb-8 leading-relaxed">
                 For parents to check their child's daily attendance records and stay connected with their academic progress.
               </p>
-              
-              {/* Features List */}
-              <div className="grid grid-cols-1 gap-3 sm:gap-4 mb-6 sm:mb-8 text-left">
-                <div className="flex items-center space-x-2 sm:space-x-3 text-blue-200">
-                  <Calendar className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
-                  <span className="text-xs sm:text-sm lg:text-base">Daily Attendance Check</span>
-                </div>
-                <div className="flex items-center space-x-2 sm:space-x-3 text-blue-200">
-                  <GraduationCap className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
-                  <span className="text-xs sm:text-sm lg:text-base">Subject-wise Records</span>
-                </div>
-                <div className="flex items-center space-x-2 sm:space-x-3 text-blue-200">
-                  <Users className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
-                  <span className="text-xs sm:text-sm lg:text-base">Real-time Updates</span>
-                </div>
-                <div className="flex items-center space-x-2 sm:space-x-3 text-blue-200">
-                  <Home className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
-                  <span className="text-xs sm:text-sm lg:text-base">Easy Access - No Login Required</span>
-                </div>
-              </div>
               
               <button
                 onClick={handleParentClick}

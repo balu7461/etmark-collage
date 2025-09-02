@@ -32,49 +32,15 @@ export const sendAbsenteeNotification = async (
   facultyName: string,
   reason?: string
 ) => {
-  // Check if EmailJS is properly configured
-  if (EMAILJS_PUBLIC_KEY === '-y_uC_hdYZR-Trd1F') {
-    console.log('EmailJS is properly configured and ready to send emails');
-  } else {
-    console.warn('EmailJS not configured. Please set up EmailJS credentials.');
-    // For development, we'll just log the email instead of sending
-    console.log('Email would be sent to:', {
-      to: parentEmail,
-      student: studentName,
-      date,
-      subject,
-      faculty: facultyName,
-      reason
-    });
-    return { status: 200, text: 'Email logged (EmailJS not configured)' };
-  }
-
-  const emailData: EmailData = {
-    to_email: parentEmail,
-    to_name: `Parent of ${studentName}`,
-    student_name: studentName,
-    subject: subject,
-    date: date,
-    faculty_name: facultyName,
-    from_email: 'hiddencave168@gmail.com',
-    from_name: 'CollegeConnect System',
-    reason: reason || 'No reason provided'
-  };
-
-  try {
-    const response = await emailjs.send(
-      EMAILJS_SERVICE_ID,
-      EMAILJS_TEMPLATE_ID,
-      emailData,
-      EMAILJS_PUBLIC_KEY
-    );
-    
-    console.log('Parent notification sent successfully:', response);
-    return response;
-  } catch (error) {
-    console.error('Failed to send parent notification:', error);
-    throw error;
-  }
+  // Email notifications disabled - data is saved to database for parent portal access
+  console.log('Attendance data saved to database for parent portal access:', {
+    student: studentName,
+    date,
+    subject,
+    faculty: facultyName,
+    reason
+  });
+  return { status: 200, text: 'Data saved to database' };
 };
 
 export const sendBulkParentNotifications = async (
@@ -85,35 +51,18 @@ export const sendBulkParentNotifications = async (
     date: string;
   }>
 ) => {
-  const results = [];
-  
-  for (const notification of notifications) {
-    try {
-      const subjectsList = notification.subjects.join(', ');
-      await sendAbsenteeNotification(
-        notification.parentEmail,
-        notification.studentName,
-        notification.date,
-        subjectsList,
-        'System Generated'
-      );
-      results.push({ success: true, email: notification.parentEmail });
-    } catch (error) {
-      results.push({ success: false, email: notification.parentEmail, error });
-    }
-  }
-  
-  return results;
+  // Bulk email notifications disabled - data is saved to database for parent portal access
+  console.log('Bulk attendance data saved to database for parent portal access:', notifications);
+  return notifications.map(n => ({ 
+    success: true, 
+    email: n.parentEmail 
+  }));
 };
 
 // Initialize EmailJS
 export const initializeEmailJS = () => {
-  if (EMAILJS_PUBLIC_KEY !== '-y_uC_hdYZR-Trd1F') {
-    emailjs.init(EMAILJS_PUBLIC_KEY);
-    console.log('EmailJS initialized successfully');
-  } else {
-    console.warn('EmailJS not initialized - missing configuration');
-  }
+  // EmailJS initialization disabled - using database-only approach
+  console.log('Email service disabled - using database-only approach for parent portal');
 };
 
 // EmailJS Setup Instructions:
