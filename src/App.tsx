@@ -62,114 +62,112 @@ function AppContent() {
     );
   }
 
-  if (!currentUser) {
-    return <AuthContainer />;
-  }
-
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden relative">
-      {/* Mobile sidebar backdrop */}
-      {isSidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-          onClick={closeSidebar}
-        />
-      )}
+    <Routes>
+      {/* Public Routes - No authentication required */}
+      <Route path="/parent-attendance" element={<ParentAttendanceCheck />} />
       
-      {/* Sidebar */}
-      <Sidebar 
-        isSidebarOpen={isSidebarOpen} 
-        toggleSidebar={toggleSidebar}
-        closeSidebar={closeSidebar}
-      />
+      {/* Authentication Routes */}
+      <Route path="/login" element={!currentUser ? <AuthContainer /> : <Navigate to="/dashboard" replace />} />
       
-      {/* Main content */}
-      <div className="flex-1 flex flex-col overflow-hidden lg:ml-0">
-        <Header toggleSidebar={toggleSidebar} />
-        <div className="flex-1 overflow-y-auto main-content">
-          <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            {currentUser.role === 'achievements_committee' ? (
-              <Route path="/dashboard" element={<Navigate to="/achievements-dashboard" replace />} />
-            ) : (
-              <Route path="/dashboard" element={<Dashboard />} />
+      {/* Protected Routes - Authentication required */}
+      <Route path="/*" element={
+        !currentUser ? (
+          <Navigate to="/login" replace />
+        ) : (
+          <div className="flex h-screen bg-gray-50 overflow-hidden relative">
+            {/* Mobile sidebar backdrop */}
+            {isSidebarOpen && (
+              <div 
+                className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+                onClick={closeSidebar}
+              />
             )}
             
-            {/* Admin-only routes */}
-            {currentUser.role === 'admin' && (
-              <>
-                <Route path="/user-management" element={<UserManagement />} />
-                <Route path="/faculty-approval" element={<FacultyApproval />} />
-                <Route path="/student-approval" element={<StudentApproval />} />
-                <Route path="/students" element={<Students />} />
-                <Route path="/attendance" element={<Attendance />} />
-                <Route path="/student-attendance" element={<StudentOverallAttendance />} />
-                <Route path="/timetable" element={<Timetable />} />
-                <Route path="/achievements" element={<Achievements />} />
-                <Route path="/leave-management" element={<LeaveManagement />} />
-                <Route path="/reports" element={<Reports />} />
-                <Route path="/settings" element={<Settings />} />
-              </>
-            )}
+            {/* Sidebar */}
+            <Sidebar 
+              isSidebarOpen={isSidebarOpen} 
+              toggleSidebar={toggleSidebar}
+              closeSidebar={closeSidebar}
+            />
             
-            {/* Timetable Committee routes */}
-            {currentUser.role === 'timetable_committee' && (
-              <>
-                <Route path="/my-timetable" element={<MyTimetable />} />
-                <Route path="/leave-management" element={<LeaveManagement />} />
-                <Route path="/my-leaves" element={<MyLeaves />} />
-                <Route path="/my-achievements" element={<MyAchievements />} />
-              </>
-            )}
-            
-            {/* Examination Committee routes */}
-            {currentUser.role === 'examination_committee' && (
-              <>
-                <Route path="/my-timetable" element={<MyTimetable />} />
-                <Route path="/leave-management" element={<LeaveManagement />} />
-                <Route path="/my-leaves" element={<MyLeaves />} />
-                <Route path="/my-achievements" element={<MyAchievements />} />
-              </>
-            )}
-            
-            {/* Achievements Committee routes */}
-            {currentUser.role === 'achievements_committee' && (
-              <>
-                <Route path="/achievements-dashboard" element={<AchievementsCommitteeDashboard />} />
-                <Route path="/student-achievements" element={<StudentAchievements />} />
-                <Route path="/my-leaves" element={<MyLeaves />} />
-                <Route path="/my-achievements" element={<MyAchievements />} />
-              </>
-            )}
-            
-            {/* Committee Member routes */}
-            {currentUser.role === 'committee_member' && (
-              <>
-                <Route path="/my-timetable" element={<MyTimetable />} />
-                <Route path="/leave-management" element={<LeaveManagement />} />
-                <Route path="/my-leaves" element={<MyLeaves />} />
-                <Route path="/my-achievements" element={<MyAchievements />} />
-              </>
-            )}
-            
-            {/* Faculty-only routes */}
-            {currentUser.role === 'faculty' && (
-              <>
-                <Route path="/mark-attendance" element={<MarkAttendance />} />
-                <Route path="/my-timetable" element={<MyTimetable />} />
-                <Route path="/my-leaves" element={<MyLeaves />} />
-                <Route path="/my-achievements" element={<MyAchievements />} />
-              </>
-            )}
-            
-            {/* Public Parent Attendance Route - No authentication required */}
-            <Route path="/parent-attendance" element={<ParentAttendanceCheck />} />
-            
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
-          </Routes>
-        </div>
-      </div>
-    </div>
+            {/* Main content */}
+            <div className="flex-1 flex flex-col overflow-hidden lg:ml-0">
+              <Header toggleSidebar={toggleSidebar} />
+              <div className="flex-1 overflow-y-auto main-content">
+                <Routes>
+                  <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                  {currentUser.role === 'achievements_committee' ? (
+                    <Route path="/dashboard" element={<Navigate to="/achievements-dashboard" replace />} />
+                  ) : (
+                    <Route path="/dashboard" element={<Dashboard />} />
+                  )}
+                  
+                  {/* Admin-only routes */}
+                  {currentUser.role === 'admin' && (
+                    <>
+                      <Route path="/user-management" element={<UserManagement />} />
+                      <Route path="/faculty-approval" element={<FacultyApproval />} />
+                      <Route path="/student-approval" element={<StudentApproval />} />
+                      <Route path="/students" element={<Students />} />
+                      <Route path="/attendance" element={<Attendance />} />
+                      <Route path="/student-attendance" element={<StudentOverallAttendance />} />
+                      <Route path="/timetable" element={<Timetable />} />
+                      <Route path="/achievements" element={<Achievements />} />
+                      <Route path="/leave-management" element={<LeaveManagement />} />
+                      <Route path="/reports" element={<Reports />} />
+                      <Route path="/settings" element={<Settings />} />
+                    </>
+                  )}
+                  
+                  {/* Timetable Committee routes */}
+                  {currentUser.role === 'timetable_committee' && (
+                    <>
+                      <Route path="/my-timetable" element={<MyTimetable />} />
+                      <Route path="/leave-management" element={<LeaveManagement />} />
+                      <Route path="/my-leaves" element={<MyLeaves />} />
+                      <Route path="/my-achievements" element={<MyAchievements />} />
+                    </>
+                  )}
+                  
+                  {/* Examination Committee routes */}
+                  {currentUser.role === 'examination_committee' && (
+                    <>
+                      <Route path="/my-timetable" element={<MyTimetable />} />
+                      <Route path="/leave-management" element={<LeaveManagement />} />
+                      <Route path="/my-leaves" element={<MyLeaves />} />
+                      <Route path="/my-achievements" element={<MyAchievements />} />
+                    </>
+                  )}
+                  
+                  {/* Achievements Committee routes */}
+                  {currentUser.role === 'achievements_committee' && (
+                    <>
+                      <Route path="/achievements-dashboard" element={<AchievementsCommitteeDashboard />} />
+                      <Route path="/student-achievements" element={<StudentAchievements />} />
+                      <Route path="/my-leaves" element={<MyLeaves />} />
+                      <Route path="/my-achievements" element={<MyAchievements />} />
+                    </>
+                  )}
+                  
+                  {/* Faculty-only routes */}
+                  {currentUser.role === 'faculty' && (
+                    <>
+                      <Route path="/mark-attendance" element={<MarkAttendance />} />
+                      <Route path="/my-timetable" element={<MyTimetable />} />
+                      <Route path="/my-leaves" element={<MyLeaves />} />
+                      <Route path="/my-achievements" element={<MyAchievements />} />
+                    </>
+                  )}
+                  
+                  <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                </Routes>
+              </div>
+            </div>
+          </div>
+        )
+      } />
+    </Routes>
   );
 }
 
