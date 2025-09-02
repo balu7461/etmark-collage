@@ -44,8 +44,20 @@ export function UserManagement() {
         ...doc.data()
       })) as Student[];
 
+      // Filter students to only include those from valid classes and years
+      const validStudents = studentsData.filter(student => {
+        if (!ALL_CLASSES.includes(student.class)) {
+          return false;
+        }
+        const validYears = getYearsForClass(student.class);
+        if (student.year && !validYears.includes(student.year)) {
+          return false;
+        }
+        return true;
+      });
+
       setUsers(usersData);
-      setStudents(studentsData);
+      setStudents(validStudents);
     } catch (error) {
       console.error('Error fetching data:', error);
       toast.error('Failed to fetch data');

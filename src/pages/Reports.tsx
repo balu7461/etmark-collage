@@ -140,7 +140,19 @@ export function Reports() {
       const studentsSnapshot = await getDocs(studentsQuery);
       const studentsData = studentsSnapshot.docs.map(doc => doc.data()) as Student[];
 
-      const exportData = studentsData.map(student => ({
+      // Filter students to only include those from valid classes and years
+      const validStudents = studentsData.filter(student => {
+        if (!ALL_CLASSES.includes(student.class)) {
+          return false;
+        }
+        const validYears = getYearsForClass(student.class);
+        if (student.year && !validYears.includes(student.year)) {
+          return false;
+        }
+        return true;
+      });
+
+      const exportData = validStudents.map(student => ({
         'Student Name': student.name,
         'Sats No.': student.rollNumber,
         'Email': student.email,

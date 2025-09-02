@@ -6,7 +6,7 @@ import { Student } from '../types';
 import { GraduationCap, UserX, Clock, CheckCircle, XCircle, Mail, Phone, Building, Calendar, Users, AlertTriangle, Shield } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
-import { ALL_CLASSES } from '../utils/constants';
+import { ALL_CLASSES, getYearsForClass } from '../utils/constants';
 
 export function StudentApproval() {
   const { currentUser } = useAuth();
@@ -32,6 +32,18 @@ export function StudentApproval() {
         ...doc.data()
       })) as Student[];
 
+      // Filter pending students to only include those from valid classes and years
+      const validPendingStudents = pendingData.filter(student => {
+        if (!ALL_CLASSES.includes(student.class)) {
+          return false;
+        }
+        const validYears = getYearsForClass(student.class);
+        if (student.year && !validYears.includes(student.year)) {
+          return false;
+        }
+        return true;
+      });
+
       // Fetch approved students
       const approvedQuery = query(
         collection(db, 'students'),
@@ -43,8 +55,20 @@ export function StudentApproval() {
         ...doc.data()
       })) as Student[];
 
-      setPendingStudents(pendingData);
-      setApprovedStudents(approvedData);
+      // Filter approved students to only include those from valid classes and years
+      const validApprovedStudents = approvedData.filter(student => {
+        if (!ALL_CLASSES.includes(student.class)) {
+          return false;
+        }
+        const validYears = getYearsForClass(student.class);
+        if (student.year && !validYears.includes(student.year)) {
+          return false;
+        }
+        return true;
+      });
+
+      setPendingStudents(validPendingStudents);
+      setApprovedStudents(validApprovedStudents);
     } catch (error) {
       console.error('Error fetching students:', error);
       toast.error('Failed to fetch student data');
