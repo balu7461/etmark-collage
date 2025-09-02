@@ -135,7 +135,7 @@ export function AttendanceForm() {
             student.parentEmail,
             student.name,
             selectedDate,
-            selectedSubject,
+            `Class Attendance - ${selectedClass}`,
             currentUser?.name || 'Faculty',
             attendance[student.id]?.reason
           );
@@ -207,8 +207,6 @@ export function AttendanceForm() {
       setAttendance({});
       setSelectedClass('');
       setSelectedYear('');
-      setSelectedTimeSlot('');
-      setSelectedSubject('');
       setStudents([]);
       
     } catch (error) {
