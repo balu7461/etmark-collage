@@ -22,12 +22,19 @@ export function AttendanceForm() {
   const [sendingEmails, setSendingEmails] = useState(false);
 
   useEffect(() => {
-    if (selectedClass && selectedYear && selectedTimeSlot && selectedSubject) {
+    if (selectedClass && selectedYear) {
+      console.log('🔍 Fetching students for:', { selectedClass, selectedYear });
       fetchStudents();
     }
-  }, [selectedClass, selectedYear, selectedTimeSlot, selectedSubject]);
+  }, [selectedClass, selectedYear]);
 
   const fetchStudents = async () => {
+    console.log('📡 Starting fetchStudents with params:', {
+      selectedClass,
+      selectedYear,
+      timestamp: new Date().toISOString()
+    });
+    
     try {
       const q = query(
         collection(db, 'students'), 
@@ -35,11 +42,35 @@ export function AttendanceForm() {
         where('year', '==', selectedYear),
         where('isApproved', '==', true)
       );
+      
+      console.log('🔎 Firestore query created for:', {
+        class: selectedClass,
+        year: selectedYear,
+        isApproved: true
+      });
+      
       const querySnapshot = await getDocs(q, { source: 'server' });
+      
+      console.log('📊 Firestore query results:', {
+        totalDocuments: querySnapshot.size,
+        isEmpty: querySnapshot.empty
+      });
+      
       const studentsData = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       })) as Student[];
+      
+      console.log('📋 Raw students data from Firestore:', {
+        count: studentsData.length,
+        students: studentsData.map(s => ({
+          name: s.name,
+          class: s.class,
+          year: s.year,
+          rollNumber: s.rollNumber,
+          isApproved: s.isApproved
+        }))
+      });
       
       setStudents(studentsData);
       
@@ -49,8 +80,21 @@ export function AttendanceForm() {
         attendanceState[student.id] = { status: 'present' };
       });
       setAttendance(attendanceState);
+      
+      console.log('✅ Students state updated:', {
+        studentsCount: studentsData.length,
+        attendanceStateKeys: Object.keys(attendanceState).length
+      });
+      
     } catch (error) {
-      console.error('Error fetching students:', error);
+      console.error('❌ DETAILED ERROR fetching students:', {
+        error,
+        errorMessage: error.message,
+        errorCode: error.code,
+        selectedClass,
+        selectedYear,
+        timestamp: new Date().toISOString()
+      });
       toast.error('Failed to fetch students');
     }
   };
