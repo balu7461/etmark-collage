@@ -7,6 +7,7 @@ import { Calendar, Users, BookOpen, Save, CheckCircle, XCircle, Mail, Send, Cloc
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 import { sendAbsenteeNotification } from '../../services/emailService';
+import { ALL_CLASSES, TIME_SLOTS, getYearsForClass, subjectsByClassAndYear } from '../../utils/constants';
 
 export function AttendanceForm() {
   const { currentUser } = useAuth();
@@ -19,61 +20,6 @@ export function AttendanceForm() {
   const [attendance, setAttendance] = useState<Record<string, { status: 'present' | 'absent'; reason?: string }>>({});
   const [loading, setLoading] = useState(false);
   const [sendingEmails, setSendingEmails] = useState(false);
-
-  const classes = ['B.com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
-  
-  const timeSlots = [
-    { start: '09:30', end: '10:25', label: '09:30 - 10:25' },
-    { start: '10:25', end: '11:20', label: '10:25 - 11:20' },
-    { start: '11:35', end: '12:30', label: '11:35 - 12:30' },
-    { start: '12:30', end: '13:15', label: '12:30 - 1:15' },
-    { start: '13:15', end: '14:10', label: '1:15 - 2:10' },
-    { start: '14:10', end: '15:05', label: '2:10 - 3:05' },
-    { start: '15:05', end: '16:00', label: '3:05 - 4:00' }
-  ];
-
-  const subjectsByClassAndYear = {
-    'B.com': {
-      '1st Year': ['Fundamentals of Financial Accounting', 'Business Communication', 'Business Mathematics', 'Banking Law and Practice', 'Kannada/Hindi', 'Constitutional Values with Reference to India', 'English'],
-      '2nd Year': ['Fundamentals of Corporate Accounting', 'Logistics and Supply Chain Management', 'Advanced Cost Accounting', 'Income Tax Law & Practice', 'English', 'Financial Institutions and Markets', 'Kannada/Hindi'],
-      '3rd Year': ['Financial Management', 'Financial Institutions and Markets', 'Employability Skills', 'Income Tax Law and Practice – I', 'Principles and Practice of Auditing']
-    },
-    'BBA': {
-      '1st Year': ['Fundamentals of Business Accounting', 'Business Economics', 'Principles and Practices of Management', 'Kannada/Hindi/French', 'Constitutional Values with Reference to India', 'English'],
-      '2nd Year': ['Cost Accounting', 'Entrepreneurship and Startup Ecosystem', 'Business Environment', 'Business Statistics II', 'English', 'Financial Institutions and Markets', 'Kannada/Hindi'],
-      '3rd Year': ['Retail Management', 'Advanced Corporate Financial Management', 'Digital Marketing', 'Income Tax – I', 'Banking Law and Practice', 'Employability Skills']
-    },
-    'BCA': {
-      '1st Year': ['Digital Computer Organization', 'Mathematical and Statistical Computing', 'Problem Solving Using C++', 'Kannada/Hindi', 'Environmental Studies', 'English'],
-      '2nd Year': ['C#.Net Programming', 'Cloud Computing', 'Web Technologies', 'Data Base Management System', 'Cyber Security', 'Kannada/Hindi', 'English'],
-      '3rd Year': ['Design and Analysis of Algorithms', 'Software Engineering', 'Statistical Computing and R Programming', 'Cloud Computing', 'Employability Skills', 'Digital Marketing']
-    },
-    'PCMB': {
-      '1st Year': ['Physics', 'Chemistry', 'Mathematics', 'Biology'],
-      '2nd Year': ['Physics', 'Chemistry', 'Mathematics', 'Biology']
-    },
-    'PCMC': {
-      '1st Year': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science'],
-      '2nd Year': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science']
-    },
-    'EBAC': {
-      '1st Year': ['Economics', 'Business Studies', 'Accountancy', 'Computer Science'],
-      '2nd Year': ['Economics', 'Business Studies', 'Accountancy', 'Computer Science']
-    },
-    'EBAS': {
-      '1st Year': ['Economics', 'Business Studies', 'Accountancy', 'Statistics'],
-      '2nd Year': ['Economics', 'Business Studies', 'Accountancy', 'Statistics']
-    }
-  };
-  
-  const getYearsForClass = (selectedClass: string) => {
-    if (['B.com', 'BBA', 'BCA'].includes(selectedClass)) {
-      return ['1st Year', '2nd Year', '3rd Year'];
-    } else if (['PCMB', 'PCMC', 'EBAC', 'EBAS'].includes(selectedClass)) {
-      return ['1st Year', '2nd Year'];
-    }
-    return [];
-  };
 
   useEffect(() => {
     if (selectedClass && selectedYear && selectedTimeSlot && selectedSubject) {
@@ -281,7 +227,7 @@ export function AttendanceForm() {
                 required
               >
                 <option value="">Select Class</option>
-                {classes.map(cls => (
+                {ALL_CLASSES.map(cls => (
                   <option key={cls} value={cls}>{cls}</option>
                 ))}
               </select>
@@ -317,6 +263,7 @@ export function AttendanceForm() {
               >
                 <option value="">Select Time</option>
                 {timeSlots.map(slot => (
+                {TIME_SLOTS.map(slot => (
                   <option key={slot.label} value={slot.label}>{slot.label}</option>
                 ))}
               </select>

@@ -6,22 +6,13 @@ import { TimetableGrid } from '../components/Timetable/TimetableGrid';
 import { TimeSlot } from '../types';
 import { CalendarDays, Clock, BookOpen, MapPin, Download } from 'lucide-react';
 import * as XLSX from 'xlsx';
+import { ALL_CLASSES, getYearsForClass, subjectsByClassAndYear } from '../utils/constants';
 
 export function MyTimetable() {
   const { currentUser } = useAuth();
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedWeek, setSelectedWeek] = useState('current');
-
-  const subjectsByClass = {
-    'B.com': ['Accountancy', 'Business Studies', 'Economics', 'English', 'Mathematics', 'Computer Applications'],
-    'BBA': ['Business Administration', 'Marketing', 'Finance', 'Human Resources', 'Operations Management', 'Business Ethics'],
-    'BCA': ['Programming in C', 'Data Structures', 'Database Management', 'Web Development', 'Software Engineering', 'Computer Networks'],
-    'PCMB': ['Physics', 'Chemistry', 'Mathematics', 'Biology'],
-    'PCMC': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science'],
-    'EBAC': ['Economics', 'Business Studies', 'Accountancy', 'Computer Science'],
-    'EBAS': ['Economics', 'Business Studies', 'Accountancy', 'Statistics']
-  };
 
   useEffect(() => {
     if (currentUser) {

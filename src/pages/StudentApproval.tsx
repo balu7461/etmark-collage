@@ -6,6 +6,7 @@ import { Student } from '../types';
 import { GraduationCap, UserX, Clock, CheckCircle, XCircle, Mail, Phone, Building, Calendar, Users, AlertTriangle, Shield } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
+import { ALL_CLASSES } from '../utils/constants';
 
 export function StudentApproval() {
   const { currentUser } = useAuth();
@@ -169,7 +170,7 @@ export function StudentApproval() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Classes</p>
-                  <p className="text-3xl font-bold text-purple-600">7</p>
+                  <p className="text-3xl font-bold text-purple-600">{ALL_CLASSES.length}</p>
                 </div>
                 <Building className="h-8 w-8 text-purple-600" />
               </div>

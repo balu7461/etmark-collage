@@ -8,21 +8,7 @@ import { Users, Plus, Edit2, Trash2, Search, Mail, Phone, GraduationCap, Buildin
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 import * as XLSX from 'xlsx';
-
-// Define classes at module level to ensure they're always available
-const ALL_CLASSES = ['B.com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'PCMCS', 'COMMERCE', 'ARTS'];
-
-const getYearsForClass = (className: string): string[] => {
-  const undergradClasses = ['B.com', 'BBA', 'BCA'];
-  const plus2Classes = ['PCMB', 'PCMC', 'PCMCS', 'COMMERCE', 'ARTS'];
-  
-  if (undergradClasses.includes(className)) {
-    return ['1st Year', '2nd Year', '3rd Year'];
-  } else if (plus2Classes.includes(className)) {
-    return ['1st Year', '2nd Year'];
-  }
-  return [];
-};
+import { ALL_CLASSES, getYearsForClass } from '../utils/constants';
 
 export function Students() {
   const { currentUser } = useAuth();

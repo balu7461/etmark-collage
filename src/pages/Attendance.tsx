@@ -5,6 +5,7 @@ import { AttendanceRecord, Student } from '../types';
 import { Calendar, Users, Filter, Download, Search } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { format } from 'date-fns';
+import { ALL_CLASSES, getYearsForClass, subjectsByClassAndYear } from '../utils/constants';
 
 export function Attendance() {
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
@@ -18,28 +19,6 @@ export function Attendance() {
     subject: '',
     faculty: ''
   });
-
-  // Updated classes to match the ones used throughout the application
-  const classes = ['B.com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
-  
-  const getYearsForClass = (selectedClass: string) => {
-    if (['B.com', 'BBA', 'BCA'].includes(selectedClass)) {
-      return ['1st Year', '2nd Year', '3rd Year'];
-    } else if (['PCMB', 'PCMC', 'EBAC', 'EBAS'].includes(selectedClass)) {
-      return ['1st Year', '2nd Year'];
-    }
-    return [];
-  };
-
-  const subjectsByClass = {
-    'B.com': ['Fundamentals of Financial Accounting', 'Business Communication', 'Business Mathematics', 'Banking Law and Practice', 'Kannada/Hindi', 'Constitutional Values with Reference to India', 'English', 'Fundamentals of Corporate Accounting', 'Logistics and Supply Chain Management', 'Advanced Cost Accounting', 'Income Tax Law & Practice', 'Financial Institutions and Markets', 'Financial Management', 'Employability Skills', 'Income Tax Law and Practice – I', 'Principles and Practice of Auditing'],
-    'BBA': ['Fundamentals of Business Accounting', 'Business Economics', 'Principles and Practices of Management', 'Kannada/Hindi/French', 'Constitutional Values with Reference to India', 'English', 'Cost Accounting', 'Entrepreneurship and Startup Ecosystem', 'Business Environment', 'Business Statistics II', 'Financial Institutions and Markets', 'Retail Management', 'Advanced Corporate Financial Management', 'Digital Marketing', 'Income Tax – I', 'Banking Law and Practice', 'Employability Skills'],
-    'BCA': ['Digital Computer Organization', 'Mathematical and Statistical Computing', 'Problem Solving Using C++', 'Kannada/Hindi', 'Environmental Studies', 'English', 'C#.Net Programming', 'Cloud Computing', 'Web Technologies', 'Data Base Management System', 'Cyber Security', 'Design and Analysis of Algorithms', 'Software Engineering', 'Statistical Computing and R Programming', 'Digital Marketing'],
-    'PCMB': ['Physics', 'Chemistry', 'Mathematics', 'Biology'],
-    'PCMC': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science'],
-    'EBAC': ['Economics', 'Business Studies', 'Accountancy', 'Computer Science'],
-    'EBAS': ['Economics', 'Business Studies', 'Accountancy', 'Statistics']
-  };
 
   useEffect(() => {
     fetchData();
@@ -228,7 +207,7 @@ export function Attendance() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">All Classes</option>
-                  {classes.map(cls => (
+                  {ALL_CLASSES.map(cls => (
                     <option key={cls} value={cls}>{cls}</option>
                   ))}
                 </select>
@@ -256,12 +235,21 @@ export function Attendance() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">All Subjects</option>
-                  {filters.class && subjectsByClass[filters.class as keyof typeof subjectsByClass]?.map(subj => (
-                    <option key={subj} value={subj}>{subj}</option>
-                  ))}
-                  {!filters.class && Object.values(subjectsByClass).flat().map(subj => (
-                    <option key={subj} value={subj}>{subj}</option>
-                  ))}
+                  {filters.class && filters.year ? (
+                    (subjectsByClassAndYear[filters.class as keyof typeof subjectsByClassAndYear] as any)?.[filters.year]?.map((subj: string) => (
+                      <option key={subj} value={subj}>{subj}</option>
+                    ))
+                  ) : filters.class ? (
+                    Object.values((subjectsByClassAndYear[filters.class as keyof typeof subjectsByClassAndYear] as any) || {}).flat().map((subj: string) => (
+                      <option key={subj} value={subj}>{subj}</option>
+                    ))
+                  ) : (
+                    Object.values(subjectsByClassAndYear).flatMap(classData => 
+                      Object.values(classData).flat()
+                    ).map((subj: string) => (
+                      <option key={subj} value={subj}>{subj}</option>
+                    ))
+                  )}
                 </select>
               </div>
               
@@ -282,7 +270,7 @@ export function Attendance() {
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Class-wise Attendance Overview</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
-              {classes.map(cls => {
+              {ALL_CLASSES.map(cls => {
                 const classRecords = filteredRecords.filter(record => record.class === cls);
                 const classPresent = classRecords.filter(record => record.status === 'present').length;
                 const classTotal = classRecords.length;

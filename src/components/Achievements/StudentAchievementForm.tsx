@@ -6,6 +6,7 @@ import { Student, StudentAchievement } from '../../types';
 import { Award, Plus, User, Calendar, MapPin, Trophy, Camera } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
+import { ALL_CLASSES } from '../../utils/constants';
 
 export function StudentAchievementForm() {
   const { currentUser } = useAuth();
@@ -31,8 +32,6 @@ export function StudentAchievementForm() {
     { value: 'Academic', label: 'Academic' },
     { value: 'Other', label: 'Other' }
   ];
-
-  const branches = ['B.Com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
 
   const outcomes = [
     'Participation Certificate',
@@ -296,7 +295,7 @@ export function StudentAchievementForm() {
               required
             >
               <option value="">Select Branch</option>
-              {branches.map(branch => (
+              {ALL_CLASSES.map(branch => (
                 <option key={branch} value={branch}>{branch}</option>
               ))}
             </select>

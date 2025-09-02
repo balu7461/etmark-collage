@@ -1,6 +1,7 @@
 import React from 'react';
 import { TimeSlot } from '../../types';
 import { Clock, MapPin, User, BookOpen, Edit2, Trash2 } from 'lucide-react';
+import { TIME_SLOTS } from '../../utils/constants';
 
 interface TimetableGridProps {
   timeSlots: TimeSlot[];
@@ -13,15 +14,7 @@ interface TimetableGridProps {
 
 export function TimetableGrid({ timeSlots, selectedClass, selectedYear, isAdmin = false, onEdit, onDelete }: TimetableGridProps) {
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const timeSlotHours = [
-    '09:30-10:25',
-    '10:25-11:20',
-    '11:35-12:30',
-    '12:30-13:15',
-    '13:15-14:10',
-    '14:10-15:05',
-    '15:05-16:00'
-  ];
+  const timeSlotHours = TIME_SLOTS.map(slot => `${slot.start}-${slot.end}`);
 
   const getTimeSlotForDayAndTime = (day: string, timeRange: string) => {
     const [startTime, endTime] = timeRange.split('-');

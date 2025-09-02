@@ -7,6 +7,7 @@ import { TimeSlot } from '../types';
 import { CalendarDays, Plus, Filter, Download, Search } from 'lucide-react';
 import toast from 'react-hot-toast';
 import * as XLSX from 'xlsx';
+import { ALL_CLASSES, getYearsForClass, subjectsByClassAndYear } from '../utils/constants';
 
 export function Timetable() {
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
@@ -17,27 +18,7 @@ export function Timetable() {
   const [selectedYear, setSelectedYear] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
-  const classes = ['B.com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
   const semesters = ['1', '2', '3', '4', '5', '6'];
-
-  const getYearsForClass = (selectedClass: string) => {
-    if (['B.com', 'BBA', 'BCA'].includes(selectedClass)) {
-      return ['1st Year', '2nd Year', '3rd Year'];
-    } else if (['PCMB', 'PCMC', 'EBAC', 'EBAS'].includes(selectedClass)) {
-      return ['1st Year', '2nd Year'];
-    }
-    return [];
-  };
-
-  const subjectsByClass = {
-    'B.com': ['Fundamentals of Financial Accounting', 'Business Communication', 'Business Mathematics', 'Banking Law and Practice', 'Kannada/Hindi', 'Constitutional Values with Reference to India', 'English', 'Fundamentals of Corporate Accounting', 'Logistics and Supply Chain Management', 'Advanced Cost Accounting', 'Income Tax Law & Practice', 'Financial Institutions and Markets', 'Financial Management', 'Employability Skills', 'Income Tax Law and Practice – I', 'Principles and Practice of Auditing'],
-    'BBA': ['Fundamentals of Business Accounting', 'Business Economics', 'Principles and Practices of Management', 'Kannada/Hindi/French', 'Constitutional Values with Reference to India', 'English', 'Cost Accounting', 'Entrepreneurship and Startup Ecosystem', 'Business Environment', 'Business Statistics II', 'Financial Institutions and Markets', 'Retail Management', 'Advanced Corporate Financial Management', 'Digital Marketing', 'Income Tax – I', 'Banking Law and Practice', 'Employability Skills'],
-    'BCA': ['Digital Computer Organization', 'Mathematical and Statistical Computing', 'Problem Solving Using C++', 'Kannada/Hindi', 'Environmental Studies', 'English', 'C#.Net Programming', 'Cloud Computing', 'Web Technologies', 'Data Base Management System', 'Cyber Security', 'Design and Analysis of Algorithms', 'Software Engineering', 'Statistical Computing and R Programming', 'Digital Marketing'],
-    'PCMB': ['Physics', 'Chemistry', 'Mathematics', 'Biology'],
-    'PCMC': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science'],
-    'EBAC': ['Economics', 'Business Studies', 'Accountancy', 'Computer Science'],
-    'EBAS': ['Economics', 'Business Studies', 'Accountancy', 'Statistics']
-  };
 
   useEffect(() => {
     fetchTimeSlots();
@@ -227,7 +208,7 @@ export function Timetable() {
                     className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="">All Classes</option>
-                    {classes.map(cls => (
+                    {ALL_CLASSES.map(cls => (
                       <option key={cls} value={cls}>{cls}</option>
                     ))}
                   </select>
