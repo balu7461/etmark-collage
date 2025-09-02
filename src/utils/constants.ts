@@ -137,14 +137,6 @@ export const subjectsByClassAndYear = {
   'ARTS': {
     '1st Year': ['History', 'Political Science', 'Economics', 'English', 'Kannada/Hindi'],
     '2nd Year': ['History', 'Political Science', 'Economics', 'English', 'Kannada/Hindi']
-  },
-  'EBAC': {
-    '1st Year': ['Economics', 'Business Studies', 'Accountancy', 'Computer Science'],
-    '2nd Year': ['Economics', 'Business Studies', 'Accountancy', 'Computer Science']
-  },
-  'EBAS': {
-    '1st Year': ['Economics', 'Business Studies', 'Accountancy', 'Statistics'],
-    '2nd Year': ['Economics', 'Business Studies', 'Accountancy', 'Statistics']
   }
 };
 
