@@ -3,8 +3,8 @@ import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { StatsCard } from '../components/Dashboard/StatsCard';
-import { Header } from '../components/Layout/Header';
 import { StudentAchievement } from '../types';
+import { calculateLeaveStats, getLeaveStatusColor, getLOPStatusColor } from '../utils/leaveCalculations';
 import { ALL_CLASSES } from '../utils/constants';
 import { 
   Users, 
@@ -24,7 +24,9 @@ import {
   Clock3,
   FileCheck,
   Trophy,
-  Star
+  Star,
+  Calendar as CalendarIcon,
+  AlertTriangle
 } from 'lucide-react';
 
 export function Dashboard() {
@@ -40,7 +42,10 @@ export function Dashboard() {
     totalStudentAchievements: 0,
     totalTimeSlots: 0,
     attendanceRate: 0,
-    departmentStats: {} as Record<string, { faculty: number; students: number }>
+    departmentStats: {} as Record<string, { faculty: number; students: number }>,
+    remainingLeaves: 0,
+    totalLOP: 0,
+    totalLeavesUsed: 0
   });
   const [loading, setLoading] = useState(true);
 
@@ -166,6 +171,10 @@ export function Dashboard() {
           totalAchievements,
           totalTimeSlots,
           attendanceRate: 0,
+          departmentStats: {},
+          remainingLeaves: leaveStats.remainingLeaves,
+          totalLOP: leaveStats.totalLOP,
+          totalLeavesUsed: leaveStats.totalLeavesUsed
         });
       } else if (currentUser?.role === 'examination_committee') {
         // Fetch examination committee stats
@@ -175,6 +184,18 @@ export function Dashboard() {
         );
         const pendingLeavesSnapshot = await getDocs(pendingLeavesQuery);
         const pendingLeaves = pendingLeavesSnapshot.size;
+
+        // Fetch my approved leaves for current year
+        const myApprovedLeavesQuery = query(
+          collection(db, 'leaveApplications'),
+          where('facultyId', '==', currentUser?.id),
+          where('status', '==', 'approved')
+        );
+        const myApprovedLeavesSnapshot = await getDocs(myApprovedLeavesQuery);
+        const myApprovedLeaves = myApprovedLeavesSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as LeaveApplication[];
 
         const myLeavesQuery = query(
           collection(db, 'leaveApplications'),
@@ -191,8 +212,59 @@ export function Dashboard() {
         const myAchievementsSnapshot = await getDocs(myAchievementsQuery);
         const totalAchievements = myAchievementsSnapshot.size;
 
+        const leaveStats = calculateLeaveStats(myApprovedLeaves);
+
         const timeSlotsSnapshot = await getDocs(collection(db, 'timeSlots'));
         const totalTimeSlots = timeSlotsSnapshot.size;
+
+        setStats({
+          totalStudents,
+          totalUsers,
+          pendingFacultyApprovals,
+          pendingStudentApprovals,
+          presentToday,
+          pendingLeaves,
+          totalAchievements,
+          totalStudentAchievements,
+          totalTimeSlots,
+          attendanceRate,
+          departmentStats: {},
+          remainingLeaves: 0,
+          totalLOP: 0,
+          totalLeavesUsed: 0
+        });
+      } else if (currentUser?.role === 'timetable_committee') {
+        // Fetch timetable committee stats
+        const pendingLeavesQuery = query(
+          collection(db, 'leaveApplications'),
+          where('status', '==', 'pending_committee_approval')
+        );
+        const pendingLeavesSnapshot = await getDocs(pendingLeavesQuery);
+        const pendingLeaves = pendingLeavesSnapshot.size;
+
+        const timeSlotsSnapshot = await getDocs(collection(db, 'timeSlots'));
+        const totalTimeSlots = timeSlotsSnapshot.size;
+
+        // Fetch my approved leaves for current year
+        const myApprovedLeavesQuery = query(
+          collection(db, 'leaveApplications'),
+          where('facultyId', '==', currentUser?.id),
+          where('status', '==', 'approved')
+        );
+        const myApprovedLeavesSnapshot = await getDocs(myApprovedLeavesQuery);
+        const myApprovedLeaves = myApprovedLeavesSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as LeaveApplication[];
+
+        const leaveStats = calculateLeaveStats(myApprovedLeaves);
+
+        const myAchievementsQuery = query(
+          collection(db, 'achievements'),
+          where('facultyId', '==', currentUser?.id)
+        );
+        const myAchievementsSnapshot = await getDocs(myAchievementsQuery);
+        const totalAchievements = myAchievementsSnapshot.size;
 
         setStats({
           totalStudents: 0,
@@ -204,9 +276,27 @@ export function Dashboard() {
           totalAchievements,
           totalTimeSlots,
           attendanceRate: 0,
+          departmentStats: {},
+          remainingLeaves: leaveStats.remainingLeaves,
+          totalLOP: leaveStats.totalLOP,
+          totalLeavesUsed: leaveStats.totalLeavesUsed
         });
       } else {
         // Fetch faculty stats
+        // Fetch my approved leaves for current year
+        const myApprovedLeavesQuery = query(
+          collection(db, 'leaveApplications'),
+          where('facultyId', '==', currentUser?.id),
+          where('status', '==', 'approved')
+        );
+        const myApprovedLeavesSnapshot = await getDocs(myApprovedLeavesQuery);
+        const myApprovedLeaves = myApprovedLeavesSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as LeaveApplication[];
+
+        const leaveStats = calculateLeaveStats(myApprovedLeaves);
+
         const myLeavesQuery = query(
           collection(db, 'leaveApplications'),
           where('facultyId', '==', currentUser?.id),
@@ -239,6 +329,10 @@ export function Dashboard() {
           totalAchievements,
           totalTimeSlots,
           attendanceRate: 0,
+          departmentStats: {},
+          remainingLeaves: leaveStats.remainingLeaves,
+          totalLOP: leaveStats.totalLOP,
+          totalLeavesUsed: leaveStats.totalLeavesUsed
         });
       }
     } catch (error) {
@@ -320,52 +414,52 @@ export function Dashboard() {
             ) : currentUser?.role === 'timetable_committee' ? (
               <>
                 <StatsCard
-                  title="Pending Leave Reviews"
+                  title="Leave Reviews"
                   value={stats.pendingLeaves}
                   icon={Clock}
                   color="yellow"
                 />
                 <StatsCard
-                  title="Total Time Slots"
+                  title="Time Slots"
                   value={stats.totalTimeSlots}
                   icon={CalendarDays}
                   color="blue"
                 />
                 <StatsCard
-                  title="My Pending Leaves"
-                  value={stats.pendingLeaves}
-                  icon={FileText}
-                  color="orange"
+                  title="Remaining Leaves"
+                  value={stats.remainingLeaves}
+                  icon={CalendarIcon}
+                  color={stats.remainingLeaves >= 8 ? "green" : stats.remainingLeaves >= 4 ? "yellow" : "red"}
                 />
                 <StatsCard
-                  title="My Achievements"
-                  value={stats.totalAchievements}
-                  icon={Award}
-                  color="purple"
+                  title="Total LOP"
+                  value={stats.totalLOP}
+                  icon={AlertTriangle}
+                  color={stats.totalLOP === 0 ? "green" : stats.totalLOP <= 2 ? "yellow" : "red"}
                 />
               </>
             ) : currentUser?.role === 'examination_committee' ? (
               <>
                 <StatsCard
-                  title="Pending Leave Reviews"
+                  title="Leave Reviews"
                   value={stats.pendingLeaves}
                   icon={Clock}
                   color="yellow"
                 />
                 <StatsCard
-                  title="My Pending Leaves"
-                  value={stats.pendingLeaves}
-                  icon={FileText}
-                  color="orange"
+                  title="Remaining Leaves"
+                  value={stats.remainingLeaves}
+                  icon={CalendarIcon}
+                  color={stats.remainingLeaves >= 8 ? "green" : stats.remainingLeaves >= 4 ? "yellow" : "red"}
                 />
                 <StatsCard
-                  title="My Achievements"
-                  value={stats.totalAchievements}
-                  icon={Award}
-                  color="purple"
+                  title="Total LOP"
+                  value={stats.totalLOP}
+                  icon={AlertTriangle}
+                  color={stats.totalLOP === 0 ? "green" : stats.totalLOP <= 2 ? "yellow" : "red"}
                 />
                 <StatsCard
-                  title="My Classes"
+                  title="Classes"
                   value={stats.totalTimeSlots}
                   icon={CalendarDays}
                   color="blue"
@@ -374,28 +468,28 @@ export function Dashboard() {
             ) : (
               <>
                 <StatsCard
-                  title="My Pending Leaves"
+                  title="Remaining Leaves"
+                  value={stats.remainingLeaves}
+                  icon={CalendarIcon}
+                  color={stats.remainingLeaves >= 8 ? "green" : stats.remainingLeaves >= 4 ? "yellow" : "red"}
+                />
+                <StatsCard
+                  title="Total LOP"
+                  value={stats.totalLOP}
+                  icon={AlertTriangle}
+                  color={stats.totalLOP === 0 ? "green" : stats.totalLOP <= 2 ? "yellow" : "red"}
+                />
+                <StatsCard
+                  title="Pending Leaves"
                   value={stats.pendingLeaves}
                   icon={Clock}
                   color="yellow"
                 />
                 <StatsCard
-                  title="My Achievements"
+                  title="Achievements"
                   value={stats.totalAchievements}
                   icon={Award}
                   color="purple"
-                />
-                <StatsCard
-                  title="My Classes"
-                  value={stats.totalTimeSlots}
-                  icon={CalendarDays}
-                  color="blue"
-                />
-                <StatsCard
-                  title="Performance"
-                  value="Excellent"
-                  icon={TrendingUp}
-                  color="green"
                 />
               </>
             )}
@@ -563,35 +657,137 @@ export function Dashboard() {
 
           {/* Committee Specific Content */}
           {(currentUser?.role === 'timetable_committee' || currentUser?.role === 'examination_committee') && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 lg:p-6 mb-4 lg:mb-6">
-              <div className="flex items-center space-x-3 mb-4">
-                {currentUser?.role === 'timetable_committee' ? (
-                  <CalendarDays className="h-6 w-6 text-[#002e5d]" />
-                ) : (
-                  <FileCheck className="h-6 w-6 text-[#002e5d]" />
-                )}
-                <h3 className="text-base lg:text-lg font-medium text-gray-900">
-                  {currentUser?.role === 'timetable_committee' ? 'Timetable Committee' : 'Examination Committee'} Dashboard
-                </h3>
-              </div>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 lg:p-4">
-                  <h4 className="font-medium text-blue-900 mb-2">Leave Review Responsibilities</h4>
-                  <p className="text-xs lg:text-sm text-blue-800">
-                    As a {currentUser?.role === 'timetable_committee' ? 'Timetable Committee' : 'Examination Committee'} member, 
-                    you are responsible for reviewing leave applications before they are sent to the Principal for final approval.
-                  </p>
+            <>
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 lg:p-6 mb-4 lg:mb-6">
+                <div className="flex items-center space-x-3 mb-4">
+                  {currentUser?.role === 'timetable_committee' ? (
+                    <CalendarDays className="h-6 w-6 text-[#002e5d]" />
+                  ) : (
+                    <FileCheck className="h-6 w-6 text-[#002e5d]" />
+                  )}
+                  <h3 className="text-base lg:text-lg font-medium text-gray-900">
+                    {currentUser?.role === 'timetable_committee' ? 'Timetable Committee' : 'Examination Committee'} Dashboard
+                  </h3>
                 </div>
-                <div className="bg-green-50 border border-green-200 rounded-lg p-3 lg:p-4">
-                  <h4 className="font-medium text-green-900 mb-2">Quick Actions</h4>
-                  <div className="space-y-2 text-xs lg:text-sm text-green-800">
-                    <p>• Review pending leave applications</p>
-                    <p>• Approve or reject leave requests</p>
-                    <p>• Add comments for Principal review</p>
-                    <p>• Monitor leave patterns</p>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 lg:p-4">
+                    <h4 className="font-medium text-blue-900 mb-2">Leave Review Responsibilities</h4>
+                    <p className="text-xs lg:text-sm text-blue-800">
+                      As a {currentUser?.role === 'timetable_committee' ? 'Timetable Committee' : 'Examination Committee'} member, 
+                      you are responsible for reviewing leave applications before they are sent to the Principal for final approval.
+                    </p>
+                  </div>
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3 lg:p-4">
+                    <h4 className="font-medium text-green-900 mb-2">Quick Actions</h4>
+                    <div className="space-y-2 text-xs lg:text-sm text-green-800">
+                      <p>• Review pending leave applications</p>
+                      <p>• Approve or reject leave requests</p>
+                      <p>• Add comments for Principal review</p>
+                      <p>• Monitor leave patterns</p>
+                    </div>
                   </div>
                 </div>
               </div>
+
+              {/* Leave Status Overview */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 lg:p-6 mb-4 lg:mb-6">
+                <div className="flex items-center space-x-3 mb-4">
+                  <CalendarIcon className="h-6 w-6 text-[#002e5d]" />
+                  <h3 className="text-base lg:text-lg font-medium text-gray-900">My Leave Status (Current Year)</h3>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-blue-600 mb-1">{stats.totalLeavesUsed}/12</div>
+                    <p className="text-sm text-blue-800">Leaves Used</p>
+                  </div>
+                  <div className={`border rounded-lg p-4 text-center ${
+                    stats.remainingLeaves >= 8 ? 'bg-green-50 border-green-200' :
+                    stats.remainingLeaves >= 4 ? 'bg-yellow-50 border-yellow-200' :
+                    'bg-red-50 border-red-200'
+                  }`}>
+                    <div className={`text-2xl font-bold mb-1 ${getLeaveStatusColor(stats.remainingLeaves)}`}>
+                      {stats.remainingLeaves}
+                    </div>
+                    <p className={`text-sm ${getLeaveStatusColor(stats.remainingLeaves)}`}>Remaining Leaves</p>
+                  </div>
+                  <div className={`border rounded-lg p-4 text-center ${
+                    stats.totalLOP === 0 ? 'bg-green-50 border-green-200' :
+                    stats.totalLOP <= 2 ? 'bg-yellow-50 border-yellow-200' :
+                    'bg-red-50 border-red-200'
+                  }`}>
+                    <div className={`text-2xl font-bold mb-1 ${getLOPStatusColor(stats.totalLOP)}`}>
+                      {stats.totalLOP}
+                    </div>
+                    <p className={`text-sm ${getLOPStatusColor(stats.totalLOP)}`}>LOP Days</p>
+                  </div>
+                </div>
+                
+                {stats.totalLOP > 0 && (
+                  <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-3">
+                    <div className="flex items-center space-x-2">
+                      <AlertTriangle className="h-4 w-4 text-red-600" />
+                      <p className="text-sm font-medium text-red-900">
+                        LOP Notice: You have {stats.totalLOP} day(s) of Loss of Pay due to exceeding monthly leave limits.
+                      </p>
+                    </div>
+                    <p className="text-xs text-red-800 mt-1">
+                      Monthly limit: 2 leaves per month. Excess leaves are considered LOP.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+
+          {/* Faculty Leave Status */}
+          {currentUser?.role === 'faculty' && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 lg:p-6 mb-4 lg:mb-6">
+              <div className="flex items-center space-x-3 mb-4">
+                <CalendarIcon className="h-6 w-6 text-[#002e5d]" />
+                <h3 className="text-base lg:text-lg font-medium text-gray-900">
+                  My Leave Status (Current Year)
+                </h3>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+                  <div className="text-2xl font-bold text-blue-600 mb-1">{stats.totalLeavesUsed}/12</div>
+                  <p className="text-sm text-blue-800">Leaves Used</p>
+                </div>
+                <div className={`border rounded-lg p-4 text-center ${
+                  stats.remainingLeaves >= 8 ? 'bg-green-50 border-green-200' :
+                  stats.remainingLeaves >= 4 ? 'bg-yellow-50 border-yellow-200' :
+                  'bg-red-50 border-red-200'
+                }`}>
+                  <div className={`text-2xl font-bold mb-1 ${getLeaveStatusColor(stats.remainingLeaves)}`}>
+                    {stats.remainingLeaves}
+                  </div>
+                  <p className={`text-sm ${getLeaveStatusColor(stats.remainingLeaves)}`}>Remaining Leaves</p>
+                </div>
+                <div className={`border rounded-lg p-4 text-center ${
+                  stats.totalLOP === 0 ? 'bg-green-50 border-green-200' :
+                  stats.totalLOP <= 2 ? 'bg-yellow-50 border-yellow-200' :
+                  'bg-red-50 border-red-200'
+                }`}>
+                  <div className={`text-2xl font-bold mb-1 ${getLOPStatusColor(stats.totalLOP)}`}>
+                    {stats.totalLOP}
+                  </div>
+                  <p className={`text-sm ${getLOPStatusColor(stats.totalLOP)}`}>LOP Days</p>
+                </div>
+              </div>
+              
+              {stats.totalLOP > 0 && (
+                <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-3">
+                  <div className="flex items-center space-x-2">
+                    <AlertTriangle className="h-4 w-4 text-red-600" />
+                    <p className="text-sm font-medium text-red-900">
+                      LOP Notice: You have {stats.totalLOP} day(s) of Loss of Pay due to exceeding monthly leave limits.
+                    </p>
+                  </div>
+                  <p className="text-xs text-red-800 mt-1">
+                    Monthly limit: 2 leaves per month. Excess leaves are considered LOP.
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>
