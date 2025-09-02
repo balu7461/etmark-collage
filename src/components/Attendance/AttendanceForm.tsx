@@ -79,6 +79,7 @@ export function AttendanceForm() {
     if (selectedClass && selectedYear && selectedTimeSlot && selectedSubject) {
       fetchStudents();
     }
+  }, [selectedClass, selectedYear, selectedTimeSlot, selectedSubject]);
 
   const fetchStudents = async () => {
     try {
@@ -254,8 +255,8 @@ export function AttendanceForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-          <div className="md:col-span-5 grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="md:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="transform transition-all duration-200 hover:scale-105">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Date
@@ -303,50 +304,11 @@ export function AttendanceForm() {
                 ))}
               </select>
             </div>
-
-            <div className="transform transition-all duration-200 hover:scale-105">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Time Slot
-              </label>
-              <select
-                value={selectedTimeSlot}
-                onChange={(e) => setSelectedTimeSlot(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                required
-              >
-                <option value="">Select Time</option>
-                {timeSlots.map(slot => (
-                  <option key={slot.label} value={slot.label}>{slot.label}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="transform transition-all duration-200 hover:scale-105">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Subject
-              </label>
-              <select
-                value={selectedSubject}
-                onChange={(e) => setSelectedSubject(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                required
-                disabled={!selectedClass || !selectedYear}
-              >
-                <option value="">Select Subject</option>
-                {selectedClass && selectedYear && subjectsByClassAndYear[selectedClass as keyof typeof subjectsByClassAndYear] ? (
-                  (subjectsByClassAndYear[selectedClass as keyof typeof subjectsByClassAndYear] as any)[selectedYear]?.map((subj: string) => (
-                    <option key={subj} value={subj}>{subj}</option>
-                  ))
-                ) : (
-                  <option value="" disabled>Select Class and Year First</option>
-                )}
-              </select>
-            </div>
           </div>
 
           {/* Stats Card */}
           {students.length > 0 && (
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-100 md:col-span-1">
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-100">
               <div className="flex items-center space-x-2 mb-3">
                 <Users className="h-5 w-5 text-blue-600" />
                 <h3 className="font-medium text-blue-900">Attendance Summary</h3>
@@ -370,14 +332,6 @@ export function AttendanceForm() {
                   </span>
                   <span className="font-semibold text-red-700">{stats.absentCount}</span>
                 </div>
-                {selectedTimeSlot && (
-                  <div className="pt-2 border-t border-blue-200">
-                    <div className="flex items-center space-x-1 text-xs text-blue-600">
-                      <Clock className="h-3 w-3" />
-                      <span>{selectedTimeSlot}</span>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           )}
@@ -389,14 +343,8 @@ export function AttendanceForm() {
               <div className="flex items-center space-x-2 mb-4">
                 <BookOpen className="h-5 w-5 text-gray-600" />
                 <h3 className="font-medium text-gray-900">
-                  Students - {selectedClass} ({selectedYear}) - {selectedSubject}
+                  Students - {selectedClass} ({selectedYear})
                 </h3>
-                {selectedTimeSlot && (
-                  <div className="flex items-center space-x-1 text-sm text-blue-600 ml-auto">
-                    <Clock className="h-4 w-4" />
-                    <span>{selectedTimeSlot}</span>
-                  </div>
-                )}
               </div>
               
               <div className="space-y-3">
