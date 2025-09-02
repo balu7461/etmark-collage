@@ -249,19 +249,69 @@ export function Students() {
             yearValue = '3rd Year';
           }
           
+          const classValue = row['Class'] || '';
+          
           const student = {
             name: row['Name'] || row['Student Name'] || '',
             email: row['Email'] || row['Email Address'] || '',
             rollNumber: row['Sats No.'] || row['Roll Number'] || row['Roll'] || '',
-            class: row['Class'] || '',
+            class: classValue,
             year: yearValue,
             parentEmail: row['Parent Email'] || '',
             parentPhone: row['Parent Phone'] || '',
-            rowIndex: index + 2 // Excel row number (starting from 2)
+            rowIndex: index + 2, // Excel row number (starting from 2)
+            validationMessage: ''
           };
           
-          // Validate required fields
-          student.isValid = !!(student.name && student.email && student.rollNumber && student.class && student.year);
+          // Enhanced validation logic
+          let isValid = true;
+          let validationMessages = [];
+          
+          // Check required fields
+          if (!student.name) {
+            isValid = false;
+            validationMessages.push('Missing name');
+          }
+          if (!student.email) {
+            isValid = false;
+            validationMessages.push('Missing email');
+          }
+          if (!student.rollNumber) {
+            isValid = false;
+            validationMessages.push('Missing Sats No.');
+          }
+          if (!student.class) {
+            isValid = false;
+            validationMessages.push('Missing class');
+          }
+          if (!student.year) {
+            isValid = false;
+            validationMessages.push('Missing year');
+          }
+          
+          // Validate class is in allowed classes
+          if (student.class && !ALL_CLASSES.includes(student.class)) {
+            isValid = false;
+            validationMessages.push(`Invalid class: ${student.class}. Allowed: ${ALL_CLASSES.join(', ')}`);
+          }
+          
+          // Validate year is valid for the selected class
+          if (student.class && student.year) {
+            const validYears = getYearsForClass(student.class);
+            if (validYears.length > 0 && !validYears.includes(student.year)) {
+              isValid = false;
+              validationMessages.push(`Invalid year: ${student.year} for class ${student.class}. Allowed: ${validYears.join(', ')}`);
+            }
+          }
+          
+          // Validate email format
+          if (student.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(student.email)) {
+            isValid = false;
+            validationMessages.push('Invalid email format');
+          }
+          
+          student.isValid = isValid;
+          student.validationMessage = validationMessages.join('; ');
           
           return student;
         });
@@ -365,6 +415,42 @@ export function Students() {
         'Year': '1st Year',
         'Parent Email': 'parent@email.com',
         'Parent Phone': '+1234567890'
+      },
+      {
+        'Name': 'Jane Smith',
+        'Email': 'jane.smith@student.edu',
+        'Sats No.': 'COM002',
+        'Class': 'B.com',
+        'Year': '2nd Year',
+        'Parent Email': 'parent2@email.com',
+        'Parent Phone': '+1234567891'
+      },
+      {
+        'Name': 'Mike Johnson',
+        'Email': 'mike.johnson@student.edu',
+        'Sats No.': 'BBA003',
+        'Class': 'BBA',
+        'Year': '3rd Year',
+        'Parent Email': 'parent3@email.com',
+        'Parent Phone': '+1234567892'
+      },
+      {
+        'Name': 'Sarah Wilson',
+        'Email': 'sarah.wilson@student.edu',
+        'Sats No.': 'PCMB004',
+        'Class': 'PCMB',
+        'Year': '1st Year',
+        'Parent Email': 'parent4@email.com',
+        'Parent Phone': '+1234567893'
+      },
+      {
+        'Name': 'David Brown',
+        'Email': 'david.brown@student.edu',
+        'Sats No.': 'PCMC005',
+        'Class': 'PCMC',
+        'Year': '2nd Year',
+        'Parent Email': 'parent5@email.com',
+        'Parent Phone': '+1234567894'
       }
     ];
     
@@ -795,6 +881,8 @@ export function Students() {
                         <li>• Upload an Excel file (.xlsx or .xls) with student data</li>
                         <li>• Required columns: Name, Email, Sats No., Class, Year</li>
                         <li>• Optional columns: Parent Email, Parent Phone</li>
+                        <li>• Valid Classes: {ALL_CLASSES.join(', ')}</li>
+                        <li>• Valid Years: 1st Year, 2nd Year, 3rd Year (depending on class)</li>
                         <li>• Download the template below for the correct format</li>
                       </ul>
                     </div>
@@ -840,6 +928,9 @@ export function Students() {
                           <AlertCircle className="h-4 w-4 text-red-600" />
                           <span className="text-red-800">Invalid: {uploadPreview.filter(s => !s.isValid).length}</span>
                         </div>
+                        <div className="text-xs text-gray-600">
+                          Total: {uploadPreview.length} records
+                        </div>
                       </div>
                     </div>
 
@@ -853,6 +944,7 @@ export function Students() {
                             <th className="px-2 lg:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Sats No.</th>
                             <th className="px-2 lg:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Class</th>
                             <th className="px-2 lg:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Year</th>
+                            <th className="px-2 lg:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase hidden md:table-cell">Issues</th>
                           </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
@@ -870,6 +962,13 @@ export function Students() {
                               <td className="px-2 lg:px-4 py-2 whitespace-nowrap text-xs lg:text-sm">{student.rollNumber}</td>
                               <td className="px-2 lg:px-4 py-2 whitespace-nowrap text-xs lg:text-sm">{student.class}</td>
                               <td className="px-2 lg:px-4 py-2 whitespace-nowrap text-xs lg:text-sm">{student.year || 'N/A'}</td>
+                              <td className="px-2 lg:px-4 py-2 text-xs text-red-600 hidden md:table-cell">
+                                {!student.isValid && student.validationMessage && (
+                                  <div className="max-w-32 lg:max-w-48 truncate" title={student.validationMessage}>
+                                    {student.validationMessage}
+                                  </div>
+                                )}
+                              </td>
                             </tr>
                           ))}
                         </tbody>
