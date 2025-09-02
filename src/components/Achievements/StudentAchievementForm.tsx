@@ -6,7 +6,7 @@ import { Student, StudentAchievement } from '../../types';
 import { Award, Plus, User, Calendar, MapPin, Trophy, Camera } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
-import { ALL_CLASSES } from '../../utils/constants';
+import { ALL_CLASSES, getYearsForClass } from '../../utils/constants';
 
 export function StudentAchievementForm() {
   const { currentUser } = useAuth();
@@ -62,7 +62,19 @@ export function StudentAchievementForm() {
         ...doc.data()
       })) as Student[];
       
-      setStudents(studentsData.sort((a, b) => a.name.localeCompare(b.name)));
+      // Filter students to only include those from valid classes and years
+      const validStudents = studentsData.filter(student => {
+        if (!ALL_CLASSES.includes(student.class)) {
+          return false;
+        }
+        const validYears = getYearsForClass(student.class);
+        if (student.year && !validYears.includes(student.year)) {
+          return false;
+        }
+        return true;
+      });
+      
+      setStudents(validStudents.sort((a, b) => a.name.localeCompare(b.name)));
     } catch (error) {
       console.error('Error fetching students:', error);
       toast.error('Failed to fetch students');

@@ -5,7 +5,7 @@ import { AttendanceRecord, Student } from '../types';
 import { Calendar, Users, Filter, Download, Search } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { format } from 'date-fns';
-import { ALL_CLASSES, getYearsForClass, subjectsByClassAndYear } from '../utils/constants';
+import { ALL_CLASSES, getYearsForClass, subjectsByClassAndYear, hasSubjectDefinitions } from '../utils/constants';
 
 export function Attendance() {
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
@@ -48,8 +48,20 @@ export function Attendance() {
         ...doc.data()
       })) as Student[];
 
+      // Filter students to only include those from valid classes and years
+      const validStudents = studentsData.filter(student => {
+        if (!ALL_CLASSES.includes(student.class)) {
+          return false;
+        }
+        const validYears = getYearsForClass(student.class);
+        if (student.year && !validYears.includes(student.year)) {
+          return false;
+        }
+        return true;
+      });
+
       setAttendanceRecords(attendanceData);
-      setStudents(studentsData);
+      setStudents(validStudents);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {

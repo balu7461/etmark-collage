@@ -3,6 +3,7 @@ import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { Student, AttendanceRecord } from '../types';
 import { Search, User, Calendar, CheckCircle, XCircle, BarChart3, GraduationCap } from 'lucide-react';
+import { ALL_CLASSES, getYearsForClass } from '../utils/constants';
 import toast from 'react-hot-toast';
 
 export function StudentOverallAttendance() {
@@ -45,6 +46,21 @@ export function StudentOverallAttendance() {
         ...studentSnapshot.docs[0].data()
       } as Student;
 
+      // Validate that the student belongs to a valid class and year
+      if (!ALL_CLASSES.includes(student.class)) {
+        toast.error(`Student belongs to an unsupported class: ${student.class}`);
+        setStudentData(null);
+        setAttendanceData(null);
+        return;
+      }
+
+      const validYears = getYearsForClass(student.class);
+      if (student.year && !validYears.includes(student.year)) {
+        toast.error(`Student has invalid year: ${student.year} for class: ${student.class}`);
+        setStudentData(null);
+        setAttendanceData(null);
+        return;
+      }
       setStudentData(student);
 
       // Fetch all attendance records for this student
