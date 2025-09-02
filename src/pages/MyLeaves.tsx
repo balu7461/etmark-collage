@@ -256,7 +256,6 @@ export function MyLeaves() {
                               )}
                             </div>
                           )}
-                          )}
                           {leave.principalComments && (
                             <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
                               <div className="flex items-center space-x-2 mb-1">
