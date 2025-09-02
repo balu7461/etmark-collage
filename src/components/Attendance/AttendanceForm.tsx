@@ -280,10 +280,21 @@ export function AttendanceForm() {
                 disabled={!selectedClass || !selectedYear}
               >
                 <option value="">Select Subject</option>
-                {selectedClass && selectedYear && subjectsByClassAndYear[selectedClass as keyof typeof subjectsByClassAndYear] ? (
-                  (subjectsByClassAndYear[selectedClass as keyof typeof subjectsByClassAndYear] as any)[selectedYear]?.map((subj: string) => (
-                    <option key={subj} value={subj}>{subj}</option>
-                  ))
+                {selectedClass && selectedYear ? (
+                  subjectsByClassAndYear[selectedClass as keyof typeof subjectsByClassAndYear] ? (
+                    (subjectsByClassAndYear[selectedClass as keyof typeof subjectsByClassAndYear] as any)[selectedYear]?.map((subj: string) => (
+                      <option key={subj} value={subj}>{subj}</option>
+                    ))
+                  ) : (
+                    // For classes without predefined subjects, allow manual entry
+                    <>
+                      <option value="General Class">General Class</option>
+                      <option value="Theory">Theory</option>
+                      <option value="Practical">Practical</option>
+                      <option value="Tutorial">Tutorial</option>
+                      <option value="Lab">Lab</option>
+                    </>
+                  )
                 ) : (
                   <option value="" disabled>Select Class and Year First</option>
                 )}
@@ -336,8 +347,11 @@ export function AttendanceForm() {
               <div className="flex items-center space-x-2 mb-4">
                 <BookOpen className="h-5 w-5 text-gray-600" />
                 <h3 className="font-medium text-gray-900">
-                  Students - {selectedClass} ({selectedYear})
+                  Students - {selectedClass} ({selectedYear}) - {selectedSubject}
                 </h3>
+                <span className="text-sm text-gray-500">
+                  {selectedTimeSlot} on {selectedDate}
+                </span>
               </div>
               
               <div className="space-y-3">

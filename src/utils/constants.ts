@@ -150,3 +150,21 @@ export const getSubjectsForClassAndYear = (className: string, year: string): str
   
   return (classSubjects as any)[year] || [];
 };
+
+// Helper function to check if a class has predefined subjects
+export const hasSubjectDefinitions = (className: string): boolean => {
+  return className in subjectsByClassAndYear;
+};
+
+// Helper function to get all available subjects across all classes
+export const getAllAvailableSubjects = (): string[] => {
+  const allSubjects = new Set<string>();
+  
+  Object.values(subjectsByClassAndYear).forEach(classData => {
+    Object.values(classData).forEach(yearSubjects => {
+      yearSubjects.forEach(subject => allSubjects.add(subject));
+    });
+  });
+  
+  return Array.from(allSubjects).sort();
+};

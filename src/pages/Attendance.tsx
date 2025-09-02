@@ -235,15 +235,16 @@ export function Attendance() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">All Subjects</option>
-                  {filters.class && filters.year ? (
-                    (subjectsByClassAndYear[filters.class as keyof typeof subjectsByClassAndYear] as any)?.[filters.year]?.map((subj: string) => (
+                  {filters.class && filters.year && subjectsByClassAndYear[filters.class as keyof typeof subjectsByClassAndYear] ? (
+                    (subjectsByClassAndYear[filters.class as keyof typeof subjectsByClassAndYear] as any)[filters.year]?.map((subj: string) => (
                       <option key={subj} value={subj}>{subj}</option>
                     ))
-                  ) : filters.class ? (
+                  ) : filters.class && subjectsByClassAndYear[filters.class as keyof typeof subjectsByClassAndYear] ? (
                     Object.values((subjectsByClassAndYear[filters.class as keyof typeof subjectsByClassAndYear] as any) || {}).flat().map((subj: string) => (
                       <option key={subj} value={subj}>{subj}</option>
                     ))
                   ) : (
+                    // Show all subjects from classes with definitions
                     Object.values(subjectsByClassAndYear).flatMap(classData => 
                       Object.values(classData).flat()
                     ).map((subj: string) => (
@@ -269,7 +270,7 @@ export function Attendance() {
           {/* Class Distribution Overview */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Class-wise Attendance Overview</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-10 gap-4">
               {ALL_CLASSES.map(cls => {
                 const classRecords = filteredRecords.filter(record => record.class === cls);
                 const classPresent = classRecords.filter(record => record.status === 'present').length;
@@ -280,7 +281,7 @@ export function Attendance() {
                   <div key={cls} className="text-center p-3 bg-gray-50 rounded-lg transform transition-all duration-200 hover:scale-105">
                     <p className="text-sm font-medium text-gray-900">{cls}</p>
                     <p className="text-lg font-bold text-blue-600">{classTotal}</p>
-                    <p className="text-xs text-gray-600">{classRate}% present</p>
+                    <p className="text-xs text-gray-600">{classTotal > 0 ? `${classRate}%` : 'No data'}</p>
                   </div>
                 );
               })}

@@ -190,10 +190,22 @@ export function TimetableForm({ onSuccess }: TimetableFormProps) {
                 required
               >
                 <option value="">Select Subject</option>
-                {formData.year && subjectsByClassAndYear[formData.class as keyof typeof subjectsByClassAndYear] ? (
-                  (subjectsByClassAndYear[formData.class as keyof typeof subjectsByClassAndYear] as any)[formData.year]?.map((subj: string) => (
-                    <option key={subj} value={subj}>{subj}</option>
-                  ))
+                {formData.year ? (
+                  subjectsByClassAndYear[formData.class as keyof typeof subjectsByClassAndYear] ? (
+                    (subjectsByClassAndYear[formData.class as keyof typeof subjectsByClassAndYear] as any)[formData.year]?.map((subj: string) => (
+                      <option key={subj} value={subj}>{subj}</option>
+                    ))
+                  ) : (
+                    // For classes without predefined subjects, provide generic options
+                    <>
+                      <option value="General Class">General Class</option>
+                      <option value="Theory">Theory</option>
+                      <option value="Practical">Practical</option>
+                      <option value="Tutorial">Tutorial</option>
+                      <option value="Lab">Lab</option>
+                      <option value="Seminar">Seminar</option>
+                    </>
+                  )
                 ) : (
                   <option value="" disabled>Select Year First</option>
                 )}
