@@ -135,7 +135,7 @@ export function AttendanceForm() {
             student.parentEmail,
             student.name,
             selectedDate,
-            `Class Attendance - ${selectedClass}`,
+            selectedSubject,
             currentUser?.name || 'Faculty',
             attendance[student.id]?.reason
           );
