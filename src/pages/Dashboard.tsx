@@ -100,7 +100,7 @@ export function Dashboard() {
 
         const pendingCommitteeLeavesQuery = query(
           collection(db, 'leaveApplications'),
-          where('status', '==', 'pending_committee_approval')
+          where('status', '==', 'pending_examination_committee_approval')
         );
         const pendingPrincipalLeavesQuery = query(
           collection(db, 'leaveApplications'),
@@ -108,7 +108,12 @@ export function Dashboard() {
         );
         const pendingCommitteeSnapshot = await getDocs(pendingCommitteeLeavesQuery);
         const pendingPrincipalSnapshot = await getDocs(pendingPrincipalLeavesQuery);
-        const pendingLeaves = pendingCommitteeSnapshot.size + pendingPrincipalSnapshot.size;
+        const pendingTimetableLeavesQuery = query(
+          collection(db, 'leaveApplications'),
+          where('status', '==', 'pending_timetable_committee_approval')
+        );
+        const pendingTimetableSnapshot = await getDocs(pendingTimetableLeavesQuery);
+        const pendingLeaves = pendingCommitteeSnapshot.size + pendingPrincipalSnapshot.size + pendingTimetableSnapshot.size;
 
         const achievementsSnapshot = await getDocs(collection(db, 'achievements'));
         const totalAchievements = achievementsSnapshot.size;
@@ -134,25 +139,28 @@ export function Dashboard() {
           attendanceRate,
           departmentStats: {}
         });
-      } else if (currentUser?.role === 'timetable_committee') {
-        // Fetch timetable committee stats
+      } else if (currentUser?.role === 'examination_committee') {
+        // Fetch examination committee stats
         const pendingLeavesQuery = query(
           collection(db, 'leaveApplications'),
-          where('status', '==', 'pending_committee_approval')
+          where('status', '==', 'pending_examination_committee_approval')
         );
         const pendingLeavesSnapshot = await getDocs(pendingLeavesQuery);
         const pendingLeaves = pendingLeavesSnapshot.size;
 
-        const timeSlotsSnapshot = await getDocs(collection(db, 'timeSlots'));
-        const totalTimeSlots = timeSlotsSnapshot.size;
-
-        const myLeavesQuery = query(
+        // Fetch my approved leaves for current year
+        const myApprovedLeavesQuery = query(
           collection(db, 'leaveApplications'),
           where('facultyId', '==', currentUser?.id),
-          where('status', 'in', ['pending_committee_approval', 'pending_principal_approval'])
+          where('status', '==', 'approved')
         );
-        const myLeavesSnapshot = await getDocs(myLeavesQuery);
-        const myPendingLeaves = myLeavesSnapshot.size;
+        const myApprovedLeavesSnapshot = await getDocs(myApprovedLeavesQuery);
+        const myApprovedLeaves = myApprovedLeavesSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as LeaveApplication[];
+
+        const leaveStats = calculateLeaveStats(myApprovedLeaves);
 
         const myAchievementsQuery = query(
           collection(db, 'achievements'),
@@ -160,6 +168,9 @@ export function Dashboard() {
         );
         const myAchievementsSnapshot = await getDocs(myAchievementsQuery);
         const totalAchievements = myAchievementsSnapshot.size;
+
+        const timeSlotsSnapshot = await getDocs(collection(db, 'timeSlots'));
+        const totalTimeSlots = timeSlotsSnapshot.size;
 
         setStats({
           totalStudents: 0,
@@ -169,6 +180,7 @@ export function Dashboard() {
           presentToday: 0,
           pendingLeaves,
           totalAchievements,
+          totalStudentAchievements: 0,
           totalTimeSlots,
           attendanceRate: 0,
           departmentStats: {},
@@ -176,68 +188,11 @@ export function Dashboard() {
           totalLOP: leaveStats.totalLOP,
           totalLeavesUsed: leaveStats.totalLeavesUsed
         });
-      } else if (currentUser?.role === 'examination_committee') {
-        // Fetch examination committee stats
-        const pendingLeavesQuery = query(
-          collection(db, 'leaveApplications'),
-          where('status', '==', 'pending_committee_approval')
-        );
-        const pendingLeavesSnapshot = await getDocs(pendingLeavesQuery);
-        const pendingLeaves = pendingLeavesSnapshot.size;
-
-        // Fetch my approved leaves for current year
-        const myApprovedLeavesQuery = query(
-          collection(db, 'leaveApplications'),
-          where('facultyId', '==', currentUser?.id),
-          where('status', '==', 'approved')
-        );
-        const myApprovedLeavesSnapshot = await getDocs(myApprovedLeavesQuery);
-        const myApprovedLeaves = myApprovedLeavesSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as LeaveApplication[];
-
-        const myLeavesQuery = query(
-          collection(db, 'leaveApplications'),
-          where('facultyId', '==', currentUser?.id),
-          where('status', 'in', ['pending_committee_approval', 'pending_principal_approval'])
-        );
-        const myLeavesSnapshot = await getDocs(myLeavesQuery);
-        const myPendingLeaves = myLeavesSnapshot.size;
-
-        const myAchievementsQuery = query(
-          collection(db, 'achievements'),
-          where('facultyId', '==', currentUser?.id)
-        );
-        const myAchievementsSnapshot = await getDocs(myAchievementsQuery);
-        const totalAchievements = myAchievementsSnapshot.size;
-
-        const leaveStats = calculateLeaveStats(myApprovedLeaves);
-
-        const timeSlotsSnapshot = await getDocs(collection(db, 'timeSlots'));
-        const totalTimeSlots = timeSlotsSnapshot.size;
-
-        setStats({
-          totalStudents,
-          totalUsers,
-          pendingFacultyApprovals,
-          pendingStudentApprovals,
-          presentToday,
-          pendingLeaves,
-          totalAchievements,
-          totalStudentAchievements,
-          totalTimeSlots,
-          attendanceRate,
-          departmentStats: {},
-          remainingLeaves: 0,
-          totalLOP: 0,
-          totalLeavesUsed: 0
-        });
       } else if (currentUser?.role === 'timetable_committee') {
         // Fetch timetable committee stats
         const pendingLeavesQuery = query(
           collection(db, 'leaveApplications'),
-          where('status', '==', 'pending_committee_approval')
+          where('status', '==', 'pending_timetable_committee_approval')
         );
         const pendingLeavesSnapshot = await getDocs(pendingLeavesQuery);
         const pendingLeaves = pendingLeavesSnapshot.size;
@@ -274,6 +229,7 @@ export function Dashboard() {
           presentToday: 0,
           pendingLeaves,
           totalAchievements,
+          totalStudentAchievements: 0,
           totalTimeSlots,
           attendanceRate: 0,
           departmentStats: {},
@@ -300,7 +256,7 @@ export function Dashboard() {
         const myLeavesQuery = query(
           collection(db, 'leaveApplications'),
           where('facultyId', '==', currentUser?.id),
-          where('status', 'in', ['pending_committee_approval', 'pending_principal_approval'])
+          where('status', 'in', ['pending_examination_committee_approval', 'pending_timetable_committee_approval', 'pending_principal_approval'])
         );
         const myLeavesSnapshot = await getDocs(myLeavesQuery);
         const pendingLeaves = myLeavesSnapshot.size;
@@ -327,6 +283,7 @@ export function Dashboard() {
           presentToday: 0,
           pendingLeaves,
           totalAchievements,
+          totalStudentAchievements: 0,
           totalTimeSlots,
           attendanceRate: 0,
           departmentStats: {},
@@ -674,7 +631,8 @@ export function Dashboard() {
                     <h4 className="font-medium text-blue-900 mb-2">Leave Review Responsibilities</h4>
                     <p className="text-xs lg:text-sm text-blue-800">
                       As a {currentUser?.role === 'timetable_committee' ? 'Timetable Committee' : 'Examination Committee'} member, 
-                      you are responsible for reviewing leave applications before they are sent to the Principal for final approval.
+                      you are responsible for reviewing leave applications 
+                      {currentUser?.role === 'examination_committee' ? ' in the first stage before they go to the Timetable Committee.' : ' in the second stage before they go to the Principal for final approval.'}
                     </p>
                   </div>
                   <div className="bg-green-50 border border-green-200 rounded-lg p-3 lg:p-4">
@@ -682,7 +640,7 @@ export function Dashboard() {
                     <div className="space-y-2 text-xs lg:text-sm text-green-800">
                       <p>• Review pending leave applications</p>
                       <p>• Approve or reject leave requests</p>
-                      <p>• Add comments for Principal review</p>
+                      <p>• Add comments for next stage review</p>
                       <p>• Monitor leave patterns</p>
                     </div>
                   </div>
