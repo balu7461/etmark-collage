@@ -125,18 +125,6 @@ export const subjectsByClassAndYear = {
   'PCMC': {
     '1st Year': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science'],
     '2nd Year': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science']
-  },
-  'PCMCS': {
-    '1st Year': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science', 'Statistics'],
-    '2nd Year': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science', 'Statistics']
-  },
-  'COMMERCE': {
-    '1st Year': ['Business Studies', 'Accountancy', 'Economics', 'English', 'Kannada/Hindi'],
-    '2nd Year': ['Business Studies', 'Accountancy', 'Economics', 'English', 'Kannada/Hindi']
-  },
-  'ARTS': {
-    '1st Year': ['History', 'Political Science', 'Economics', 'English', 'Kannada/Hindi'],
-    '2nd Year': ['History', 'Political Science', 'Economics', 'English', 'Kannada/Hindi']
   }
 };
 
