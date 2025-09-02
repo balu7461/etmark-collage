@@ -241,6 +241,7 @@ export function MyLeaves() {
                                 </p>
                               )}
                             </div>
+                          )}
                           {leave.timetableCommitteeComments && (
                             <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-4">
                               <div className="flex items-center space-x-2 mb-1">
