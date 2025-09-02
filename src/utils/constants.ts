@@ -6,12 +6,7 @@ export const ALL_CLASSES = [
   'BBA', 
   'BCA', 
   'PCMB', 
-  'PCMC', 
-  'PCMCS', 
-  'COMMERCE', 
-  'ARTS', 
-  'EBAC', 
-  'EBAS'
+  'PCMC'
 ];
 
 export const TIME_SLOTS = [

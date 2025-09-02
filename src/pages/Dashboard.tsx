@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { StatsCard } from '../components/Dashboard/StatsCard';
 import { Header } from '../components/Layout/Header';
 import { StudentAchievement } from '../types';
+import { ALL_CLASSES } from '../utils/constants';
 import { 
   Users, 
   Calendar, 
@@ -25,19 +26,6 @@ import {
   Trophy,
   Star
 } from 'lucide-react';
-
-const ALL_CLASSES = [
-  'B.com 1st Year', 'B.com 2nd Year', 'B.com 3rd Year',
-  'BBA 1st Year', 'BBA 2nd Year', 'BBA 3rd Year',
-  'BCA 1st Year', 'BCA 2nd Year', 'BCA 3rd Year',
-  'PCMB 1st Year', 'PCMB 2nd Year',
-  'PCMC 1st Year', 'PCMC 2nd Year',
-  'PCMCS 1st Year', 'PCMCS 2nd Year',
-  'COMMERCE 1st Year', 'COMMERCE 2nd Year',
-  'ARTS 1st Year', 'ARTS 2nd Year',
-  'EBAC 1st Year', 'EBAC 2nd Year',
-  'EBAS 1st Year', 'EBAS 2nd Year'
-];
 
 export function Dashboard() {
   const { currentUser } = useAuth();
@@ -459,9 +447,9 @@ export function Dashboard() {
                     <Trophy className="h-8 w-8 text-yellow-600" />
                   </div>
                   <div className="text-sm text-gray-600">
-                    <p>• B.com, BBA, BCA (3-year programs)</p>
-                    <p>• PCMB, PCMC, PCMCS (2-year programs)</p>
-                    <p>• COMMERCE, ARTS, EBAC, EBAS (2-year programs)</p>
+                    <p>• B.com, BBA, BCA (3-year degree programs)</p>
+                    <p>• PCMB, PCMC (2-year pre-university programs)</p>
+                    <p>• Total: {ALL_CLASSES.length} active classes</p>
                   </div>
                 </div>
               </div>
