@@ -31,6 +31,7 @@ export interface AttendanceRecord {
   date: string;
   status: 'present' | 'absent';
   subject: string;
+  timeSlot: string;
   facultyId: string;
   facultyName: string;
   reason?: string;

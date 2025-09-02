@@ -41,23 +41,36 @@ export function TimetableForm({ onSuccess }: TimetableFormProps) {
     return [];
   };
   
-  const subjectsByClass = {
-    'B.com': ['Accountancy', 'Business Studies', 'Economics', 'English', 'Mathematics', 'Computer Applications'],
-    'BBA': ['Business Administration', 'Marketing', 'Finance', 'Human Resources', 'Operations Management', 'Business Ethics'],
-    'BCA': ['Programming in C', 'Data Structures', 'Database Management', 'Web Development', 'Software Engineering', 'Computer Networks'],
+  const subjectsByClassAndYear = {
+    'B.com': {
+      '1st Year': ['Fundamentals of Financial Accounting', 'Business Communication', 'Business Mathematics', 'Banking Law and Practice', 'Kannada/Hindi', 'Constitutional Values with Reference to India', 'English'],
+      '2nd Year': ['Fundamentals of Corporate Accounting', 'Logistics and Supply Chain Management', 'Advanced Cost Accounting', 'Income Tax Law & Practice', 'English', 'Financial Institutions and Markets', 'Kannada/Hindi'],
+      '3rd Year': ['Financial Management', 'Financial Institutions and Markets', 'Employability Skills', 'Income Tax Law and Practice – I', 'Principles and Practice of Auditing']
+    },
+    'BBA': {
+      '1st Year': ['Fundamentals of Business Accounting', 'Business Economics', 'Principles and Practices of Management', 'Kannada/Hindi/French', 'Constitutional Values with Reference to India', 'English'],
+      '2nd Year': ['Cost Accounting', 'Entrepreneurship and Startup Ecosystem', 'Business Environment', 'Business Statistics II', 'English', 'Financial Institutions and Markets', 'Kannada/Hindi'],
+      '3rd Year': ['Retail Management', 'Advanced Corporate Financial Management', 'Digital Marketing', 'Income Tax – I', 'Banking Law and Practice', 'Employability Skills']
+    },
+    'BCA': {
+      '1st Year': ['Digital Computer Organization', 'Mathematical and Statistical Computing', 'Problem Solving Using C++', 'Kannada/Hindi', 'Environmental Studies', 'English'],
+      '2nd Year': ['C#.Net Programming', 'Cloud Computing', 'Web Technologies', 'Data Base Management System', 'Cyber Security', 'Kannada/Hindi', 'English'],
+      '3rd Year': ['Design and Analysis of Algorithms', 'Software Engineering', 'Statistical Computing and R Programming', 'Cloud Computing', 'Employability Skills', 'Digital Marketing']
+    },
     'PCMB': ['Physics', 'Chemistry', 'Mathematics', 'Biology'],
     'PCMC': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science'],
     'EBAC': ['Economics', 'Business Studies', 'Accountancy', 'Computer Science'],
     'EBAS': ['Economics', 'Business Studies', 'Accountancy', 'Statistics']
   };
+
   const timeSlots = [
-    { start: '09:00', end: '10:00' },
-    { start: '10:00', end: '11:00' },
-    { start: '11:15', end: '12:15' },
-    { start: '12:15', end: '13:15' },
-    { start: '14:00', end: '15:00' },
-    { start: '15:00', end: '16:00' },
-    { start: '16:00', end: '17:00' }
+    { start: '09:30', end: '10:25', label: '09:30 - 10:25' },
+    { start: '10:25', end: '11:20', label: '10:25 - 11:20' },
+    { start: '11:35', end: '12:30', label: '11:35 - 12:30' },
+    { start: '12:30', end: '13:15', label: '12:30 - 1:15' },
+    { start: '13:15', end: '14:10', label: '1:15 - 2:10' },
+    { start: '14:10', end: '15:05', label: '2:10 - 3:05' },
+    { start: '15:05', end: '16:00', label: '3:05 - 4:00' }
   ];
 
   useEffect(() => {
@@ -183,7 +196,7 @@ export function TimetableForm({ onSuccess }: TimetableFormProps) {
             >
               <option value="">Select Start Time</option>
               {timeSlots.map(slot => (
-                <option key={slot.start} value={slot.start}>{slot.start}</option>
+                <option key={slot.start} value={slot.start}>{slot.label}</option>
               ))}
             </select>
           </div>
@@ -200,7 +213,7 @@ export function TimetableForm({ onSuccess }: TimetableFormProps) {
             >
               <option value="">Select End Time</option>
               {timeSlots.map(slot => (
-                <option key={slot.end} value={slot.end}>{slot.end}</option>
+                <option key={slot.end} value={slot.end}>{slot.label}</option>
               ))}
             </select>
           </div>
@@ -219,16 +232,20 @@ export function TimetableForm({ onSuccess }: TimetableFormProps) {
                 required
               >
                 <option value="">Select Subject</option>
-                {subjectsByClass[formData.class as keyof typeof subjectsByClass]?.map(subj => (
-                  <option key={subj} value={subj}>{subj}</option>
-                ))}
+                {formData.year && subjectsByClassAndYear[formData.class as keyof typeof subjectsByClassAndYear] ? (
+                  (subjectsByClassAndYear[formData.class as keyof typeof subjectsByClassAndYear] as any)[formData.year]?.map((subj: string) => (
+                    <option key={subj} value={subj}>{subj}</option>
+                  ))
+                ) : (
+                  <option value="" disabled>Select Year First</option>
+                )}
               </select>
             ) : (
               <select
                 disabled
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500"
               >
-                <option value="">Select Class First</option>
+                <option value="">Select Class and Year First</option>
               </select>
             )}
           </div>

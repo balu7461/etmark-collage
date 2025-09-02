@@ -14,13 +14,13 @@ interface TimetableGridProps {
 export function TimetableGrid({ timeSlots, selectedClass, selectedYear, isAdmin = false, onEdit, onDelete }: TimetableGridProps) {
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const timeSlotHours = [
-    '09:00-10:00',
-    '10:00-11:00',
-    '11:15-12:15',
-    '12:15-13:15',
-    '14:00-15:00',
-    '15:00-16:00',
-    '16:00-17:00'
+    '09:30-10:25',
+    '10:25-11:20',
+    '11:35-12:30',
+    '12:30-13:15',
+    '13:15-14:10',
+    '14:10-15:05',
+    '15:05-16:00'
   ];
 
   const getTimeSlotForDayAndTime = (day: string, timeRange: string) => {

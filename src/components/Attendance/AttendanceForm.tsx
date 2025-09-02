@@ -3,7 +3,7 @@ import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { useAuth } from '../../contexts/AuthContext';
 import { Student, AttendanceRecord } from '../../types';
-import { Calendar, Users, BookOpen, Save, CheckCircle, XCircle, Mail, Send } from 'lucide-react';
+import { Calendar, Users, BookOpen, Save, CheckCircle, XCircle, Mail, Send, Clock } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 import { sendAbsenteeNotification } from '../../services/emailService';
@@ -13,12 +13,58 @@ export function AttendanceForm() {
   const [students, setStudents] = useState<Student[]>([]);
   const [selectedClass, setSelectedClass] = useState('');
   const [selectedYear, setSelectedYear] = useState('');
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState('');
+  const [selectedSubject, setSelectedSubject] = useState('');
   const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [attendance, setAttendance] = useState<Record<string, { status: 'present' | 'absent'; reason?: string }>>({});
   const [loading, setLoading] = useState(false);
   const [sendingEmails, setSendingEmails] = useState(false);
 
   const classes = ['B.com', 'BBA', 'BCA', 'PCMB', 'PCMC', 'EBAC', 'EBAS'];
+  
+  const timeSlots = [
+    { start: '09:30', end: '10:25', label: '09:30 - 10:25' },
+    { start: '10:25', end: '11:20', label: '10:25 - 11:20' },
+    { start: '11:35', end: '12:30', label: '11:35 - 12:30' },
+    { start: '12:30', end: '13:15', label: '12:30 - 1:15' },
+    { start: '13:15', end: '14:10', label: '1:15 - 2:10' },
+    { start: '14:10', end: '15:05', label: '2:10 - 3:05' },
+    { start: '15:05', end: '16:00', label: '3:05 - 4:00' }
+  ];
+
+  const subjectsByClassAndYear = {
+    'B.com': {
+      '1st Year': ['Fundamentals of Financial Accounting', 'Business Communication', 'Business Mathematics', 'Banking Law and Practice', 'Kannada/Hindi', 'Constitutional Values with Reference to India', 'English'],
+      '2nd Year': ['Fundamentals of Corporate Accounting', 'Logistics and Supply Chain Management', 'Advanced Cost Accounting', 'Income Tax Law & Practice', 'English', 'Financial Institutions and Markets', 'Kannada/Hindi'],
+      '3rd Year': ['Financial Management', 'Financial Institutions and Markets', 'Employability Skills', 'Income Tax Law and Practice – I', 'Principles and Practice of Auditing']
+    },
+    'BBA': {
+      '1st Year': ['Fundamentals of Business Accounting', 'Business Economics', 'Principles and Practices of Management', 'Kannada/Hindi/French', 'Constitutional Values with Reference to India', 'English'],
+      '2nd Year': ['Cost Accounting', 'Entrepreneurship and Startup Ecosystem', 'Business Environment', 'Business Statistics II', 'English', 'Financial Institutions and Markets', 'Kannada/Hindi'],
+      '3rd Year': ['Retail Management', 'Advanced Corporate Financial Management', 'Digital Marketing', 'Income Tax – I', 'Banking Law and Practice', 'Employability Skills']
+    },
+    'BCA': {
+      '1st Year': ['Digital Computer Organization', 'Mathematical and Statistical Computing', 'Problem Solving Using C++', 'Kannada/Hindi', 'Environmental Studies', 'English'],
+      '2nd Year': ['C#.Net Programming', 'Cloud Computing', 'Web Technologies', 'Data Base Management System', 'Cyber Security', 'Kannada/Hindi', 'English'],
+      '3rd Year': ['Design and Analysis of Algorithms', 'Software Engineering', 'Statistical Computing and R Programming', 'Cloud Computing', 'Employability Skills', 'Digital Marketing']
+    },
+    'PCMB': {
+      '1st Year': ['Physics', 'Chemistry', 'Mathematics', 'Biology'],
+      '2nd Year': ['Physics', 'Chemistry', 'Mathematics', 'Biology']
+    },
+    'PCMC': {
+      '1st Year': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science'],
+      '2nd Year': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science']
+    },
+    'EBAC': {
+      '1st Year': ['Economics', 'Business Studies', 'Accountancy', 'Computer Science'],
+      '2nd Year': ['Economics', 'Business Studies', 'Accountancy', 'Computer Science']
+    },
+    'EBAS': {
+      '1st Year': ['Economics', 'Business Studies', 'Accountancy', 'Statistics'],
+      '2nd Year': ['Economics', 'Business Studies', 'Accountancy', 'Statistics']
+    }
+  };
   
   const getYearsForClass = (selectedClass: string) => {
     if (['B.com', 'BBA', 'BCA'].includes(selectedClass)) {
@@ -30,10 +76,9 @@ export function AttendanceForm() {
   };
 
   useEffect(() => {
-    if (selectedClass && selectedYear) {
+    if (selectedClass && selectedYear && selectedTimeSlot && selectedSubject) {
       fetchStudents();
     }
-  }, [selectedClass, selectedYear]);
 
   const fetchStudents = async () => {
     try {
@@ -89,7 +134,7 @@ export function AttendanceForm() {
             student.parentEmail,
             student.name,
             selectedDate,
-            `Class Attendance - ${selectedClass}`,
+            selectedSubject,
             currentUser?.name || 'Faculty',
             attendance[student.id]?.reason
           );
@@ -114,8 +159,8 @@ export function AttendanceForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!selectedClass || !selectedYear || !currentUser) {
-      toast.error('Please select class, year, and date');
+    if (!selectedClass || !selectedYear || !selectedTimeSlot || !selectedSubject || !currentUser) {
+      toast.error('Please select class, year, time slot, subject, and date');
       return;
     }
 
@@ -125,7 +170,8 @@ export function AttendanceForm() {
         studentId: student.id,
         date: selectedDate,
         status: attendance[student.id]?.status || 'present',
-        subject: `Class Attendance - ${selectedClass} (${selectedYear})`,
+        subject: selectedSubject,
+        timeSlot: selectedTimeSlot,
         facultyId: currentUser.id,
         facultyName: currentUser.name,
         reason: attendance[student.id]?.reason || '',
@@ -160,6 +206,8 @@ export function AttendanceForm() {
       setAttendance({});
       setSelectedClass('');
       setSelectedYear('');
+      setSelectedTimeSlot('');
+      setSelectedSubject('');
       setStudents([]);
       
     } catch (error) {
@@ -206,8 +254,8 @@ export function AttendanceForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="md:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+          <div className="md:col-span-5 grid grid-cols-1 md:grid-cols-5 gap-4">
             <div className="transform transition-all duration-200 hover:scale-105">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Date
@@ -255,11 +303,50 @@ export function AttendanceForm() {
                 ))}
               </select>
             </div>
+
+            <div className="transform transition-all duration-200 hover:scale-105">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Time Slot
+              </label>
+              <select
+                value={selectedTimeSlot}
+                onChange={(e) => setSelectedTimeSlot(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                required
+              >
+                <option value="">Select Time</option>
+                {timeSlots.map(slot => (
+                  <option key={slot.label} value={slot.label}>{slot.label}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="transform transition-all duration-200 hover:scale-105">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Subject
+              </label>
+              <select
+                value={selectedSubject}
+                onChange={(e) => setSelectedSubject(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                required
+                disabled={!selectedClass || !selectedYear}
+              >
+                <option value="">Select Subject</option>
+                {selectedClass && selectedYear && subjectsByClassAndYear[selectedClass as keyof typeof subjectsByClassAndYear] ? (
+                  (subjectsByClassAndYear[selectedClass as keyof typeof subjectsByClassAndYear] as any)[selectedYear]?.map((subj: string) => (
+                    <option key={subj} value={subj}>{subj}</option>
+                  ))
+                ) : (
+                  <option value="" disabled>Select Class and Year First</option>
+                )}
+              </select>
+            </div>
           </div>
 
           {/* Stats Card */}
           {students.length > 0 && (
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-100">
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-100 md:col-span-1">
               <div className="flex items-center space-x-2 mb-3">
                 <Users className="h-5 w-5 text-blue-600" />
                 <h3 className="font-medium text-blue-900">Attendance Summary</h3>
@@ -283,6 +370,14 @@ export function AttendanceForm() {
                   </span>
                   <span className="font-semibold text-red-700">{stats.absentCount}</span>
                 </div>
+                {selectedTimeSlot && (
+                  <div className="pt-2 border-t border-blue-200">
+                    <div className="flex items-center space-x-1 text-xs text-blue-600">
+                      <Clock className="h-3 w-3" />
+                      <span>{selectedTimeSlot}</span>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -294,8 +389,14 @@ export function AttendanceForm() {
               <div className="flex items-center space-x-2 mb-4">
                 <BookOpen className="h-5 w-5 text-gray-600" />
                 <h3 className="font-medium text-gray-900">
-                  Students - {selectedClass} ({selectedYear})
+                  Students - {selectedClass} ({selectedYear}) - {selectedSubject}
                 </h3>
+                {selectedTimeSlot && (
+                  <div className="flex items-center space-x-1 text-sm text-blue-600 ml-auto">
+                    <Clock className="h-4 w-4" />
+                    <span>{selectedTimeSlot}</span>
+                  </div>
+                )}
               </div>
               
               <div className="space-y-3">
