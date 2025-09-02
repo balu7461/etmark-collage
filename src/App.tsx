@@ -24,6 +24,7 @@ import { Settings } from './pages/Settings';
 import { StudentAchievements } from './pages/StudentAchievements';
 import { AchievementsCommitteeDashboard } from './pages/AchievementsCommitteeDashboard';
 import { ParentAttendanceCheck } from './pages/ParentAttendanceCheck';
+import { LandingPage } from './pages/LandingPage';
 import { Toaster } from 'react-hot-toast';
 
 function AppContent() {
@@ -65,10 +66,14 @@ function AppContent() {
   return (
     <Routes>
       {/* Public Routes - No authentication required */}
+      <Route path="/welcome" element={<LandingPage />} />
       <Route path="/parent-attendance" element={<ParentAttendanceCheck />} />
       
       {/* Authentication Routes */}
       <Route path="/login" element={!currentUser ? <AuthContainer /> : <Navigate to="/dashboard" replace />} />
+      
+      {/* Root redirect to welcome page */}
+      <Route path="/" element={<Navigate to="/welcome" replace />} />
       
       {/* Protected Routes - Authentication required */}
       <Route path="/*" element={
@@ -96,7 +101,6 @@ function AppContent() {
               <Header toggleSidebar={toggleSidebar} />
               <div className="flex-1 overflow-y-auto main-content">
                 <Routes>
-                  <Route path="/" element={<Navigate to="/dashboard" replace />} />
                   {currentUser.role === 'achievements_committee' ? (
                     <Route path="/dashboard" element={<Navigate to="/achievements-dashboard" replace />} />
                   ) : (

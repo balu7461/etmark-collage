@@ -20,7 +20,9 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
       setProgress(prev => {
         if (prev >= 100) {
           clearInterval(timer);
-          setTimeout(onComplete, 800);
+          setTimeout(() => {
+            window.location.href = '/welcome';
+          }, 800);
           return 100;
         }
         return prev + 1.5;
