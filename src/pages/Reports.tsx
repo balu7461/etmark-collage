@@ -45,7 +45,11 @@ export function Reports() {
         'Student Name': studentLookup[record.studentId]?.name || 'Unknown',
         'Sats No.': studentLookup[record.studentId]?.rollNumber || 'N/A',
         'Class': record.class,
-        'Status': record.status,
+        'Status': record.status === 'present' ? 'Present' :
+                  record.status === 'absent' ? 'Absent' :
+                  record.status === 'sports' ? 'Sports Activity' :
+                  record.status === 'ec' ? 'Extra-Curricular' :
+                  record.status,
         'Reason': record.reason || '',
       }));
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { AttendanceRecord, Student } from '../types';
-import { Calendar, Users, Filter, Download, Search } from 'lucide-react';
+import { Calendar, Users, Filter, Download, Search, Trophy, Star } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { format } from 'date-fns';
 import { ALL_CLASSES, getYearsForClass, subjectsByClassAndYear, hasSubjectDefinitions } from '../utils/constants';
@@ -113,9 +113,13 @@ export function Attendance() {
     const totalRecords = filteredRecords.length;
     const presentCount = filteredRecords.filter(r => r.status === 'present').length;
     const absentCount = filteredRecords.filter(r => r.status === 'absent').length;
-    const attendanceRate = totalRecords > 0 ? ((presentCount / totalRecords) * 100).toFixed(1) : '0';
+    const sportsCount = filteredRecords.filter(r => r.status === 'sports').length;
+    const ecCount = filteredRecords.filter(r => r.status === 'ec').length;
+    // Sports and EC count as excused attendance (positive towards percentage)
+    const excusedCount = presentCount + sportsCount + ecCount;
+    const attendanceRate = totalRecords > 0 ? ((excusedCount / totalRecords) * 100).toFixed(1) : '0';
 
-    return { totalRecords, presentCount, absentCount, attendanceRate };
+    return { totalRecords, presentCount, absentCount, sportsCount, ecCount, attendanceRate };
   };
 
   const stats = getAttendanceStats();
@@ -140,23 +144,23 @@ export function Attendance() {
           </div>
 
           {/* Statistics Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+          <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 lg:gap-6 mb-6">
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Total Records</p>
-                  <p className="text-3xl font-bold text-gray-900">{stats.totalRecords}</p>
+                  <p className="text-xs lg:text-sm font-medium text-gray-600">Total Records</p>
+                  <p className="text-2xl lg:text-3xl font-bold text-gray-900">{stats.totalRecords}</p>
                 </div>
-                <Users className="h-8 w-8 text-blue-600" />
+                <Users className="h-6 w-6 lg:h-8 lg:w-8 text-blue-600" />
               </div>
             </div>
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Present</p>
-                  <p className="text-3xl font-bold text-green-600">{stats.presentCount}</p>
+                  <p className="text-xs lg:text-sm font-medium text-gray-600">Present</p>
+                  <p className="text-2xl lg:text-3xl font-bold text-green-600">{stats.presentCount}</p>
                 </div>
-                <div className="h-8 w-8 bg-green-100 rounded-full flex items-center justify-center">
+                <div className="h-6 w-6 lg:h-8 lg:w-8 bg-green-100 rounded-full flex items-center justify-center">
                   <span className="text-green-600 font-bold">✓</span>
                 </div>
               </div>
@@ -164,10 +168,10 @@ export function Attendance() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Absent</p>
-                  <p className="text-3xl font-bold text-red-600">{stats.absentCount}</p>
+                  <p className="text-xs lg:text-sm font-medium text-gray-600">Absent</p>
+                  <p className="text-2xl lg:text-3xl font-bold text-red-600">{stats.absentCount}</p>
                 </div>
-                <div className="h-8 w-8 bg-red-100 rounded-full flex items-center justify-center">
+                <div className="h-6 w-6 lg:h-8 lg:w-8 bg-red-100 rounded-full flex items-center justify-center">
                   <span className="text-red-600 font-bold">✗</span>
                 </div>
               </div>
@@ -175,10 +179,28 @@ export function Attendance() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Attendance Rate</p>
-                  <p className="text-3xl font-bold text-[#002e5d]">{stats.attendanceRate}%</p>
+                  <p className="text-xs lg:text-sm font-medium text-gray-600">Sports</p>
+                  <p className="text-2xl lg:text-3xl font-bold text-blue-600">{stats.sportsCount}</p>
                 </div>
-                <Calendar className="h-8 w-8 text-[#002e5d]" />
+                <Trophy className="h-6 w-6 lg:h-8 lg:w-8 text-blue-600" />
+              </div>
+            </div>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs lg:text-sm font-medium text-gray-600">EC</p>
+                  <p className="text-2xl lg:text-3xl font-bold text-purple-600">{stats.ecCount}</p>
+                </div>
+                <Star className="h-6 w-6 lg:h-8 lg:w-8 text-purple-600" />
+              </div>
+            </div>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs lg:text-sm font-medium text-gray-600">Attendance Rate</p>
+                  <p className="text-2xl lg:text-3xl font-bold text-[#002e5d]">{stats.attendanceRate}%</p>
+                </div>
+                <Calendar className="h-6 w-6 lg:h-8 lg:w-8 text-[#002e5d]" />
               </div>
             </div>
           </div>
@@ -358,9 +380,16 @@ export function Attendance() {
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                             record.status === 'present' 
                               ? 'bg-green-100 text-green-800' 
-                              : 'bg-red-100 text-red-800'
+                              : record.status === 'absent'
+                              ? 'bg-red-100 text-red-800'
+                              : record.status === 'sports'
+                              ? 'bg-blue-100 text-blue-800'
+                              : 'bg-purple-100 text-purple-800'
                           }`}>
-                            {record.status}
+                            {record.status === 'present' ? 'Present' :
+                             record.status === 'absent' ? 'Absent' :
+                             record.status === 'sports' ? 'Sports' :
+                             'EC'}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.facultyName}</td>

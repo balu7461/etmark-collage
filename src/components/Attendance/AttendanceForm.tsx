@@ -16,7 +16,7 @@ export function AttendanceForm() {
   const [selectedTimeSlot, setSelectedTimeSlot] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('');
   const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
-  const [attendance, setAttendance] = useState<Record<string, { status: 'present' | 'absent'; reason?: string }>>({});
+  const [attendance, setAttendance] = useState<Record<string, { status: 'present' | 'absent' | 'sports' | 'ec'; reason?: string }>>({});
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -73,7 +73,7 @@ export function AttendanceForm() {
       setStudents(studentsData);
       
       // Initialize attendance state - ALL STUDENTS DEFAULT TO PRESENT
-      const attendanceState: Record<string, { status: 'present' | 'absent'; reason?: string }> = {};
+      const attendanceState: Record<string, { status: 'present' | 'absent' | 'sports' | 'ec'; reason?: string }> = {};
       studentsData.forEach(student => {
         attendanceState[student.id] = { status: 'present' };
       });
@@ -97,7 +97,7 @@ export function AttendanceForm() {
     }
   };
 
-  const handleAttendanceChange = (studentId: string, status: 'present' | 'absent') => {
+  const handleAttendanceChange = (studentId: string, status: 'present' | 'absent' | 'sports' | 'ec') => {
     setAttendance(prev => ({
       ...prev,
       [studentId]: { ...prev[studentId], status }
@@ -167,9 +167,17 @@ export function AttendanceForm() {
     const presentCount = students.filter(student => 
       attendance[student.id]?.status === 'present'
     ).length;
-    const absentCount = totalStudents - presentCount;
+    const absentCount = students.filter(student => 
+      attendance[student.id]?.status === 'absent'
+    ).length;
+    const sportsCount = students.filter(student => 
+      attendance[student.id]?.status === 'sports'
+    ).length;
+    const ecCount = students.filter(student => 
+      attendance[student.id]?.status === 'ec'
+    ).length;
     
-    return { totalStudents, presentCount, absentCount };
+    return { totalStudents, presentCount, absentCount, sportsCount, ecCount };
   };
 
   const stats = getAttendanceStats();
@@ -285,33 +293,47 @@ export function AttendanceForm() {
 
           {/* Stats Card */}
           {students.length > 0 && (
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-100 md:col-span-1">
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-3 lg:p-4 border border-blue-100 md:col-span-1">
               <div className="flex items-center space-x-2 mb-3">
                 <Users className="h-5 w-5 text-blue-600" />
-                <h3 className="font-medium text-blue-900">Attendance Summary</h3>
+                <h3 className="font-medium text-blue-900 text-sm lg:text-base">Attendance Summary</h3>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1 lg:space-y-2">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Total Students:</span>
-                  <span className="font-semibold text-gray-900">{stats.totalStudents}</span>
+                  <span className="text-xs lg:text-sm text-gray-600">Total:</span>
+                  <span className="font-semibold text-gray-900 text-sm lg:text-base">{stats.totalStudents}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-green-600 flex items-center">
-                    <CheckCircle className="h-4 w-4 mr-1" />
+                  <span className="text-xs lg:text-sm text-green-600 flex items-center">
+                    <CheckCircle className="h-3 w-3 lg:h-4 lg:w-4 mr-1" />
                     Present:
                   </span>
-                  <span className="font-semibold text-green-700">{stats.presentCount}</span>
+                  <span className="font-semibold text-green-700 text-sm lg:text-base">{stats.presentCount}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-red-600 flex items-center">
-                    <XCircle className="h-4 w-4 mr-1" />
+                  <span className="text-xs lg:text-sm text-red-600 flex items-center">
+                    <XCircle className="h-3 w-3 lg:h-4 lg:w-4 mr-1" />
                     Absent:
                   </span>
-                  <span className="font-semibold text-red-700">{stats.absentCount}</span>
+                  <span className="font-semibold text-red-700 text-sm lg:text-base">{stats.absentCount}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs lg:text-sm text-blue-600 flex items-center">
+                    <Trophy className="h-3 w-3 lg:h-4 lg:w-4 mr-1" />
+                    Sports:
+                  </span>
+                  <span className="font-semibold text-blue-700 text-sm lg:text-base">{stats.sportsCount}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs lg:text-sm text-purple-600 flex items-center">
+                    <Star className="h-3 w-3 lg:h-4 lg:w-4 mr-1" />
+                    EC:
+                  </span>
+                  <span className="font-semibold text-purple-700 text-sm lg:text-base">{stats.ecCount}</span>
                 </div>
                 {selectedTimeSlot && (
-                  <div className="pt-2 border-t border-blue-200">
-                    <div className="flex items-center space-x-1 text-xs text-blue-600">
+                  <div className="pt-1 lg:pt-2 border-t border-blue-200">
+                    <div className="flex items-center space-x-1 text-xs lg:text-sm text-blue-600">
                       <Clock className="h-3 w-3" />
                       <span>{selectedTimeSlot}</span>
                     </div>
@@ -337,54 +359,84 @@ export function AttendanceForm() {
               
               <div className="space-y-3">
                 {students.map((student) => (
-                  <div key={student.id} className="bg-white rounded-lg p-4 border border-gray-200 hover:shadow-md transition-all">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-3 sm:space-y-0">
+                  <div key={student.id} className="bg-white rounded-lg p-3 lg:p-4 border border-gray-200 hover:shadow-md transition-all attendance-student-card">
+                    <div className="flex flex-col lg:flex-row lg:items-center justify-between space-y-3 lg:space-y-0 attendance-student-info">
                       <div className="flex-1">
-                        <h4 className="font-medium text-gray-900">{student.name}</h4>
-                        <p className="text-sm text-gray-600">Roll No: {student.rollNumber}</p>
+                        <h4 className="font-medium text-gray-900 text-sm lg:text-base student-name">{student.name}</h4>
+                        <p className="text-xs lg:text-sm text-gray-600 student-details">Roll No: {student.rollNumber}</p>
                         {student.parentEmail && (
-                          <p className="text-xs text-gray-500 flex items-center mt-1">
+                          <p className="text-xs text-gray-500 flex items-center mt-1 student-details">
                             <Mail className="h-3 w-3 mr-1" />
-                            {student.parentEmail}
+                            <span className="truncate max-w-32 lg:max-w-none">{student.parentEmail}</span>
                           </p>
                         )}
                       </div>
                       
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
-                        <div className="flex space-x-2">
+                      <div className="flex flex-col lg:flex-row items-start lg:items-center space-y-2 lg:space-y-0 lg:space-x-3 attendance-controls">
+                        <div className="grid grid-cols-2 lg:flex gap-2 lg:space-x-2 w-full lg:w-auto attendance-radio-group">
                           <button
                             type="button"
                             onClick={() => handleAttendanceChange(student.id, 'present')}
-                            className={`px-3 py-1 rounded-full text-sm font-medium transition-all ${
+                            className={`px-2 lg:px-3 py-2 lg:py-1 rounded-lg lg:rounded-full text-xs lg:text-sm font-medium transition-all min-h-[44px] lg:min-h-auto flex items-center justify-center ${
                               attendance[student.id]?.status === 'present'
-                                ? 'bg-green-100 text-green-800 border-2 border-green-300'
+                                ? 'bg-green-100 text-green-800 border-2 border-green-300 shadow-md'
                                 : 'bg-gray-100 text-gray-600 border-2 border-transparent hover:bg-green-50'
                             }`}
                           >
-                            <CheckCircle className="h-4 w-4 inline mr-1" />
+                            <CheckCircle className="h-3 w-3 lg:h-4 lg:w-4 inline mr-1" />
                             Present
                           </button>
                           <button
                             type="button"
                             onClick={() => handleAttendanceChange(student.id, 'absent')}
-                            className={`px-3 py-1 rounded-full text-sm font-medium transition-all ${
+                            className={`px-2 lg:px-3 py-2 lg:py-1 rounded-lg lg:rounded-full text-xs lg:text-sm font-medium transition-all min-h-[44px] lg:min-h-auto flex items-center justify-center ${
                               attendance[student.id]?.status === 'absent'
-                                ? 'bg-red-100 text-red-800 border-2 border-red-300'
+                                ? 'bg-red-100 text-red-800 border-2 border-red-300 shadow-md'
                                 : 'bg-gray-100 text-gray-600 border-2 border-transparent hover:bg-red-50'
                             }`}
                           >
-                            <XCircle className="h-4 w-4 inline mr-1" />
+                            <XCircle className="h-3 w-3 lg:h-4 lg:w-4 inline mr-1" />
                             Absent
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleAttendanceChange(student.id, 'sports')}
+                            className={`px-2 lg:px-3 py-2 lg:py-1 rounded-lg lg:rounded-full text-xs lg:text-sm font-medium transition-all min-h-[44px] lg:min-h-auto flex items-center justify-center ${
+                              attendance[student.id]?.status === 'sports'
+                                ? 'bg-blue-100 text-blue-800 border-2 border-blue-300 shadow-md'
+                                : 'bg-gray-100 text-gray-600 border-2 border-transparent hover:bg-blue-50'
+                            }`}
+                          >
+                            <Trophy className="h-3 w-3 lg:h-4 lg:w-4 inline mr-1" />
+                            Sports
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleAttendanceChange(student.id, 'ec')}
+                            className={`px-2 lg:px-3 py-2 lg:py-1 rounded-lg lg:rounded-full text-xs lg:text-sm font-medium transition-all min-h-[44px] lg:min-h-auto flex items-center justify-center ${
+                              attendance[student.id]?.status === 'ec'
+                                ? 'bg-purple-100 text-purple-800 border-2 border-purple-300 shadow-md'
+                                : 'bg-gray-100 text-gray-600 border-2 border-transparent hover:bg-purple-50'
+                            }`}
+                          >
+                            <Star className="h-3 w-3 lg:h-4 lg:w-4 inline mr-1" />
+                            EC
                           </button>
                         </div>
 
-                        {attendance[student.id]?.status === 'absent' && (
+                        {(attendance[student.id]?.status === 'absent' || 
+                          attendance[student.id]?.status === 'sports' || 
+                          attendance[student.id]?.status === 'ec') && (
                           <input
                             type="text"
-                            placeholder="Reason (optional)"
+                            placeholder={
+                              attendance[student.id]?.status === 'absent' ? 'Reason (optional)' :
+                              attendance[student.id]?.status === 'sports' ? 'Sports activity (optional)' :
+                              'EC activity (optional)'
+                            }
                             value={attendance[student.id]?.reason || ''}
                             onChange={(e) => handleReasonChange(student.id, e.target.value)}
-                            className="w-full sm:w-32 px-2 py-1 text-xs sm:text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            className="w-full lg:w-40 px-2 py-2 lg:py-1 text-xs lg:text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all attendance-reason-input"
                           />
                         )}
                       </div>

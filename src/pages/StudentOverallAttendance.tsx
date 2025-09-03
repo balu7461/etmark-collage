@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { Student, AttendanceRecord } from '../types';
-import { Search, User, Calendar, CheckCircle, XCircle, BarChart3, GraduationCap } from 'lucide-react';
+import { Search, User, Calendar, CheckCircle, XCircle, BarChart3, GraduationCap, Trophy, Star } from 'lucide-react';
 import { ALL_CLASSES, getYearsForClass } from '../utils/constants';
 import toast from 'react-hot-toast';
 
@@ -79,11 +79,17 @@ export function StudentOverallAttendance() {
       const totalDays = records.length;
       const totalPresent = records.filter(record => record.status === 'present').length;
       const totalAbsent = records.filter(record => record.status === 'absent').length;
-      const attendancePercentage = totalDays > 0 ? Math.round((totalPresent / totalDays) * 100) : 0;
+      const totalSports = records.filter(record => record.status === 'sports').length;
+      const totalEC = records.filter(record => record.status === 'ec').length;
+      // Sports and EC count as excused attendance (positive towards percentage)
+      const excusedCount = totalPresent + totalSports + totalEC;
+      const attendancePercentage = totalDays > 0 ? Math.round((excusedCount / totalDays) * 100) : 0;
 
       setAttendanceData({
         totalPresent,
         totalAbsent,
+        totalSports,
+        totalEC,
         attendancePercentage,
         totalDays,
         records: records.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -195,11 +201,11 @@ export function StudentOverallAttendance() {
           {/* Attendance Statistics */}
           {attendanceData && (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6">
+              <div className="grid grid-cols-2 lg:grid-cols-6 gap-3 lg:gap-4 mb-6">
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 lg:p-6 transform transition-all duration-200 hover:scale-105">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs lg:text-sm font-medium text-gray-600">Total Days</p>
+                      <p className="text-xs font-medium text-gray-600">Total Days</p>
                       <p className="text-2xl lg:text-3xl font-bold text-gray-900">{attendanceData.totalDays}</p>
                     </div>
                     <Calendar className="h-6 w-6 lg:h-8 lg:w-8 text-blue-600" />
@@ -209,7 +215,7 @@ export function StudentOverallAttendance() {
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 lg:p-6 transform transition-all duration-200 hover:scale-105">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs lg:text-sm font-medium text-gray-600">Present</p>
+                      <p className="text-xs font-medium text-gray-600">Present</p>
                       <p className="text-2xl lg:text-3xl font-bold text-green-600">{attendanceData.totalPresent}</p>
                     </div>
                     <CheckCircle className="h-6 w-6 lg:h-8 lg:w-8 text-green-600" />
@@ -219,17 +225,37 @@ export function StudentOverallAttendance() {
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 lg:p-6 transform transition-all duration-200 hover:scale-105">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs lg:text-sm font-medium text-gray-600">Absent</p>
+                      <p className="text-xs font-medium text-gray-600">Absent</p>
                       <p className="text-2xl lg:text-3xl font-bold text-red-600">{attendanceData.totalAbsent}</p>
                     </div>
                     <XCircle className="h-6 w-6 lg:h-8 lg:w-8 text-red-600" />
                   </div>
                 </div>
                 
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 lg:p-6 transform transition-all duration-200 hover:scale-105">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-medium text-gray-600">Sports</p>
+                      <p className="text-2xl lg:text-3xl font-bold text-blue-600">{attendanceData.totalSports}</p>
+                    </div>
+                    <Trophy className="h-6 w-6 lg:h-8 lg:w-8 text-blue-600" />
+                  </div>
+                </div>
+                
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 lg:p-6 transform transition-all duration-200 hover:scale-105">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-medium text-gray-600">EC</p>
+                      <p className="text-2xl lg:text-3xl font-bold text-purple-600">{attendanceData.totalEC}</p>
+                    </div>
+                    <Star className="h-6 w-6 lg:h-8 lg:w-8 text-purple-600" />
+                  </div>
+                </div>
+                
                 <div className={`rounded-xl shadow-sm border p-4 lg:p-6 transform transition-all duration-200 hover:scale-105 ${getAttendanceBgColor(attendanceData.attendancePercentage)}`}>
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs lg:text-sm font-medium text-gray-600">Attendance %</p>
+                      <p className="text-xs font-medium text-gray-600">Attendance %</p>
                       <p className={`text-2xl lg:text-3xl font-bold ${getAttendanceColor(attendanceData.attendancePercentage)}`}>
                         {attendanceData.attendancePercentage}%
                       </p>
@@ -260,8 +286,8 @@ export function StudentOverallAttendance() {
                     <p className="text-xs lg:text-sm text-gray-600">
                       {attendanceData.attendancePercentage >= 85 
                         ? 'Student has maintained excellent attendance record.' 
-                        : attendanceData.attendancePercentage >= 75 
-                        ? 'Student has good attendance but can improve further.' 
+                        : attendanceData.attendancePercentage >= 75
+                        ? 'Student has good attendance. Some classes were excused for activities.'
                         : 'Student attendance is below minimum requirement. Immediate attention needed.'}
                     </p>
                   </div>
@@ -295,9 +321,16 @@ export function StudentOverallAttendance() {
                             <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                               record.status === 'present' 
                                 ? 'bg-green-100 text-green-800' 
-                                : 'bg-red-100 text-red-800'
+                                : record.status === 'absent'
+                                ? 'bg-red-100 text-red-800'
+                                : record.status === 'sports'
+                                ? 'bg-blue-100 text-blue-800'
+                                : 'bg-purple-100 text-purple-800'
                             }`}>
-                              {record.status}
+                              {record.status === 'present' ? 'Present' :
+                               record.status === 'absent' ? 'Absent' :
+                               record.status === 'sports' ? 'Sports' :
+                               'EC'}
                             </span>
                           </td>
                           <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-xs lg:text-sm text-gray-900 hidden sm:table-cell truncate max-w-32 lg:max-w-none">

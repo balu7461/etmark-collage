@@ -4,9 +4,20 @@ A comprehensive college management system built with React, TypeScript, and Fire
 
 ## 🎯 Overview
 
-Trinity Track is a modern, full-featured management system that streamlines college operations including student management, faculty coordination, attendance tracking, leave management, achievement recognition, and comprehensive reporting.
+Trinity Track is a modern, full-featured management system that streamlines college operations including student management, faculty coordination, enhanced 4-status attendance tracking, leave management, achievement recognition, and comprehensive reporting.
 
 ## ✨ Key Features
+
+### 📊 **Enhanced Attendance System**
+- **4-Status Attendance Tracking**: 
+  - **Present**: Student attended regular class
+  - **Absent**: Student was absent from class
+  - **Sports**: Student participating in sports activities (counts as excused)
+  - **EC (Extra-Curricular)**: Student in extra-curricular activities (counts as excused)
+- **Smart Percentage Calculation**: Sports and EC activities count positively towards attendance
+- **Mobile-Responsive Interface**: Optimized for marking attendance on mobile devices
+- **Activity Reason Tracking**: Optional reason/activity description for Sports and EC
+- **Parent Portal Integration**: Parents can see all 4 attendance types in their dashboard
 
 ### 👥 **User Management System**
 - **Multi-Role Support**: Admin, Faculty, Timetable Committee, Examination Committee, Achievements Committee
@@ -22,11 +33,15 @@ Trinity Track is a modern, full-featured management system that streamlines coll
 - **Class & Year Organization**: Organized by classes (B.com, BBA, BCA, PCMB, PCMC, EBAC, EBAS)
 
 ### 📅 **Attendance Management**
-- **Digital Attendance**: Mark attendance for entire classes
+- **Enhanced Digital Attendance**: Mark attendance for entire classes with 4 status options
+- **Multiple Attendance Types**: Present, Absent, Sports Activity, Extra-Curricular (EC)
+- **Smart Attendance Calculation**: Sports and EC activities count as excused attendance
 - **Real-time Tracking**: Live attendance statistics and reporting
 - **Parent Notifications**: Automatic email notifications to parents for absent students
 - **Attendance Reports**: Comprehensive attendance analytics and export
 - **Student Attendance Search**: Search individual student attendance records by Sats No.
+- **Activity Tracking**: Separate tracking for sports and extra-curricular activities
+- **Mobile-Optimized Interface**: Touch-friendly attendance marking on all devices
 
 ### 🏖️ **Leave Management System**
 - **Multi-Level Approval**: Committee → Principal approval workflow
@@ -51,13 +66,16 @@ Trinity Track is a modern, full-featured management system that streamlines coll
 
 ### 📈 **Reports & Analytics**
 - **Attendance Reports**: Detailed attendance analytics with date range filtering
+- **Activity Reports**: Separate reporting for sports and extra-curricular participation
 - **Leave Reports**: Faculty leave application summaries
 - **Achievement Reports**: Faculty and student achievement analytics
 - **Student Reports**: Complete student database exports
 - **Excel Export**: All reports exportable to Excel format
+- **Enhanced Attendance Metrics**: Comprehensive tracking including excused activities
 
 ### 📧 **Email Integration**
 - **Automated Notifications**: Automatic parent notifications for student absences
+- **Activity Notifications**: Optional notifications for sports and EC activities
 - **EmailJS Integration**: Seamless email service integration
 - **Custom Templates**: Configurable email templates
 - **Bulk Notifications**: Send notifications to multiple parents simultaneously
@@ -136,9 +154,12 @@ service cloud.firestore {
       allow read, write: if request.auth != null;
     }
     
-    // Attendance collection
+    // Attendance collection - supports 4 status types: present, absent, sports, ec
     match /attendance/{attendanceId} {
       allow read, write: if request.auth != null;
+      // Validate attendance status values
+      allow create, update: if request.auth != null && 
+        resource.data.status in ['present', 'absent', 'sports', 'ec'];
     }
     
     // Leave applications
@@ -320,13 +341,28 @@ No environment variables needed - Firebase configuration is included in the buil
 | Dashboard | ✅ | ✅ | ✅ | ✅ | ✅ |
 | User Management | ✅ | ❌ | ❌ | ❌ | ❌ |
 | Student Management | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Mark Attendance | ❌ | ✅ | ❌ | ❌ | ❌ |
+| Mark Attendance (4-Status) | ❌ | ✅ | ❌ | ❌ | ❌ |
 | View Attendance | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Parent Attendance Portal | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Timetable Management | ✅ | View Only | ✅ | View Only | ❌ |
 | Leave Management | ✅ | Apply Only | Review & Apply | Review & Apply | Apply Only |
 | Faculty Achievements | ✅ | Personal Only | Personal Only | Personal Only | Personal Only |
 | Student Achievements | ❌ | ❌ | ❌ | ❌ | ✅ |
 | Reports & Analytics | ✅ | ❌ | ❌ | ❌ | Limited |
+
+### 📊 **Enhanced Attendance System**
+- **4-Status Attendance Options**: Present, Absent, Sports Activity, Extra-Curricular (EC)
+- **Smart Calculation**: Sports and EC activities count as excused attendance
+- **Mobile-Optimized**: Touch-friendly interface for marking attendance on mobile devices
+- **Parent Portal Integration**: Parents can view all attendance types including activities
+- **Activity Tracking**: Optional descriptions for sports and EC activities
+- **Enhanced Reports**: Excel exports include all 4 attendance status types
+
+### 🎯 **Attendance Status Definitions**
+- **Present**: Student attended regular class session
+- **Absent**: Student was absent from class (counts negatively)
+- **Sports**: Student participating in sports activities (counts as excused)
+- **EC (Extra-Curricular)**: Student in extra-curricular activities (counts as excused)
 
 ## 🛠️ Development
 
