@@ -5,7 +5,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { StatsCard } from '../components/Dashboard/StatsCard';
 import { StudentAchievement, LeaveApplication } from '../types';
 import { calculateLeaveStats, getLeaveStatusColor, getLOPStatusColor } from '../utils/leaveCalculations';
-import { calculateLeaveStats, getLeaveStatusColor, getLOPStatusColor } from '../utils/leaveCalculations';
 import { ALL_CLASSES } from '../utils/constants';
 import { 
   Users, 
