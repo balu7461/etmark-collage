@@ -29,7 +29,7 @@ import {
   AlertTriangle
 } from 'lucide-react';
 
-export function Dashboard() {
+export function MyLeaves() {
   const { currentUser } = useAuth();
   const [stats, setStats] = useState({
     totalStudents: 0,
