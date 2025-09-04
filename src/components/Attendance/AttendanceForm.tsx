@@ -3,7 +3,7 @@ import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { useAuth } from '../../contexts/AuthContext';
 import { Student, AttendanceRecord } from '../../types';
-import { Calendar, Users, BookOpen, Save, CheckCircle, XCircle, Mail, Send, Clock } from 'lucide-react';
+import { Calendar, Users, BookOpen, Save, CheckCircle, XCircle, Mail, Send, Clock, Trophy, Star } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 import { ALL_CLASSES, TIME_SLOTS, getYearsForClass, subjectsByClassAndYear } from '../../utils/constants';
