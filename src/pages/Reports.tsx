@@ -5,6 +5,7 @@ import { AttendanceRecord, Student, LeaveApplication, Achievement } from '../typ
 import { BarChart3, Download, Calendar, Users, FileText, Award } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { format } from 'date-fns';
+import { ALL_CLASSES, getYearsForClass } from '../utils/constants';
 
 export function Reports() {
   const [loading, setLoading] = useState(false);
