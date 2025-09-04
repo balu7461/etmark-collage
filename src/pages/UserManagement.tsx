@@ -4,6 +4,7 @@ import { db } from '../lib/firebase';
 import { User, Student, Department } from '../types';
 import { Users, Edit2, Trash2, Search, Filter, UserCheck, UserX, Building, Mail, Phone } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { ALL_CLASSES, getYearsForClass } from '../utils/constants';
 
 export function UserManagement() {
   const [users, setUsers] = useState<User[]>([]);
