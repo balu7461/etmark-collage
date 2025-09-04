@@ -4,6 +4,7 @@ import { db } from '../lib/firebase';
 import { Student, AttendanceRecord } from '../types';
 import { Search, User, Calendar, CheckCircle, XCircle, BarChart3, GraduationCap, Trophy, Star } from 'lucide-react';
 import { ALL_CLASSES, getYearsForClass } from '../utils/constants';
+import { calculateMonthlyAttendance, getAttendanceColor, getAttendanceBgColor, getAttendanceStatus, type MonthlyAttendanceBreakdown } from '../utils/attendanceCalculations';
 import toast from 'react-hot-toast';
 
 export function StudentOverallAttendance() {
@@ -13,9 +14,12 @@ export function StudentOverallAttendance() {
   const [attendanceData, setAttendanceData] = useState<{
     totalPresent: number;
     totalAbsent: number;
+    totalSports: number;
+    totalEC: number;
     attendancePercentage: number;
     totalDays: number;
     records: AttendanceRecord[];
+    monthlyBreakdown: MonthlyAttendanceBreakdown[];
   } | null>(null);
 
   const searchStudentAttendance = async () => {
@@ -81,18 +85,26 @@ export function StudentOverallAttendance() {
       const totalAbsent = records.filter(record => record.status === 'absent').length;
       const totalSports = records.filter(record => record.status === 'sports').length;
       const totalEC = records.filter(record => record.status === 'ec').length;
+      const totalSports = records.filter(record => record.status === 'sports').length;
+      const totalEC = records.filter(record => record.status === 'ec').length;
       // Sports and EC count as excused attendance (positive towards percentage)
       const excusedCount = totalPresent + totalSports + totalEC;
       const attendancePercentage = totalDays > 0 ? Math.round((excusedCount / totalDays) * 100) : 0;
+
+      // Calculate monthly breakdown
+      const monthlyBreakdown = calculateMonthlyAttendance(records);
 
       setAttendanceData({
         totalPresent,
         totalAbsent,
         totalSports,
         totalEC,
+        totalSports,
+        totalEC,
         attendancePercentage,
         totalDays,
-        records: records.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        records: records.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
+        monthlyBreakdown
       });
 
       toast.success('Student attendance data loaded successfully!');
@@ -194,6 +206,92 @@ export function StudentOverallAttendance() {
                   <p className="text-xs lg:text-sm font-medium text-gray-600">Year</p>
                   <p className="text-sm lg:text-base font-semibold text-gray-900">{studentData.year || 'N/A'}</p>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* Monthly Attendance Breakdown */}
+          {attendanceData && attendanceData.monthlyBreakdown.length > 0 && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+              <div className="px-4 lg:px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <h3 className="text-base lg:text-lg font-semibold text-gray-900">Monthly Attendance Breakdown</h3>
+                <p className="text-xs lg:text-sm text-gray-600">Detailed month-wise attendance analysis</p>
+              </div>
+              
+              <div className="p-4 lg:p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {attendanceData.monthlyBreakdown.map((monthData, index) => (
+                    <div key={index} className={`rounded-xl border-2 p-4 transform transition-all duration-200 hover:scale-105 ${getAttendanceBgColor(monthData.attendancePercentage)}`}>
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="font-semibold text-gray-900 text-sm lg:text-base">{monthData.monthName}</h4>
+                        <span className={`text-xl lg:text-2xl font-bold ${getAttendanceColor(monthData.attendancePercentage)}`}>
+                          {monthData.attendancePercentage}%
+                        </span>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center text-xs lg:text-sm">
+                          <span className="text-gray-600">Total Classes:</span>
+                          <span className="font-medium text-gray-900">{monthData.totalClasses}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-xs lg:text-sm">
+                          <span className="text-green-600 flex items-center">
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            Present:
+                          </span>
+                          <span className="font-medium text-green-700">{monthData.presentCount}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-xs lg:text-sm">
+                          <span className="text-red-600 flex items-center">
+                            <XCircle className="h-3 w-3 mr-1" />
+                            Absent:
+                          </span>
+                          <span className="font-medium text-red-700">{monthData.absentCount}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-xs lg:text-sm">
+                          <span className="text-blue-600 flex items-center">
+                            <Trophy className="h-3 w-3 mr-1" />
+                            Sports:
+                          </span>
+                          <span className="font-medium text-blue-700">{monthData.sportsCount}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-xs lg:text-sm">
+                          <span className="text-purple-600 flex items-center">
+                            <Star className="h-3 w-3 mr-1" />
+                            EC:
+                          </span>
+                          <span className="font-medium text-purple-700">{monthData.ecCount}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-3 pt-3 border-t border-gray-200">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs lg:text-sm font-medium text-gray-600">Status:</span>
+                          <span className={`text-xs lg:text-sm font-bold ${getAttendanceColor(monthData.attendancePercentage)}`}>
+                            {getAttendanceStatus(monthData.attendancePercentage)}
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                          <div 
+                            className={`h-2 rounded-full transition-all duration-300 ${
+                              monthData.attendancePercentage >= 85 ? 'bg-green-500' :
+                              monthData.attendancePercentage >= 75 ? 'bg-yellow-500' :
+                              'bg-red-500'
+                            }`}
+                            style={{ width: `${monthData.attendancePercentage}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                {attendanceData.monthlyBreakdown.length === 0 && (
+                  <div className="text-center py-8">
+                    <Calendar className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                    <p className="text-sm text-gray-600">No monthly data available</p>
+                  </div>
+                )}
               </div>
             </div>
           )}

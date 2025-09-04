@@ -15,9 +15,10 @@ export function AttendanceForm() {
   const [selectedYear, setSelectedYear] = useState('');
   const [selectedTimeSlot, setSelectedTimeSlot] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('');
-  const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const [selectedDate] = useState(format(new Date(), 'yyyy-MM-dd')); // Fixed to current date only
   const [attendance, setAttendance] = useState<Record<string, { status: 'present' | 'absent' | 'sports' | 'ec'; reason?: string }>>({});
   const [loading, setLoading] = useState(false);
+  const currentDate = format(new Date(), 'yyyy-MM-dd');
 
   useEffect(() => {
     if (selectedClass && selectedYear) {
@@ -70,6 +71,14 @@ export function AttendanceForm() {
         }))
       });
       
+      // Sort students by roll number in ascending order
+      studentsData.sort((a, b) => {
+        // Handle alphanumeric sorting properly
+        const rollA = a.rollNumber.toLowerCase();
+        const rollB = b.rollNumber.toLowerCase();
+        return rollA.localeCompare(rollB, undefined, { numeric: true, sensitivity: 'base' });
+      });
+      
       setStudents(studentsData);
       
       // Initialize attendance state - ALL STUDENTS DEFAULT TO PRESENT
@@ -114,6 +123,12 @@ export function AttendanceForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate that attendance is being marked for current date only
+    if (selectedDate !== currentDate) {
+      toast.error('Attendance can only be marked for the current date');
+      return;
+    }
     
     if (!selectedClass || !selectedYear || !selectedTimeSlot || !selectedSubject || !currentUser) {
       toast.error('Please select class, year, time slot, subject, and date');
@@ -194,15 +209,20 @@ export function AttendanceForm() {
           <div className="md:col-span-5 grid grid-cols-1 md:grid-cols-5 gap-4">
             <div className="transform transition-all duration-200 hover:scale-105">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Date
+                Date (Today Only)
               </label>
               <input
                 type="date"
                 value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
+                min={currentDate}
+                max={currentDate}
+                disabled
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 required
               />
+              <p className="text-xs text-gray-500 mt-1">
+                Attendance can only be marked for today's date
+              </p>
             </div>
 
             <div className="transform transition-all duration-200 hover:scale-105">

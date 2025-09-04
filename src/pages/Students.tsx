@@ -76,12 +76,11 @@ export function Students() {
       console.log('✅ Valid students after filtering:', validStudents.length, 'students');
       console.log('🚫 Filtered out students:', studentsData.length - validStudents.length, 'students');
       
-      // Sort by class and then by roll number
+      // Sort by roll number in ascending order (alphanumeric)
       validStudents.sort((a, b) => {
-        if (a.class !== b.class) {
-          return a.class.localeCompare(b.class);
-        }
-        return a.rollNumber.localeCompare(b.rollNumber);
+        const rollA = a.rollNumber.toLowerCase();
+        const rollB = b.rollNumber.toLowerCase();
+        return rollA.localeCompare(rollB, undefined, { numeric: true, sensitivity: 'base' });
       });
       
       console.log('✅ Students sorted and ready to display');
