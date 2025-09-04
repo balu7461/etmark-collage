@@ -4,13 +4,20 @@ import { db } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { LeaveApplicationForm } from '../components/Leave/LeaveApplicationForm';
 import { LeaveApplication } from '../types';
-import { Calendar, Clock, CheckCircle, XCircle, FileText, Plus, User, MessageSquare } from 'lucide-react';
+import { Calendar, Clock, CheckCircle, XCircle, FileText, Plus, User, MessageSquare, AlertTriangle } from 'lucide-react';
+import { calculateLeaveStats, getLeaveStatusColor, getLOPStatusColor } from '../utils/leaveCalculations';
 
 export function MyLeaves() {
   const { currentUser } = useAuth();
   const [leaves, setLeaves] = useState<LeaveApplication[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [leaveStats, setLeaveStats] = useState({
+    totalLeavesUsed: 0,
+    remainingLeaves: 12,
+    totalLOP: 0,
+    monthlyBreakdown: []
+  });
 
   useEffect(() => {
     fetchMyLeaves();
@@ -38,6 +45,11 @@ export function MyLeaves() {
       });
       
       setLeaves(sortedLeaves);
+
+      // Calculate leave statistics for approved leaves only
+      const approvedLeaves = leavesData.filter(leave => leave.status === 'approved');
+      const stats = calculateLeaveStats(approvedLeaves);
+      setLeaveStats(stats);
     } catch (error) {
       console.error('Error fetching leaves:', error);
     } finally {
@@ -123,44 +135,130 @@ export function MyLeaves() {
 
           {/* Stats Cards */}
           {!showForm && (
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transform transition-all duration-200 hover:scale-105">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Total Applications</p>
-                    <p className="text-3xl font-bold text-gray-900">{stats.total}</p>
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transform transition-all duration-200 hover:scale-105">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Total Applications</p>
+                      <p className="text-3xl font-bold text-gray-900">{stats.total}</p>
+                    </div>
+                    <FileText className="h-8 w-8 text-blue-600" />
                   </div>
-                  <FileText className="h-8 w-8 text-blue-600" />
+                </div>
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transform transition-all duration-200 hover:scale-105">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Pending</p>
+                      <p className="text-3xl font-bold text-yellow-600">{stats.pending}</p>
+                    </div>
+                    <Clock className="h-8 w-8 text-yellow-600" />
+                  </div>
+                </div>
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transform transition-all duration-200 hover:scale-105">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Approved</p>
+                      <p className="text-3xl font-bold text-green-600">{stats.approved}</p>
+                    </div>
+                    <CheckCircle className="h-8 w-8 text-green-600" />
+                  </div>
+                </div>
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transform transition-all duration-200 hover:scale-105">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Rejected</p>
+                      <p className="text-3xl font-bold text-red-600">{stats.rejected}</p>
+                    </div>
+                    <XCircle className="h-8 w-8 text-red-600" />
+                  </div>
                 </div>
               </div>
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transform transition-all duration-200 hover:scale-105">
+
+              {/* Leave Balance Overview */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Pending</p>
-                    <p className="text-3xl font-bold text-yellow-600">{stats.pending}</p>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">Leave Balance (Current Year)</h3>
+                    <p className="text-sm text-gray-600">Annual quota: 12 days | Monthly limit: 2 days</p>
                   </div>
-                  <Clock className="h-8 w-8 text-yellow-600" />
+                  <Calendar className="h-8 w-8 text-[#002e5d]" />
                 </div>
-              </div>
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transform transition-all duration-200 hover:scale-105">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Approved</p>
-                    <p className="text-3xl font-bold text-green-600">{stats.approved}</p>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-blue-600 mb-1">{leaveStats.totalLeavesUsed}/12</div>
+                    <p className="text-sm text-blue-800">Leaves Used</p>
                   </div>
-                  <CheckCircle className="h-8 w-8 text-green-600" />
-                </div>
-              </div>
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transform transition-all duration-200 hover:scale-105">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Rejected</p>
-                    <p className="text-3xl font-bold text-red-600">{stats.rejected}</p>
+                  <div className={`border rounded-lg p-4 text-center ${
+                    leaveStats.remainingLeaves >= 8 ? 'bg-green-50 border-green-200' :
+                    leaveStats.remainingLeaves >= 4 ? 'bg-yellow-50 border-yellow-200' :
+                    'bg-red-50 border-red-200'
+                  }`}>
+                    <div className={`text-2xl font-bold mb-1 ${getLeaveStatusColor(leaveStats.remainingLeaves)}`}>
+                      {leaveStats.remainingLeaves}
+                    </div>
+                    <p className={`text-sm ${getLeaveStatusColor(leaveStats.remainingLeaves)}`}>Remaining Leaves</p>
                   </div>
-                  <XCircle className="h-8 w-8 text-red-600" />
+                  <div className={`border rounded-lg p-4 text-center ${
+                    leaveStats.totalLOP === 0 ? 'bg-green-50 border-green-200' :
+                    leaveStats.totalLOP <= 2 ? 'bg-yellow-50 border-yellow-200' :
+                    'bg-red-50 border-red-200'
+                  }`}>
+                    <div className={`text-2xl font-bold mb-1 ${getLOPStatusColor(leaveStats.totalLOP)}`}>
+                      {leaveStats.totalLOP}
+                    </div>
+                    <p className={`text-sm ${getLOPStatusColor(leaveStats.totalLOP)}`}>LOP Days</p>
+                  </div>
                 </div>
+                
+                {leaveStats.totalLOP > 0 && (
+                  <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-3">
+                    <div className="flex items-center space-x-2">
+                      <AlertTriangle className="h-4 w-4 text-red-600" />
+                      <p className="text-sm font-medium text-red-900">
+                        LOP Notice: You have {leaveStats.totalLOP} day(s) of Loss of Pay due to exceeding monthly leave limits.
+                      </p>
+                    </div>
+                    <p className="text-xs text-red-800 mt-1">
+                      Monthly limit: 2 leaves per month. Excess leaves are considered LOP.
+                    </p>
+                  </div>
+                )}
               </div>
-            </div>
+
+              {/* Monthly Breakdown */}
+              {leaveStats.monthlyBreakdown.length > 0 && (
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">Monthly Leave Breakdown</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {leaveStats.monthlyBreakdown.map((month, index) => (
+                      <div key={index} className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                        <h4 className="font-medium text-gray-900 mb-2">{month.monthName}</h4>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Valid Leaves:</span>
+                            <span className="font-medium text-blue-600">{month.leavesUsed} days</span>
+                          </div>
+                          {month.lopDays > 0 && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600">LOP Days:</span>
+                              <span className="font-medium text-red-600">{month.lopDays} days</span>
+                            </div>
+                          )}
+                          <div className="pt-2 border-t border-gray-300">
+                            <div className="flex justify-between">
+                              <span className="text-gray-600">Total Taken:</span>
+                              <span className="font-medium text-gray-900">{month.leavesUsed + month.lopDays} days</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
           )}
 
           {showForm ? (
