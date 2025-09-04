@@ -27,7 +27,6 @@ import {
   Star,
   Calendar as CalendarIcon,
   AlertTriangle
-  AlertTriangle
 } from 'lucide-react';
 
 export function Dashboard() {
