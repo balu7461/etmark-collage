@@ -85,8 +85,6 @@ export function StudentOverallAttendance() {
       const totalAbsent = records.filter(record => record.status === 'absent').length;
       const totalSports = records.filter(record => record.status === 'sports').length;
       const totalEC = records.filter(record => record.status === 'ec').length;
-      const totalSports = records.filter(record => record.status === 'sports').length;
-      const totalEC = records.filter(record => record.status === 'ec').length;
       // Sports and EC count as excused attendance (positive towards percentage)
       const excusedCount = totalPresent + totalSports + totalEC;
       const attendancePercentage = totalDays > 0 ? Math.round((excusedCount / totalDays) * 100) : 0;
