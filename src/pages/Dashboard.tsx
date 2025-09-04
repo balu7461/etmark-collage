@@ -46,9 +46,6 @@ export function Dashboard() {
     remainingLeaves: 0,
     totalLOP: 0,
     totalLeavesUsed: 0
-    remainingLeaves: 0,
-    totalLOP: 0,
-    totalLeavesUsed: 0
   });
   const [loading, setLoading] = useState(true);
 
