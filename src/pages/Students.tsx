@@ -598,7 +598,7 @@ export function Students() {
 
   const filteredStudents = students.filter(student => {
     const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         student.rollNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         String(student.rollNumber || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
                          student.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesClass = selectedClass === '' || student.class === selectedClass;
     return matchesSearch && matchesClass;
