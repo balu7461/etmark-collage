@@ -197,7 +197,7 @@ export function StudentOverallAttendance() {
       if (records.length > 0) {
         toast.success(`Student attendance data loaded successfully! Found ${records.length} attendance records.`);
       } else {
-        toast.info(`Student found: ${student.name}, but no attendance records exist yet.`);
+        toast(`Student found: ${student.name}, but no attendance records exist yet.`);
       }
 
     } catch (error) {
