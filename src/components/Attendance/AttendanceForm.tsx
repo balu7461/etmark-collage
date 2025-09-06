@@ -74,8 +74,8 @@ export function AttendanceForm() {
       // Sort students by roll number in ascending order
       studentsData.sort((a, b) => {
         // Handle alphanumeric sorting properly
-        const rollA = a.rollNumber.toLowerCase();
-        const rollB = b.rollNumber.toLowerCase();
+        const rollA = String(a.rollNumber || '').toLowerCase();
+        const rollB = String(b.rollNumber || '').toLowerCase();
         return rollA.localeCompare(rollB, undefined, { numeric: true, sensitivity: 'base' });
       });
       

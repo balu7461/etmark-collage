@@ -78,8 +78,8 @@ export function Students() {
       
       // Sort by roll number in ascending order (alphanumeric)
       validStudents.sort((a, b) => {
-        const rollA = a.rollNumber.toLowerCase();
-        const rollB = b.rollNumber.toLowerCase();
+        const rollA = String(a.rollNumber || '').toLowerCase();
+        const rollB = String(b.rollNumber || '').toLowerCase();
         return rollA.localeCompare(rollB, undefined, { numeric: true, sensitivity: 'base' });
       });
       
