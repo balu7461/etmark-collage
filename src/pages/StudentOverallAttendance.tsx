@@ -5,6 +5,7 @@ import { Student, AttendanceRecord } from '../types';
 import { Search, User, Calendar, CheckCircle, XCircle, BarChart3, GraduationCap, Trophy, Star } from 'lucide-react';
 import { ALL_CLASSES, getYearsForClass } from '../utils/constants';
 import { calculateMonthlyAttendance, getAttendanceColor, getAttendanceBgColor, getAttendanceStatus, type MonthlyAttendanceBreakdown } from '../utils/attendanceCalculations';
+import { processStudentId, generateSearchTerms, formatStudentIdForDisplay } from '../utils/studentIdValidation';
 import toast from 'react-hot-toast';
 import { normalizeStudentClassAndYear, isValidStudentData } from '../utils/dataNormalization';
 
@@ -24,33 +25,59 @@ export function StudentOverallAttendance() {
   } | null>(null);
 
   const searchStudentAttendance = async () => {
-    if (!satsNo.trim() || !/^\d+$/.test(satsNo.trim())) {
-      toast.error('Please enter a valid numeric Sats No. (e.g., 265212747)');
+    if (!satsNo.trim()) {
+      toast.error('Please enter a Sats No.');
       return;
     }
 
+    // Process and validate the student ID
+    const idProcessingResult = processStudentId(satsNo);
+    
+    if (idProcessingResult.status === 'Invalid') {
+      toast.error(`Invalid Sats No. format: ${idProcessingResult.notes}`);
+      return;
+    }
+
+    const standardizedId = idProcessingResult.standardizedVersion;
+    const searchTerms = generateSearchTerms(satsNo);
+    
+    console.log('🔍 Student ID processing result:', {
+      original: satsNo,
+      standardized: standardizedId,
+      formatType: idProcessingResult.formatType,
+      searchTerms,
+      notes: idProcessingResult.notes
+    });
+
     setLoading(true);
-    console.log('🔍 Starting student search with numeric Sats No.:', satsNo.trim());
+    console.log('🔍 Starting student search with processed Sats No.:', standardizedId);
     
     try {
-      // Search for student by roll number with multiple query attempts
-      const searchTerm = satsNo.trim(); // Keep as numeric string
-      console.log('📡 Searching for student with numeric Sats No.:', searchTerm);
+      let studentSnapshot: any = null;
       
-      // First attempt: exact match
-      const studentQuery = query(
-        collection(db, 'students'),
-        where('rollNumber', '==', searchTerm)
-      );
-      let studentSnapshot = await getDocs(studentQuery);
+      // Try each search term until we find a match
+      for (const searchTerm of searchTerms) {
+        console.log('📡 Searching for student with term:', searchTerm);
+        
+        const studentQuery = query(
+          collection(db, 'students'),
+          where('rollNumber', '==', searchTerm)
+        );
+        studentSnapshot = await getDocs(studentQuery);
+        
+        if (!studentSnapshot.empty) {
+          console.log('✅ Found student with search term:', searchTerm);
+          break;
+        }
+      }
       
       console.log('📊 First search attempt results:', {
-        searchTerm,
+        searchTerms,
         documentsFound: studentSnapshot.size,
         isEmpty: studentSnapshot.empty
       });
       
-      // If no exact match found, try case-insensitive search by fetching all students
+      // If no match found with direct queries, try comprehensive search
       if (studentSnapshot.empty) {
         console.log('🔄 No exact match found, trying comprehensive search...');
         
@@ -62,15 +89,15 @@ export function StudentOverallAttendance() {
         // Find student with case-insensitive roll number match
         const matchingDoc = allStudentsSnapshot.docs.find(doc => {
           const studentData = doc.data();
-          const rollNumber = String(studentData.rollNumber || '').trim();
-          const matches = rollNumber === searchTerm;
+          const rollNumber = String(studentData.rollNumber || '').trim().toUpperCase();
+          const matches = searchTerms.some(term => rollNumber === term);
           
           if (matches) {
             console.log('✅ Found matching student:', {
               name: studentData.name,
               rollNumber: studentData.rollNumber,
               normalizedRollNumber: rollNumber,
-              searchTerm
+              searchTerms
             });
           }
           
@@ -88,7 +115,7 @@ export function StudentOverallAttendance() {
       }
 
       if (studentSnapshot.empty) {
-        console.log('❌ No student found with Sats No.:', searchTerm);
+        console.log('❌ No student found with Sats No.:', standardizedId);
         toast.error('Student not found with this Sats No.');
         setStudentData(null);
         setAttendanceData(null);
@@ -205,7 +232,8 @@ export function StudentOverallAttendance() {
         error,
         errorMessage: error.message,
         errorCode: error.code,
-        searchTerm: satsNo.trim(),
+        originalInput: satsNo,
+        standardizedId,
         timestamp: new Date().toISOString()
       });
       toast.error('Failed to fetch student attendance data');
@@ -243,11 +271,25 @@ export function StudentOverallAttendance() {
                 <input
                   type="text"
                   value={satsNo}
-                  onChange={(e) => setSatsNo(e.target.value.replace(/\D/g, ''))}
+                  onChange={(e) => setSatsNo(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Enter Sats No. (e.g., 265212747)"
+                  placeholder="Enter Sats No. (e.g., 265212747 or U01IQ25M0001)"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm lg:text-base"
                 />
+                {satsNo && (
+                  <div className="mt-2 text-xs text-gray-600">
+                    {(() => {
+                      const result = processStudentId(satsNo);
+                      return (
+                        <span className={result.status === 'Valid' ? 'text-green-600' : 'text-red-600'}>
+                          Format: {result.formatType} | Status: {result.status}
+                          {result.status === 'Valid' && result.standardizedVersion !== satsNo.trim().toUpperCase() && 
+                            ` | Standardized: ${result.standardizedVersion}`}
+                        </span>
+                      );
+                    })()}
+                  </div>
+                )}
               </div>
               <button
                 onClick={searchStudentAttendance}
@@ -281,7 +323,7 @@ export function StudentOverallAttendance() {
                 </div>
                 <div>
                   <p className="text-xs lg:text-sm font-medium text-gray-600">Sats No.</p>
-                  <p className="text-sm lg:text-base font-semibold text-gray-900">{studentData.rollNumber}</p>
+                  <p className="text-sm lg:text-base font-semibold text-gray-900">{formatStudentIdForDisplay(studentData.rollNumber)}</p>
                 </div>
                 <div>
                   <p className="text-xs lg:text-sm font-medium text-gray-600">Class</p>
@@ -542,12 +584,12 @@ export function StudentOverallAttendance() {
             <div className="text-center py-12 bg-white rounded-xl shadow-sm border border-gray-100">
               <GraduationCap className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-base lg:text-lg font-medium text-gray-900 mb-2">Search for Student Attendance</h3>
-              <p className="text-sm lg:text-base text-gray-600">Enter a student's numeric Sats No. to view their complete attendance record.</p>
+              <p className="text-sm lg:text-base text-gray-600">Enter a student's Sats No. to view their complete attendance record.</p>
               <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4 text-left max-w-md mx-auto">
                 <h4 className="font-medium text-blue-900 mb-2">Search Tips:</h4>
                 <ul className="text-sm text-blue-800 space-y-1">
-                  <li>• Enter the exact numeric Sats No. as shown on student ID</li>
-                  <li>• Only numbers are allowed (e.g., 265212747)</li>
+                  <li>• Enter the exact Sats No. as shown on student ID</li>
+                  <li>• Supports both numeric (e.g., 265212747) and alphanumeric (e.g., U01IQ25M0001) formats</li>
                   <li>• Works for all classes and students</li>
                   <li>• If student not found, check spelling or contact admin</li>
                 </ul>
