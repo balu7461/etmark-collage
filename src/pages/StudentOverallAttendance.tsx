@@ -33,8 +33,7 @@ export function StudentOverallAttendance() {
       // Search for student by roll number
       const studentQuery = query(
         collection(db, 'students'),
-        where('rollNumber', '==', usn.trim()),
-        where('isApproved', '==', true)
+        where('rollNumber', '==', usn.trim())
       );
       const studentSnapshot = await getDocs(studentQuery);
 

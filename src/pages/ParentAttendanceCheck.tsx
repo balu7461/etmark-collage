@@ -32,8 +32,7 @@ export function ParentAttendanceCheck() {
       // First, find the student by Sats No.
       const studentQuery = query(
         collection(db, 'students'),
-        where('rollNumber', '==', satsNo.trim()),
-        where('isApproved', '==', true)
+        where('rollNumber', '==', satsNo.trim())
       );
       const studentSnapshot = await getDocs(studentQuery);
 
