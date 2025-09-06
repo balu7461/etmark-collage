@@ -526,6 +526,49 @@ export function Students() {
       }
     ];
     
+    // Add examples for EBAC and EBAS classes
+    const ebacEbasExamples = [
+      {
+        'Name': 'Ivy Purple',
+        'Email': 'ivy.purple@student.edu',
+        'Sats No.': 'EBAC014',
+        'Class': 'EBAC',
+        'Year': '1st Year',
+        'Parent Email': 'parent14@email.com',
+        'Parent Phone': '+1234567903'
+      },
+      {
+        'Name': 'Jack Silver',
+        'Email': 'jack.silver@student.edu',
+        'Sats No.': 'EBAC015',
+        'Class': 'EBAC',
+        'Year': '2nd Year',
+        'Parent Email': 'parent15@email.com',
+        'Parent Phone': '+1234567904'
+      },
+      {
+        'Name': 'Kate Gold',
+        'Email': 'kate.gold@student.edu',
+        'Sats No.': 'EBAS016',
+        'Class': 'EBAS',
+        'Year': '1st Year',
+        'Parent Email': 'parent16@email.com',
+        'Parent Phone': '+1234567905'
+      },
+      {
+        'Name': 'Leo Bronze',
+        'Email': 'leo.bronze@student.edu',
+        'Sats No.': 'EBAS017',
+        'Class': 'EBAS',
+        'Year': '2nd Year',
+        'Parent Email': 'parent17@email.com',
+        'Parent Phone': '+1234567906'
+      }
+    ];
+    
+    // Combine all examples
+    const allExamples = [...template, ...ebacEbasExamples];
+    
     const ws = XLSX.utils.json_to_sheet(template);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Students Template');
