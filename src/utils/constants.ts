@@ -116,12 +116,20 @@ export const subjectsByClassAndYear = {
     ]
   },
   'PCMB': {
-    '1st Year': ['Physics', 'Chemistry', 'Mathematics', 'Biology'],
-    '2nd Year': ['Physics', 'Chemistry', 'Mathematics', 'Biology']
+    '1st Year': ['Kannada', 'Hindi', 'Sanskrit', 'English', 'Physics', 'Chemistry', 'Mathematics', 'Biology'],
+    '2nd Year': ['Kannada', 'Hindi', 'Sanskrit', 'English', 'Physics', 'Chemistry', 'Mathematics', 'Biology']
   },
   'PCMC': {
-    '1st Year': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science'],
-    '2nd Year': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science']
+    '1st Year': ['Kannada', 'Hindi', 'Sanskrit', 'English', 'Physics', 'Chemistry', 'Mathematics', 'Computer Science'],
+    '2nd Year': ['Kannada', 'Hindi', 'Sanskrit', 'English', 'Physics', 'Chemistry', 'Mathematics', 'Computer Science']
+  },
+  'EBAC': {
+    '1st Year': ['Kannada', 'Hindi', 'Sanskrit', 'English', 'Economics', 'Business Studies', 'Accountancy', 'Computer Science'],
+    '2nd Year': ['Kannada', 'Hindi', 'Sanskrit', 'English', 'Economics', 'Business Studies', 'Accountancy', 'Computer Science']
+  },
+  'EBAS': {
+    '1st Year': ['Kannada', 'Hindi', 'Sanskrit', 'English', 'Economics', 'Business Studies', 'Accountancy', 'Statistics'],
+    '2nd Year': ['Kannada', 'Hindi', 'Sanskrit', 'English', 'Economics', 'Business Studies', 'Accountancy', 'Statistics']
   }
 };
 
