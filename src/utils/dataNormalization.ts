@@ -151,7 +151,7 @@ export function isValidStudentData(student: Student): boolean {
 /**
  * Filters and normalizes student data in one operation
  * @param students - Raw student array from Firestore
- * @returns Filtered array of normalized, valid students
+ * @returns Array of all normalized students (no filtering)
  */
 export function processStudentData(students: Student[]): Student[] {
   console.log('🔄 Processing student data...', {
@@ -160,14 +160,33 @@ export function processStudentData(students: Student[]): Student[] {
   });
   
   const normalizedStudents = normalizeStudentArray(students);
-  const validStudents = normalizedStudents.filter(isValidStudentData);
+  
+  // Log validation warnings but don't filter out students
+  const validationResults = normalizedStudents.map(student => ({
+    student,
+    isValid: isValidStudentData(student)
+  }));
+  
+  const invalidStudents = validationResults.filter(result => !result.isValid);
+  if (invalidStudents.length > 0) {
+    console.warn('⚠️ Found students with validation issues (but still including them):', 
+      invalidStudents.map(result => ({
+        name: result.student.name,
+        class: result.student.class,
+        year: result.student.year,
+        rollNumber: result.student.rollNumber
+      }))
+    );
+  }
   
   console.log('✅ Student data processing complete:', {
     originalCount: students.length,
     normalizedCount: normalizedStudents.length,
-    validCount: validStudents.length,
-    filteredOut: students.length - validStudents.length
+    validCount: validationResults.filter(r => r.isValid).length,
+    invalidCount: invalidStudents.length,
+    totalReturned: normalizedStudents.length
   });
   
-  return validStudents;
+  // Return ALL normalized students, don't filter any out
+  return normalizedStudents;
 }

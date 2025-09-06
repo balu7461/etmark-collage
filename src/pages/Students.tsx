@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 import * as XLSX from 'xlsx';
 import { ALL_CLASSES, getYearsForClass, hasSubjectDefinitions } from '../utils/constants';
-import { processStudentData, normalizeStudentClassAndYear } from '../utils/dataNormalization';
+import { processStudentData, normalizeStudentClassAndYear, normalizeClassName, normalizeYear } from '../utils/dataNormalization';
 
 export function Students() {
   const { currentUser } = useAuth();
@@ -112,6 +112,8 @@ export function Students() {
     try {
       const studentData = {
         ...formData,
+        class: normalizeClassName(formData.class),
+        year: normalizeYear(formData.year),
         isApproved: true, // Admin/HOD added students are auto-approved
         approvedBy: currentUser?.name,
         approvedDate: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
@@ -122,7 +124,12 @@ export function Students() {
 
       if (editingStudent) {
         console.log('✏️ Updating existing student with ID:', editingStudent.id);
-        await updateDoc(doc(db, 'students', editingStudent.id), formData);
+        const normalizedFormData = {
+          ...formData,
+          class: normalizeClassName(formData.class),
+          year: normalizeYear(formData.year)
+        };
+        await updateDoc(doc(db, 'students', editingStudent.id), normalizedFormData);
         console.log('✅ Student updated successfully in Firestore');
         toast.success('Student updated successfully');
       } else {
@@ -233,14 +240,16 @@ export function Students() {
             yearValue = '3rd Year';
           }
           
-          const classValue = row['Class'] || '';
+          // Normalize class value during upload
+          const rawClassValue = row['Class'] || '';
+          const classValue = normalizeClassName(rawClassValue);
           
           const student = {
             name: row['Name'] || row['Student Name'] || '',
             email: row['Email'] || row['Email Address'] || '',
             rollNumber: row['Sats No.'] || row['Roll Number'] || row['Roll'] || '',
             class: classValue,
-            year: yearValue,
+            year: normalizeYear(yearValue),
             parentEmail: row['Parent Email'] || '',
             parentPhone: row['Parent Phone'] || '',
             rowIndex: index + 2, // Excel row number (starting from 2)
@@ -340,8 +349,8 @@ export function Students() {
           name: student.name,
           email: student.email,
           rollNumber: student.rollNumber,
-          class: student.class,
-          year: student.year,
+          class: normalizeClassName(student.class),
+          year: normalizeYear(student.year),
           parentEmail: student.parentEmail || '',
           parentPhone: student.parentPhone || '',
           isApproved: true, // Auto-approve bulk uploads

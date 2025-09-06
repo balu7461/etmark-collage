@@ -95,7 +95,11 @@ export function AttendanceForm() {
       
       console.log('✅ Students state updated:', {
         studentsCount: validStudents.length,
-        attendanceStateKeys: Object.keys(attendanceState).length
+        attendanceStateKeys: Object.keys(attendanceState).length,
+        studentsByClass: validStudents.reduce((acc, s) => {
+          acc[s.class] = (acc[s.class] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>)
       });
       
     } catch (error) {
