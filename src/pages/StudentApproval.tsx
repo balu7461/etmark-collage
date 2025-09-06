@@ -7,6 +7,7 @@ import { GraduationCap, UserX, Clock, CheckCircle, XCircle, Mail, Phone, Buildin
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 import { ALL_CLASSES, getYearsForClass } from '../utils/constants';
+import { processStudentData } from '../utils/dataNormalization';
 
 export function StudentApproval() {
   const { currentUser } = useAuth();
@@ -32,17 +33,8 @@ export function StudentApproval() {
         ...doc.data()
       })) as Student[];
 
-      // Filter pending students to only include those from valid classes and years
-      const validPendingStudents = pendingData.filter(student => {
-        if (!ALL_CLASSES.includes(student.class)) {
-          return false;
-        }
-        const validYears = getYearsForClass(student.class);
-        if (validYears.length > 0 && !validYears.includes(student.year)) {
-          return false;
-        }
-        return true;
-      });
+      // Process and normalize pending student data
+      const validPendingStudents = processStudentData(pendingData);
 
       // Fetch approved students
       const approvedQuery = query(
@@ -55,17 +47,8 @@ export function StudentApproval() {
         ...doc.data()
       })) as Student[];
 
-      // Filter approved students to only include those from valid classes and years
-      const validApprovedStudents = approvedData.filter(student => {
-        if (!ALL_CLASSES.includes(student.class)) {
-          return false;
-        }
-        const validYears = getYearsForClass(student.class);
-        if (validYears.length > 0 && !validYears.includes(student.year)) {
-          return false;
-        }
-        return true;
-      });
+      // Process and normalize approved student data
+      const validApprovedStudents = processStudentData(approvedData);
 
       setPendingStudents(validPendingStudents);
       setApprovedStudents(validApprovedStudents);

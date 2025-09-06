@@ -5,6 +5,7 @@ import { User, Student, Department } from '../types';
 import { Users, Edit2, Trash2, Search, Filter, UserCheck, UserX, Building, Mail, Phone } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { ALL_CLASSES, getYearsForClass } from '../utils/constants';
+import { processStudentData } from '../utils/dataNormalization';
 
 export function UserManagement() {
   const [users, setUsers] = useState<User[]>([]);
@@ -44,17 +45,8 @@ export function UserManagement() {
         ...doc.data()
       })) as Student[];
 
-      // Filter students to only include those from valid classes and years
-      const validStudents = studentsData.filter(student => {
-        if (!ALL_CLASSES.includes(student.class)) {
-          return false;
-        }
-        const validYears = getYearsForClass(student.class);
-        if (validYears.length > 0 && !validYears.includes(student.year)) {
-          return false;
-        }
-        return true;
-      });
+      // Process and normalize student data to handle class/year inconsistencies
+      const validStudents = processStudentData(studentsData);
 
       setUsers(usersData);
       setStudents(validStudents);

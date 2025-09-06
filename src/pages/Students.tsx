@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 import * as XLSX from 'xlsx';
 import { ALL_CLASSES, getYearsForClass, hasSubjectDefinitions } from '../utils/constants';
+import { processStudentData, normalizeStudentClassAndYear } from '../utils/dataNormalization';
 
 export function Students() {
   const { currentUser } = useAuth();
@@ -53,23 +54,8 @@ export function Students() {
         ...doc.data()
       })) as Student[];
       
-      // Filter students to only include those from valid classes and years
-      const validStudents = studentsData.filter(student => {
-        // Check if student's class is in our current ALL_CLASSES
-        if (!ALL_CLASSES.includes(student.class)) {
-          console.log(`Filtering out student ${student.name} - invalid class: ${student.class}`);
-          return false;
-        }
-        
-        // Check if student's year is valid for their class
-        const validYears = getYearsForClass(student.class);
-        if (validYears.length > 0 && !validYears.includes(student.year)) {
-          console.log(`Filtering out student ${student.name} - invalid year: ${student.year} for class: ${student.class}`);
-          return false;
-        }
-        
-        return true;
-      });
+      // Process and normalize student data to handle class/year inconsistencies
+      const validStudents = processStudentData(studentsData);
       
       console.log('📋 Students data processed:', studentsData.length, 'students');
       console.log('✅ Valid students after filtering:', validStudents.length, 'students');

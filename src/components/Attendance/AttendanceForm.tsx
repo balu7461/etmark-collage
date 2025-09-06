@@ -7,6 +7,7 @@ import { Calendar, Users, BookOpen, Save, CheckCircle, XCircle, Mail, Send, Cloc
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 import { ALL_CLASSES, TIME_SLOTS, getYearsForClass, subjectsByClassAndYear } from '../../utils/constants';
+import { processStudentData } from '../../utils/dataNormalization';
 
 export function AttendanceForm() {
   const { currentUser } = useAuth();
@@ -72,25 +73,28 @@ export function AttendanceForm() {
         }))
       });
       
+      // Process and normalize student data to handle class/year inconsistencies
+      const validStudents = processStudentData(studentsData);
+      
       // Sort students by roll number in ascending order
-      studentsData.sort((a, b) => {
+      validStudents.sort((a, b) => {
         // Handle alphanumeric sorting properly
         const rollA = String(a.rollNumber || '').toLowerCase();
         const rollB = String(b.rollNumber || '').toLowerCase();
         return rollA.localeCompare(rollB, undefined, { numeric: true, sensitivity: 'base' });
       });
       
-      setStudents(studentsData);
+      setStudents(validStudents);
       
       // Initialize attendance state - ALL STUDENTS DEFAULT TO PRESENT
       const attendanceState: Record<string, { status: 'present' | 'absent' | 'sports' | 'ec'; reason?: string }> = {};
-      studentsData.forEach(student => {
+      validStudents.forEach(student => {
         attendanceState[student.id] = { status: 'present' };
       });
       setAttendance(attendanceState);
       
       console.log('✅ Students state updated:', {
-        studentsCount: studentsData.length,
+        studentsCount: validStudents.length,
         attendanceStateKeys: Object.keys(attendanceState).length
       });
       

@@ -6,6 +6,7 @@ import { Calendar, Users, Filter, Download, Search, Trophy, Star } from 'lucide-
 import * as XLSX from 'xlsx';
 import { format } from 'date-fns';
 import { ALL_CLASSES, getYearsForClass, subjectsByClassAndYear, hasSubjectDefinitions } from '../utils/constants';
+import { processStudentData } from '../utils/dataNormalization';
 
 export function Attendance() {
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
@@ -48,17 +49,8 @@ export function Attendance() {
         ...doc.data()
       })) as Student[];
 
-      // Filter students to only include those from valid classes and years
-      const validStudents = studentsData.filter(student => {
-        if (!ALL_CLASSES.includes(student.class)) {
-          return false;
-        }
-        const validYears = getYearsForClass(student.class);
-        if (validYears.length > 0 && !validYears.includes(student.year)) {
-          return false;
-        }
-        return true;
-      });
+      // Process and normalize student data to handle class/year inconsistencies
+      const validStudents = processStudentData(studentsData);
 
       setAttendanceRecords(attendanceData);
       setStudents(validStudents);

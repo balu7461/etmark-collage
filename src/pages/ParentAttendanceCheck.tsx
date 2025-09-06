@@ -5,6 +5,7 @@ import { Student, AttendanceRecord } from '../types';
 import { Search, User, Calendar, CheckCircle, XCircle, Clock, BookOpen, GraduationCap, AlertCircle, Phone, Mail, ArrowLeft, Trophy, Star } from 'lucide-react';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
+import { normalizeStudentClassAndYear, isValidStudentData } from '../utils/dataNormalization';
 
 export function ParentAttendanceCheck() {
   const [satsNo, setSatsNo] = useState('');
@@ -48,7 +49,19 @@ export function ParentAttendanceCheck() {
         ...studentSnapshot.docs[0].data()
       } as Student;
 
-      setStudentData(student);
+      // Normalize student data to handle class/year inconsistencies
+      const normalizedStudent = normalizeStudentClassAndYear(student);
+      
+      // Validate the normalized student data
+      if (!isValidStudentData(normalizedStudent)) {
+        console.warn('Student data validation warning:', {
+          original: { class: student.class, year: student.year },
+          normalized: { class: normalizedStudent.class, year: normalizedStudent.year },
+          student: student.name
+        });
+      }
+      
+      setStudentData(normalizedStudent);
 
       // Fetch attendance records for the selected date
       const attendanceQuery = query(

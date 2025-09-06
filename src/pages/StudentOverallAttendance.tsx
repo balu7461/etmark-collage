@@ -6,6 +6,7 @@ import { Search, User, Calendar, CheckCircle, XCircle, BarChart3, GraduationCap,
 import { ALL_CLASSES, getYearsForClass } from '../utils/constants';
 import { calculateMonthlyAttendance, getAttendanceColor, getAttendanceBgColor, getAttendanceStatus, type MonthlyAttendanceBreakdown } from '../utils/attendanceCalculations';
 import toast from 'react-hot-toast';
+import { normalizeStudentClassAndYear, isValidStudentData } from '../utils/dataNormalization';
 
 export function StudentOverallAttendance() {
   const [usn, setUsn] = useState('');
@@ -49,22 +50,18 @@ export function StudentOverallAttendance() {
         ...studentSnapshot.docs[0].data()
       } as Student;
 
-      // Validate that the student belongs to a valid class and year
-      if (!ALL_CLASSES.includes(student.class)) {
-        toast.error(`Student belongs to an unsupported class: ${student.class}`);
-        setStudentData(null);
-        setAttendanceData(null);
-        return;
-      }
+      // Normalize student data to handle class/year inconsistencies
+      const normalizedStudent = normalizeStudentClassAndYear(student);
 
-      const validYears = getYearsForClass(student.class);
-      if (validYears.length > 0 && !validYears.includes(student.year)) {
-        toast.error(`Student has invalid year: ${student.year} for class: ${student.class}`);
+      // Validate that the normalized student belongs to a valid class and year
+      if (!isValidStudentData(normalizedStudent)) {
+        toast.error(`Student data validation failed. Original: ${student.class}/${student.year}, Normalized: ${normalizedStudent.class}/${normalizedStudent.year}`);
         setStudentData(null);
         setAttendanceData(null);
         return;
       }
-      setStudentData(student);
+      
+      setStudentData(normalizedStudent);
 
       // Fetch all attendance records for this student
       const attendanceQuery = query(
