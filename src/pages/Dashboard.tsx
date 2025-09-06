@@ -346,7 +346,6 @@ export function Dashboard() {
                   value={stats.totalUsers.toLocaleString()}
                   icon={UserCog}
                   color="purple"
-                  trend={{ value: 5.2, isPositive: true }}
                 />
                 <StatsCard
                   title="Faculty Approvals"
@@ -365,7 +364,6 @@ export function Dashboard() {
                   value={stats.totalStudents.toLocaleString()}
                   icon={Users}
                   color="blue"
-                  trend={{ value: 3.1, isPositive: true }}
                 />
               </>
             ) : currentUser?.role === 'timetable_committee' ? (
