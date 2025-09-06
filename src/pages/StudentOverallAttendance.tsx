@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 import { normalizeStudentClassAndYear, isValidStudentData } from '../utils/dataNormalization';
 
 export function StudentOverallAttendance() {
-  const [usn, setUsn] = useState('');
+  const [satsNo, setSatsNo] = useState('');
   const [loading, setLoading] = useState(false);
   const [studentData, setStudentData] = useState<Student | null>(null);
   const [attendanceData, setAttendanceData] = useState<{
@@ -24,21 +24,71 @@ export function StudentOverallAttendance() {
   } | null>(null);
 
   const searchStudentAttendance = async () => {
-    if (!usn.trim()) {
+    if (!satsNo.trim()) {
       toast.error('Please enter a valid Sats No.');
       return;
     }
 
     setLoading(true);
+    console.log('🔍 Starting student search with Sats No.:', satsNo.trim());
+    
     try {
-      // Search for student by roll number
+      // Search for student by roll number with multiple query attempts
+      const searchTerm = satsNo.trim().toUpperCase();
+      console.log('📡 Searching for student with normalized Sats No.:', searchTerm);
+      
+      // First attempt: exact match
       const studentQuery = query(
         collection(db, 'students'),
-        where('rollNumber', '==', usn.trim())
+        where('rollNumber', '==', searchTerm)
       );
-      const studentSnapshot = await getDocs(studentQuery);
+      let studentSnapshot = await getDocs(studentQuery);
+      
+      console.log('📊 First search attempt results:', {
+        searchTerm,
+        documentsFound: studentSnapshot.size,
+        isEmpty: studentSnapshot.empty
+      });
+      
+      // If no exact match found, try case-insensitive search by fetching all students
+      if (studentSnapshot.empty) {
+        console.log('🔄 No exact match found, trying comprehensive search...');
+        
+        const allStudentsQuery = query(collection(db, 'students'));
+        const allStudentsSnapshot = await getDocs(allStudentsQuery);
+        
+        console.log('📊 Fetched all students for search:', allStudentsSnapshot.size);
+        
+        // Find student with case-insensitive roll number match
+        const matchingDoc = allStudentsSnapshot.docs.find(doc => {
+          const studentData = doc.data();
+          const rollNumber = String(studentData.rollNumber || '').toUpperCase().trim();
+          const matches = rollNumber === searchTerm;
+          
+          if (matches) {
+            console.log('✅ Found matching student:', {
+              name: studentData.name,
+              rollNumber: studentData.rollNumber,
+              normalizedRollNumber: rollNumber,
+              searchTerm
+            });
+          }
+          
+          return matches;
+        });
+        
+        if (matchingDoc) {
+          // Create a mock snapshot with the found document
+          studentSnapshot = {
+            empty: false,
+            size: 1,
+            docs: [matchingDoc]
+          } as any;
+        }
+      }
 
       if (studentSnapshot.empty) {
+        console.log('❌ No student found with Sats No.:', searchTerm);
         toast.error('Student not found with this Sats No.');
         setStudentData(null);
         setAttendanceData(null);
@@ -50,30 +100,65 @@ export function StudentOverallAttendance() {
         ...studentSnapshot.docs[0].data()
       } as Student;
 
+      console.log('👤 Found student:', {
+        name: student.name,
+        rollNumber: student.rollNumber,
+        class: student.class,
+        year: student.year,
+        id: student.id
+      });
+      
       // Normalize student data to handle class/year inconsistencies
       const normalizedStudent = normalizeStudentClassAndYear(student);
-
-      // Validate that the normalized student belongs to a valid class and year
-      if (!isValidStudentData(normalizedStudent)) {
-        toast.error(`Student data validation failed. Original: ${student.class}/${student.year}, Normalized: ${normalizedStudent.class}/${normalizedStudent.year}`);
-        setStudentData(null);
-        setAttendanceData(null);
-        return;
+      
+      console.log('🔧 Normalized student data:', {
+        original: { class: student.class, year: student.year },
+        normalized: { class: normalizedStudent.class, year: normalizedStudent.year }
+      });
+      
+      // Log validation status but don't block display
+      const isValid = isValidStudentData(normalizedStudent);
+      if (!isValid) {
+        console.warn('⚠️ Student data validation warning (but still displaying):', {
+          name: student.name,
+          rollNumber: student.rollNumber,
+          originalClass: student.class,
+          originalYear: student.year,
+          normalizedClass: normalizedStudent.class,
+          normalizedYear: normalizedStudent.year
+        });
       }
       
       setStudentData(normalizedStudent);
 
       // Fetch all attendance records for this student
+      console.log('📅 Fetching attendance records for student ID:', student.id);
       const attendanceQuery = query(
         collection(db, 'attendance'),
         where('studentId', '==', student.id)
       );
       const attendanceSnapshot = await getDocs(attendanceQuery);
       
+      console.log('📊 Attendance records found:', attendanceSnapshot.size);
+      
       const records = attendanceSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       })) as AttendanceRecord[];
+
+      console.log('📋 Attendance records details:', {
+        totalRecords: records.length,
+        statusBreakdown: {
+          present: records.filter(r => r.status === 'present').length,
+          absent: records.filter(r => r.status === 'absent').length,
+          sports: records.filter(r => r.status === 'sports').length,
+          ec: records.filter(r => r.status === 'ec').length
+        },
+        dateRange: records.length > 0 ? {
+          earliest: Math.min(...records.map(r => new Date(r.date).getTime())),
+          latest: Math.max(...records.map(r => new Date(r.date).getTime()))
+        } : null
+      });
 
       // Calculate attendance statistics
       const totalDays = records.length;
@@ -88,11 +173,19 @@ export function StudentOverallAttendance() {
       // Calculate monthly breakdown
       const monthlyBreakdown = calculateMonthlyAttendance(records);
 
-      setAttendanceData({
+      console.log('📈 Calculated attendance statistics:', {
+        totalDays,
         totalPresent,
         totalAbsent,
         totalSports,
         totalEC,
+        excusedCount,
+        attendancePercentage,
+        monthlyBreakdownCount: monthlyBreakdown.length
+      });
+      setAttendanceData({
+        totalPresent,
+        totalAbsent,
         totalSports,
         totalEC,
         attendancePercentage,
@@ -101,10 +194,20 @@ export function StudentOverallAttendance() {
         monthlyBreakdown
       });
 
-      toast.success('Student attendance data loaded successfully!');
+      if (records.length > 0) {
+        toast.success(`Student attendance data loaded successfully! Found ${records.length} attendance records.`);
+      } else {
+        toast.info(`Student found: ${student.name}, but no attendance records exist yet.`);
+      }
 
     } catch (error) {
-      console.error('Error fetching student attendance:', error);
+      console.error('❌ DETAILED ERROR fetching student attendance:', {
+        error,
+        errorMessage: error.message,
+        errorCode: error.code,
+        searchTerm: satsNo.trim(),
+        timestamp: new Date().toISOString()
+      });
       toast.error('Failed to fetch student attendance data');
     } finally {
       setLoading(false);
@@ -115,18 +218,6 @@ export function StudentOverallAttendance() {
     if (e.key === 'Enter') {
       searchStudentAttendance();
     }
-  };
-
-  const getAttendanceColor = (percentage: number) => {
-    if (percentage >= 85) return 'text-green-600';
-    if (percentage >= 75) return 'text-yellow-600';
-    return 'text-red-600';
-  };
-
-  const getAttendanceBgColor = (percentage: number) => {
-    if (percentage >= 85) return 'bg-green-100 border-green-200';
-    if (percentage >= 75) return 'bg-yellow-100 border-yellow-200';
-    return 'bg-red-100 border-red-200';
   };
 
   return (
@@ -151,8 +242,8 @@ export function StudentOverallAttendance() {
               <div className="flex-1">
                 <input
                   type="text"
-                  value={usn}
-                 onChange={(e) => setUsn(e.target.value.toUpperCase().trim())}
+                  value={satsNo}
+                  onChange={(e) => setSatsNo(e.target.value.toUpperCase().trim())}
                   onKeyPress={handleKeyPress}
                   placeholder="Enter Sats No. (e.g., BCA001, COM123)"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm lg:text-base"
@@ -452,6 +543,15 @@ export function StudentOverallAttendance() {
               <GraduationCap className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-base lg:text-lg font-medium text-gray-900 mb-2">Search for Student Attendance</h3>
               <p className="text-sm lg:text-base text-gray-600">Enter a student's Sats No. to view their complete attendance record.</p>
+              <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4 text-left max-w-md mx-auto">
+                <h4 className="font-medium text-blue-900 mb-2">Search Tips:</h4>
+                <ul className="text-sm text-blue-800 space-y-1">
+                  <li>• Enter the exact Sats No. as shown on student ID</li>
+                  <li>• Search is case-insensitive (BCA001 = bca001)</li>
+                  <li>• Works for all classes: {ALL_CLASSES.join(', ')}</li>
+                  <li>• If student not found, check spelling or contact admin</li>
+                </ul>
+              </div>
             </div>
           )}
         </div>

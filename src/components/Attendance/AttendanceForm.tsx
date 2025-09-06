@@ -74,7 +74,19 @@ export function AttendanceForm() {
       });
       
       // Process and normalize student data to handle class/year inconsistencies
+      // CRITICAL: This now returns ALL students after normalization
       const validStudents = processStudentData(studentsData);
+      
+      console.log('🔧 After normalization processing:', {
+        originalCount: studentsData.length,
+        processedCount: validStudents.length,
+        studentsReturned: validStudents.map(s => ({
+          name: s.name,
+          rollNumber: s.rollNumber,
+          class: s.class,
+          year: s.year
+        }))
+      });
       
       // Sort students by roll number in ascending order
       validStudents.sort((a, b) => {

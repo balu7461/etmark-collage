@@ -161,7 +161,7 @@ export function processStudentData(students: Student[]): Student[] {
   
   const normalizedStudents = normalizeStudentArray(students);
   
-  // Log validation warnings but don't filter out students
+  // Log validation warnings but don't filter out students - DISPLAY ALL
   const validationResults = normalizedStudents.map(student => ({
     student,
     isValid: isValidStudentData(student)
@@ -169,7 +169,7 @@ export function processStudentData(students: Student[]): Student[] {
   
   const invalidStudents = validationResults.filter(result => !result.isValid);
   if (invalidStudents.length > 0) {
-    console.warn('⚠️ Found students with validation issues (but still including them):', 
+    console.warn('⚠️ Found students with validation issues (STILL DISPLAYING ALL):', 
       invalidStudents.map(result => ({
         name: result.student.name,
         class: result.student.class,
@@ -184,9 +184,11 @@ export function processStudentData(students: Student[]): Student[] {
     normalizedCount: normalizedStudents.length,
     validCount: validationResults.filter(r => r.isValid).length,
     invalidCount: invalidStudents.length,
-    totalReturned: normalizedStudents.length
+    totalReturned: normalizedStudents.length,
+    message: 'ALL STUDENTS RETURNED - NO FILTERING APPLIED'
   });
   
-  // Return ALL normalized students, don't filter any out
+  // CRITICAL: Return ALL normalized students - never filter any out
+  // This ensures all students appear in attendance forms and dashboards
   return normalizedStudents;
 }

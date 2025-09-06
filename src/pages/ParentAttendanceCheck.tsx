@@ -31,13 +31,61 @@ export function ParentAttendanceCheck() {
     
     try {
       // First, find the student by Sats No.
+      const searchTerm = satsNo.trim().toUpperCase();
+      console.log('🔍 Parent portal searching for student with Sats No.:', searchTerm);
+      
+      // First attempt: exact match
       const studentQuery = query(
         collection(db, 'students'),
-        where('rollNumber', '==', satsNo.trim())
+        where('rollNumber', '==', searchTerm)
       );
-      const studentSnapshot = await getDocs(studentQuery);
+      let studentSnapshot = await getDocs(studentQuery);
+      
+      console.log('📊 First search attempt results:', {
+        searchTerm,
+        documentsFound: studentSnapshot.size,
+        isEmpty: studentSnapshot.empty
+      });
+      
+      // If no exact match found, try comprehensive search
+      if (studentSnapshot.empty) {
+        console.log('🔄 No exact match found, trying comprehensive search...');
+        
+        const allStudentsQuery = query(collection(db, 'students'));
+        const allStudentsSnapshot = await getDocs(allStudentsQuery);
+        
+        console.log('📊 Fetched all students for search:', allStudentsSnapshot.size);
+        
+        // Find student with case-insensitive roll number match
+        const matchingDoc = allStudentsSnapshot.docs.find(doc => {
+          const studentData = doc.data();
+          const rollNumber = String(studentData.rollNumber || '').toUpperCase().trim();
+          const matches = rollNumber === searchTerm;
+          
+          if (matches) {
+            console.log('✅ Found matching student in comprehensive search:', {
+              name: studentData.name,
+              rollNumber: studentData.rollNumber,
+              normalizedRollNumber: rollNumber,
+              searchTerm
+            });
+          }
+          
+          return matches;
+        });
+        
+        if (matchingDoc) {
+          // Create a mock snapshot with the found document
+          studentSnapshot = {
+            empty: false,
+            size: 1,
+            docs: [matchingDoc]
+          } as any;
+        }
+      }
 
       if (studentSnapshot.empty) {
+        console.log('❌ No student found with Sats No.:', searchTerm);
         toast.error('Student not found with this Sats No. Please check and try again.');
         setStudentData(null);
         setAttendanceData([]);
@@ -49,27 +97,50 @@ export function ParentAttendanceCheck() {
         ...studentSnapshot.docs[0].data()
       } as Student;
 
+      console.log('👤 Found student:', {
+        name: student.name,
+        rollNumber: student.rollNumber,
+        class: student.class,
+        year: student.year,
+        id: student.id
+      });
+
       // Normalize student data to handle class/year inconsistencies
       const normalizedStudent = normalizeStudentClassAndYear(student);
       
-      // Validate the normalized student data
-      if (!isValidStudentData(normalizedStudent)) {
-        console.warn('Student data validation warning:', {
-          original: { class: student.class, year: student.year },
-          normalized: { class: normalizedStudent.class, year: normalizedStudent.year },
-          student: student.name
+      console.log('🔧 Normalized student data:', {
+        original: { class: student.class, year: student.year },
+        normalized: { class: normalizedStudent.class, year: normalizedStudent.year }
+      });
+      
+      // Log validation status but don't block display
+      const isValid = isValidStudentData(normalizedStudent);
+      if (!isValid) {
+        console.warn('⚠️ Student data validation warning (but still displaying):', {
+          name: student.name,
+          rollNumber: student.rollNumber,
+          originalClass: student.class,
+          originalYear: student.year,
+          normalizedClass: normalizedStudent.class,
+          normalizedYear: normalizedStudent.year
         });
       }
       
       setStudentData(normalizedStudent);
 
       // Fetch attendance records for the selected date
+      console.log('📅 Fetching attendance records for date:', selectedDate);
       const attendanceQuery = query(
         collection(db, 'attendance'),
         where('studentId', '==', student.id),
         where('date', '==', selectedDate)
       );
       const attendanceSnapshot = await getDocs(attendanceQuery);
+      
+      console.log('📊 Attendance records found for date:', {
+        date: selectedDate,
+        recordsFound: attendanceSnapshot.size
+      });
       
       const records = attendanceSnapshot.docs.map(doc => ({
         id: doc.id,
@@ -82,13 +153,20 @@ export function ParentAttendanceCheck() {
       setAttendanceData(records);
 
       if (records.length === 0) {
-        toast.info('No attendance records found for the selected date.');
+        toast.info(`Student found: ${student.name}, but no attendance records found for ${selectedDate}.`);
       } else {
-        toast.success(`Found ${records.length} attendance record(s) for ${selectedDate}`);
+        toast.success(`Found ${records.length} attendance record(s) for ${student.name} on ${selectedDate}`);
       }
 
     } catch (error) {
-      console.error('Error fetching attendance:', error);
+      console.error('❌ DETAILED ERROR fetching attendance:', {
+        error,
+        errorMessage: error.message,
+        errorCode: error.code,
+        searchTerm: satsNo.trim(),
+        selectedDate,
+        timestamp: new Date().toISOString()
+      });
       toast.error('Failed to fetch attendance data. Please try again.');
     } finally {
       setLoading(false);
