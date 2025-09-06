@@ -6,6 +6,7 @@ import { BarChart3, Download, Calendar, Users, FileText, Award } from 'lucide-re
 import * as XLSX from 'xlsx';
 import { format } from 'date-fns';
 import { ALL_CLASSES, getYearsForClass } from '../utils/constants';
+import { formatStudentIdForDisplay } from '../utils/studentIdValidation';
 
 export function Reports() {
   const [loading, setLoading] = useState(false);
@@ -44,7 +45,7 @@ export function Reports() {
       const exportData = attendanceData.map(record => ({
         'Date': record.date,
         'Student Name': studentLookup[record.studentId]?.name || 'Unknown',
-        'Sats No.': studentLookup[record.studentId]?.rollNumber || 'N/A',
+        'Sats No.': studentLookup[record.studentId]?.rollNumber ? formatStudentIdForDisplay(studentLookup[record.studentId].rollNumber) : 'N/A',
         'Class': record.class,
         'Status': record.status === 'present' ? 'Present' :
                   record.status === 'absent' ? 'Absent' :
@@ -158,7 +159,7 @@ export function Reports() {
 
       const exportData = validStudents.map(student => ({
         'Student Name': student.name,
-        'Sats No.': student.rollNumber,
+       'Sats No.': formatStudentIdForDisplay(student.rollNumber),
         'Email': student.email,
         'Class': student.class,
         'Parent Email': student.parentEmail || '',

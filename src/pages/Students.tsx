@@ -10,6 +10,7 @@ import { format } from 'date-fns';
 import * as XLSX from 'xlsx';
 import { ALL_CLASSES, getYearsForClass, hasSubjectDefinitions } from '../utils/constants';
 import { processStudentData, normalizeStudentClassAndYear, normalizeClassName, normalizeYear } from '../utils/dataNormalization';
+import { processStudentId, formatStudentIdForDisplay } from '../utils/studentIdValidation';
 
 export function Students() {
   const { currentUser } = useAuth();
@@ -412,7 +413,7 @@ export function Students() {
       {
         'Name': 'Priya Patel',
         'Email': 'priya.patel@student.edu',
-        'Sats No.': '265212748',
+        'Sats No.': 'U01IQ25M0001',
         'Class': 'B.com',
         'Year': '2nd Year',
         'Parent Email': 'parent.patel@email.com',
@@ -421,7 +422,7 @@ export function Students() {
       {
         'Name': 'Arjun Kumar',
         'Email': 'arjun.kumar@student.edu',
-        'Sats No.': '265212749',
+        'Sats No.': 'ST2023ABC456',
         'Class': 'BBA',
         'Year': '3rd Year',
         'Parent Email': 'parent.kumar@email.com',
@@ -439,7 +440,7 @@ export function Students() {
       {
         'Name': 'Rohan Gupta',
         'Email': 'rohan.gupta@student.edu',
-        'Sats No.': '265212751',
+        'Sats No.': 'BCA2024001',
         'Class': 'PCMC',
         'Year': '2nd Year',
         'Parent Email': 'parent.gupta@email.com',
@@ -458,7 +459,7 @@ export function Students() {
       {
         'Name': 'Vikram Joshi',
         'Email': 'vikram.joshi@student.edu',
-        'Sats No.': '265212753',
+        'Sats No.': 'COM2024753',
         'Class': 'B.com',
         'Year': '3rd Year',
         'Parent Email': 'parent.joshi@email.com',
@@ -476,7 +477,7 @@ export function Students() {
       {
         'Name': 'Aditya Verma',
         'Email': 'aditya.verma@student.edu',
-        'Sats No.': '265212755',
+        'Sats No.': 'BBA2024755',
         'Class': 'BBA',
         'Year': '2nd Year',
         'Parent Email': 'parent.verma@email.com',
@@ -494,7 +495,7 @@ export function Students() {
       {
         'Name': 'Karthik Nair',
         'Email': 'karthik.nair@student.edu',
-        'Sats No.': '265212757',
+        'Sats No.': 'BCA2024757',
         'Class': 'BCA',
         'Year': '3rd Year',
         'Parent Email': 'parent.nair@email.com',
@@ -512,7 +513,7 @@ export function Students() {
       {
         'Name': 'Rahul Menon',
         'Email': 'rahul.menon@student.edu',
-        'Sats No.': '265212759',
+        'Sats No.': 'PCMC24759',
         'Class': 'PCMC',
         'Year': '1st Year',
         'Parent Email': 'parent.menon@email.com',
@@ -534,7 +535,7 @@ export function Students() {
       {
         'Name': 'Siddharth Rao',
         'Email': 'siddharth.rao@student.edu',
-        'Sats No.': '265212761',
+        'Sats No.': 'EBAC24761',
         'Class': 'EBAC',
         'Year': '2nd Year',
         'Parent Email': 'parent.rao@email.com',
@@ -552,7 +553,7 @@ export function Students() {
       {
         'Name': 'Akash Bhat',
         'Email': 'akash.bhat@student.edu',
-        'Sats No.': '265212763',
+        'Sats No.': 'EBAS24763',
         'Class': 'EBAS',
         'Year': '2nd Year',
         'Parent Email': 'parent.bhat@email.com',
@@ -729,11 +730,23 @@ export function Students() {
                   <input
                     type="text"
                     value={formData.rollNumber}
-                    onChange={(e) => setFormData(prev => ({ ...prev, rollNumber: e.target.value.replace(/\D/g, '') }))}
-                    placeholder="e.g., 265212747"
+                    onChange={(e) => setFormData(prev => ({ ...prev, rollNumber: e.target.value }))}
+                    placeholder="e.g., 265212747 or U01IQ25M0001"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     required
                   />
+                  {formData.rollNumber && (
+                    <div className="mt-1 text-xs">
+                      {(() => {
+                        const result = processStudentId(formData.rollNumber);
+                        return (
+                          <span className={result.status === 'Valid' ? 'text-green-600' : 'text-red-600'}>
+                            Format: {result.formatType} | Status: {result.status}
+                          </span>
+                        );
+                      })()}
+                    </div>
+                  )}
                 </div>
 
                 <div className="transform transition-all duration-200 hover:scale-105">
@@ -909,7 +922,7 @@ export function Students() {
                               </div>
                             </td>
                             <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              {student.rollNumber}
+                              {formatStudentIdForDisplay(student.rollNumber)}
                             </td>
                             <td className="px-4 lg:px-6 py-4 whitespace-nowrap">
                               <span className="inline-flex px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded-full">
@@ -991,6 +1004,7 @@ export function Students() {
                         <li>• Upload an Excel file (.xlsx or .xls) with student data</li>
                         <li>• Required columns: Name, Email, Sats No., Class, Year</li>
                         <li>• Optional columns: Parent Email, Parent Phone</li>
+                        <li>• Sats No. supports both numeric (265212747) and alphanumeric (U01IQ25M0001) formats</li>
                         <li>• Valid Classes: {ALL_CLASSES.join(', ')}</li>
                         <li>• Valid Years: 1st Year, 2nd Year, 3rd Year (depending on class)</li>
                         <li>• Download the template below for the correct format</li>

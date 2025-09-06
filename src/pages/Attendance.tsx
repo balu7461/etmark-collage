@@ -7,6 +7,7 @@ import * as XLSX from 'xlsx';
 import { format } from 'date-fns';
 import { ALL_CLASSES, getYearsForClass, subjectsByClassAndYear, hasSubjectDefinitions } from '../utils/constants';
 import { processStudentData } from '../utils/dataNormalization';
+import { formatStudentIdForDisplay } from '../utils/studentIdValidation';
 
 export function Attendance() {
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
@@ -68,7 +69,7 @@ export function Attendance() {
 
   const getStudentRollNumber = (studentId: string) => {
     const student = students.find(s => s.id === studentId);
-    return student ? student.rollNumber : 'N/A';
+    return student ? formatStudentIdForDisplay(student.rollNumber) : 'N/A';
   };
 
   const filteredRecords = attendanceRecords.filter(record => {
