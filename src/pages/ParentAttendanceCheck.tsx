@@ -135,7 +135,7 @@ export function ParentAttendanceCheck() {
                   src="/trinity-logo.png" 
                   alt="Trinity Track Logo" 
                   className="h-8 w-8 object-contain filter brightness-0 invert"
-                  onError={(e) => {
+                 onChange={(e) => setSatsNo(e.target.value.toUpperCase().trim())}
                     e.currentTarget.style.display = 'none';
                     e.currentTarget.parentElement!.innerHTML = '<div class="text-white text-sm font-bold">Trinity</div>';
                   }}

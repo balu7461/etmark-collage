@@ -35,6 +35,8 @@ export function AttendanceForm() {
     });
     
     try {
+      // Fetch all students for the selected class and year
+      // Note: Removed isApproved filter to ensure all students can have attendance marked
       const q = query(
         collection(db, 'students'), 
         where('class', '==', selectedClass),

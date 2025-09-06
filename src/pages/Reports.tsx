@@ -137,7 +137,7 @@ export function Reports() {
   const exportStudentReport = async () => {
     setLoading(true);
     try {
-      // Fetch only approved students for real-time data
+      // Fetch all students for comprehensive reporting
       const studentsQuery = query(
         collection(db, 'students')
       );

@@ -39,7 +39,7 @@ export function Students() {
   const fetchStudents = async () => {
     console.log('🔄 Fetching students from Firestore...');
     try {
-      // Fetch only approved students for real-time data
+      // Fetch all students for comprehensive management
       const q = query(
         collection(db, 'students')
       );

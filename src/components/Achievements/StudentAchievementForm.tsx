@@ -52,6 +52,7 @@ export function StudentAchievementForm() {
 
   const fetchStudents = async () => {
     try {
+      // Fetch all students for achievement assignment
       const q = query(
         collection(db, 'students')
       );

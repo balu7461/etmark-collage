@@ -155,7 +155,7 @@ export function StudentOverallAttendance() {
                 <input
                   type="text"
                   value={usn}
-                  onChange={(e) => setUsn(e.target.value)}
+                 onChange={(e) => setUsn(e.target.value.toUpperCase().trim())}
                   onKeyPress={handleKeyPress}
                   placeholder="Enter Sats No. (e.g., BCA001, COM123)"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm lg:text-base"
