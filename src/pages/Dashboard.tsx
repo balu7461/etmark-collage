@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, query, where } from 'firebase/firestore';
+import { writeBatch } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { StatsCard } from '../components/Dashboard/StatsCard';
@@ -26,7 +27,8 @@ import {
   Trophy,
   Star,
   Calendar as CalendarIcon,
-  AlertTriangle
+  AlertTriangle,
+  Trash2
 } from 'lucide-react';
 
 export function Dashboard() {
@@ -48,10 +50,101 @@ export function Dashboard() {
     totalLeavesUsed: 0
   });
   const [loading, setLoading] = useState(true);
+  const [deletingStudents, setDeletingStudents] = useState(false);
 
   useEffect(() => {
     fetchDashboardStats();
   }, [currentUser]);
+
+  const handleDeleteAllStudents = async () => {
+    const confirmMessage = `⚠️ DANGER: This will permanently delete ALL student data from the database.
+
+This action will:
+• Delete all student records (${stats.totalStudents} students)
+• Delete all attendance records for these students
+• Remove all parent contact information
+• This action CANNOT be undone
+
+Type "DELETE ALL STUDENTS" to confirm:`;
+
+    const userInput = prompt(confirmMessage);
+    
+    if (userInput !== "DELETE ALL STUDENTS") {
+      if (userInput !== null) {
+        toast.error('Deletion cancelled - confirmation text did not match');
+      }
+      return;
+    }
+
+    const finalConfirm = window.confirm(
+      `FINAL CONFIRMATION: Are you absolutely sure you want to delete ALL ${stats.totalStudents} students and their data? This action is IRREVERSIBLE.`
+    );
+
+    if (!finalConfirm) {
+      return;
+    }
+
+    setDeletingStudents(true);
+    try {
+      // Get all student documents
+      const studentsSnapshot = await getDocs(collection(db, 'students'));
+      const studentIds = studentsSnapshot.docs.map(doc => doc.id);
+      
+      // Get all attendance records for these students
+      const attendanceSnapshot = await getDocs(collection(db, 'attendance'));
+      const attendanceToDelete = attendanceSnapshot.docs.filter(doc => 
+        studentIds.includes(doc.data().studentId)
+      );
+
+      // Delete in batches (Firestore limit is 500 operations per batch)
+      const batchSize = 500;
+      let totalDeleted = 0;
+
+      // Delete students in batches
+      for (let i = 0; i < studentsSnapshot.docs.length; i += batchSize) {
+        const batch = writeBatch(db);
+        const batchDocs = studentsSnapshot.docs.slice(i, i + batchSize);
+        
+        batchDocs.forEach(doc => {
+          batch.delete(doc.ref);
+        });
+        
+        await batch.commit();
+        totalDeleted += batchDocs.length;
+        
+        // Show progress for large datasets
+        if (studentsSnapshot.docs.length > 100) {
+          toast.loading(`Deleting students... ${totalDeleted}/${studentsSnapshot.docs.length}`, {
+            id: 'delete-progress'
+          });
+        }
+      }
+
+      // Delete attendance records in batches
+      for (let i = 0; i < attendanceToDelete.length; i += batchSize) {
+        const batch = writeBatch(db);
+        const batchDocs = attendanceToDelete.slice(i, i + batchSize);
+        
+        batchDocs.forEach(doc => {
+          batch.delete(doc.ref);
+        });
+        
+        await batch.commit();
+      }
+
+      toast.dismiss('delete-progress');
+      toast.success(`Successfully deleted ${totalDeleted} students and their attendance records`);
+      
+      // Refresh dashboard stats
+      fetchDashboardStats();
+      
+    } catch (error) {
+      console.error('Error deleting all students:', error);
+      toast.error('Failed to delete student data. Please try again.');
+    } finally {
+      setDeletingStudents(false);
+    }
+  };
 
   const fetchDashboardStats = async () => {
     try {
@@ -610,6 +703,49 @@ export function Dashboard() {
             </>
           )}
 
+          {/* Danger Zone - Admin Only */}
+          {currentUser?.role === 'admin' && (
+            <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4 lg:p-6 mt-6">
+              <div className="flex items-center space-x-3 mb-4">
+                <Trash2 className="h-6 w-6 text-red-600" />
+                <h3 className="text-base lg:text-lg font-medium text-red-900">Danger Zone</h3>
+              </div>
+              
+              <div className="bg-white border border-red-300 rounded-lg p-4">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+                  <div>
+                    <h4 className="text-sm font-medium text-red-900 mb-1">Delete All Student Data</h4>
+                    <p className="text-xs text-red-800 mb-2">
+                      Permanently delete all students and their attendance records from the database.
+                    </p>
+                    <div className="text-xs text-red-700 space-y-1">
+                      <p>⚠️ This will delete {stats.totalStudents} students</p>
+                      <p>⚠️ This will delete all attendance records</p>
+                      <p>⚠️ This action cannot be undone</p>
+                      <p>⚠️ Large datasets may take several minutes to process</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleDeleteAllStudents}
+                    disabled={deletingStudents || stats.totalStudents === 0}
+                    className="bg-red-600 text-white px-4 py-3 rounded-lg hover:bg-red-700 transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 text-sm font-medium min-w-[200px]"
+                  >
+                    {deletingStudents ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        <span>Deleting...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 className="h-4 w-4" />
+                        <span>Delete All Students</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
           {/* Committee Specific Content */}
           {(currentUser?.role === 'timetable_committee' || currentUser?.role === 'examination_committee') && (
             <>
