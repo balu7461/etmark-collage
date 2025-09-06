@@ -59,7 +59,7 @@ export function StudentOverallAttendance() {
       }
 
       const validYears = getYearsForClass(student.class);
-      if (student.year && !validYears.includes(student.year)) {
+      if (validYears.length > 0 && !validYears.includes(student.year)) {
         toast.error(`Student has invalid year: ${student.year} for class: ${student.class}`);
         setStudentData(null);
         setAttendanceData(null);

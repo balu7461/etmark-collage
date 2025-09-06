@@ -51,7 +51,7 @@ export function UserManagement() {
           return false;
         }
         const validYears = getYearsForClass(student.class);
-        if (student.year && !validYears.includes(student.year)) {
+        if (validYears.length > 0 && !validYears.includes(student.year)) {
           return false;
         }
         return true;

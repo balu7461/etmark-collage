@@ -64,7 +64,7 @@ export function Students() {
         
         // Check if student's year is valid for their class
         const validYears = getYearsForClass(student.class);
-        if (student.year && !validYears.includes(student.year)) {
+        if (validYears.length > 0 && !validYears.includes(student.year)) {
           console.log(`Filtering out student ${student.name} - invalid year: ${student.year} for class: ${student.class}`);
           return false;
         }
