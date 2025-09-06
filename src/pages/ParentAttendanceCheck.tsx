@@ -16,8 +16,8 @@ export function ParentAttendanceCheck() {
   const [hasSearched, setHasSearched] = useState(false);
 
   const searchAttendance = async () => {
-    if (!satsNo.trim()) {
-      toast.error('Please enter your child\'s Sats No.');
+    if (!satsNo.trim() || !/^\d+$/.test(satsNo.trim())) {
+      toast.error('Please enter a valid numeric Sats No. (e.g., 265212747)');
       return;
     }
 
@@ -31,8 +31,8 @@ export function ParentAttendanceCheck() {
     
     try {
       // First, find the student by Sats No.
-      const searchTerm = satsNo.trim().toUpperCase();
-      console.log('🔍 Parent portal searching for student with Sats No.:', searchTerm);
+      const searchTerm = satsNo.trim(); // Keep as numeric string
+      console.log('🔍 Parent portal searching for student with numeric Sats No.:', searchTerm);
       
       // First attempt: exact match
       const studentQuery = query(
@@ -59,7 +59,7 @@ export function ParentAttendanceCheck() {
         // Find student with case-insensitive roll number match
         const matchingDoc = allStudentsSnapshot.docs.find(doc => {
           const studentData = doc.data();
-          const rollNumber = String(studentData.rollNumber || '').toUpperCase().trim();
+          const rollNumber = String(studentData.rollNumber || '').trim();
           const matches = rollNumber === searchTerm;
           
           if (matches) {
@@ -276,9 +276,9 @@ export function ParentAttendanceCheck() {
                     <input
                       type="text"
                       value={satsNo}
-                      onChange={(e) => setSatsNo(e.target.value.toUpperCase())}
+                      onChange={(e) => setSatsNo(e.target.value.replace(/\D/g, ''))}
                       onKeyPress={handleKeyPress}
-                      placeholder="e.g., BCA001, COM123"
+                      placeholder="e.g., 265212747"
                       className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center font-mono"
                     />
                   </div>
@@ -336,7 +336,7 @@ export function ParentAttendanceCheck() {
                 <div className="text-left">
                   <h4 className="font-medium text-blue-900 mb-1">How to Use</h4>
                   <ul className="text-sm text-blue-800 space-y-1">
-                    <li>• Enter your child's Sats No. (Student ID) as provided by the college</li>
+                    <li>• Enter your child's numeric Sats No. (Student ID) as provided by the college</li>
                     <li>• Select the date you want to check attendance for</li>
                     <li>• Click "Check Attendance" to view the records</li>
                     <li>• You can check attendance for any past or current date</li>
@@ -632,9 +632,9 @@ export function ParentAttendanceCheck() {
             <div className="bg-gray-50 rounded-lg p-4 text-left">
               <h4 className="font-medium text-gray-900 mb-2">Tips:</h4>
               <ul className="text-sm text-gray-600 space-y-1">
-                <li>• Make sure you're entering the correct Sats No.</li>
+                <li>• Make sure you're entering the correct numeric Sats No.</li>
                 <li>• Check if there are any spaces or special characters</li>
-                <li>• The Sats No. should match exactly what's on your child's ID card</li>
+                <li>• The Sats No. should be numbers only (e.g., 265212747)</li>
                 <li>• Contact the college office if you're unsure about the Sats No.</li>
               </ul>
             </div>

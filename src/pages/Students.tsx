@@ -401,121 +401,121 @@ export function Students() {
   const downloadTemplate = () => {
     const template = [
       {
-        'Name': 'John Doe',
-        'Email': 'john.doe@student.edu',
-        'Sats No.': 'BCA001',
+        'Name': 'Aarav Sharma',
+        'Email': 'aarav.sharma@student.edu',
+        'Sats No.': '265212747',
         'Class': 'BCA',
         'Year': '1st Year',
-        'Parent Email': 'parent@email.com',
+        'Parent Email': 'parent.sharma@email.com',
         'Parent Phone': '+1234567890'
       },
       {
-        'Name': 'Jane Smith',
-        'Email': 'jane.smith@student.edu',
-        'Sats No.': 'COM002',
+        'Name': 'Priya Patel',
+        'Email': 'priya.patel@student.edu',
+        'Sats No.': '265212748',
         'Class': 'B.com',
         'Year': '2nd Year',
-        'Parent Email': 'parent2@email.com',
+        'Parent Email': 'parent.patel@email.com',
         'Parent Phone': '+1234567891'
       },
       {
-        'Name': 'Mike Johnson',
-        'Email': 'mike.johnson@student.edu',
-        'Sats No.': 'BBA003',
+        'Name': 'Arjun Kumar',
+        'Email': 'arjun.kumar@student.edu',
+        'Sats No.': '265212749',
         'Class': 'BBA',
         'Year': '3rd Year',
-        'Parent Email': 'parent3@email.com',
+        'Parent Email': 'parent.kumar@email.com',
         'Parent Phone': '+1234567892'
       },
       {
-        'Name': 'Sarah Wilson',
-        'Email': 'sarah.wilson@student.edu',
-        'Sats No.': 'PCMB004',
+        'Name': 'Ananya Singh',
+        'Email': 'ananya.singh@student.edu',
+        'Sats No.': '265212750',
         'Class': 'PCMB',
         'Year': '1st Year',
-        'Parent Email': 'parent4@email.com',
+        'Parent Email': 'parent.singh@email.com',
         'Parent Phone': '+1234567893'
       },
       {
-        'Name': 'David Brown',
-        'Email': 'david.brown@student.edu',
-        'Sats No.': 'PCMC005',
+        'Name': 'Rohan Gupta',
+        'Email': 'rohan.gupta@student.edu',
+        'Sats No.': '265212751',
         'Class': 'PCMC',
         'Year': '2nd Year',
-        'Parent Email': 'parent5@email.com',
+        'Parent Email': 'parent.gupta@email.com',
         'Parent Phone': '+1234567894'
       },
       // Additional examples for comprehensive coverage
       {
-        'Name': 'Alice Green',
-        'Email': 'alice.green@student.edu',
-        'Sats No.': 'BCOM006',
+        'Name': 'Kavya Reddy',
+        'Email': 'kavya.reddy@student.edu',
+        'Sats No.': '265212752',
         'Class': 'B.com',
         'Year': '1st Year',
-        'Parent Email': 'parent6@email.com',
+        'Parent Email': 'parent.reddy@email.com',
         'Parent Phone': '+1234567895'
       },
       {
-        'Name': 'Bob White',
-        'Email': 'bob.white@student.edu',
-        'Sats No.': 'BCOM007',
+        'Name': 'Vikram Joshi',
+        'Email': 'vikram.joshi@student.edu',
+        'Sats No.': '265212753',
         'Class': 'B.com',
         'Year': '3rd Year',
-        'Parent Email': 'parent7@email.com',
+        'Parent Email': 'parent.joshi@email.com',
         'Parent Phone': '+1234567896'
       },
       {
-        'Name': 'Charlie Black',
-        'Email': 'charlie.black@student.edu',
-        'Sats No.': 'BBA008',
+        'Name': 'Ishita Agarwal',
+        'Email': 'ishita.agarwal@student.edu',
+        'Sats No.': '265212754',
         'Class': 'BBA',
         'Year': '1st Year',
-        'Parent Email': 'parent8@email.com',
+        'Parent Email': 'parent.agarwal@email.com',
         'Parent Phone': '+1234567897'
       },
       {
-        'Name': 'Diana Grey',
-        'Email': 'diana.grey@student.edu',
-        'Sats No.': 'BBA009',
+        'Name': 'Aditya Verma',
+        'Email': 'aditya.verma@student.edu',
+        'Sats No.': '265212755',
         'Class': 'BBA',
         'Year': '2nd Year',
-        'Parent Email': 'parent9@email.com',
+        'Parent Email': 'parent.verma@email.com',
         'Parent Phone': '+1234567898'
       },
       {
-        'Name': 'Eve Blue',
-        'Email': 'eve.blue@student.edu',
-        'Sats No.': 'BCA010',
+        'Name': 'Sneha Iyer',
+        'Email': 'sneha.iyer@student.edu',
+        'Sats No.': '265212756',
         'Class': 'BCA',
         'Year': '2nd Year',
-        'Parent Email': 'parent10@email.com',
+        'Parent Email': 'parent.iyer@email.com',
         'Parent Phone': '+1234567899'
       },
       {
-        'Name': 'Frank Red',
-        'Email': 'frank.red@student.edu',
-        'Sats No.': 'BCA011',
+        'Name': 'Karthik Nair',
+        'Email': 'karthik.nair@student.edu',
+        'Sats No.': '265212757',
         'Class': 'BCA',
         'Year': '3rd Year',
-        'Parent Email': 'parent11@email.com',
+        'Parent Email': 'parent.nair@email.com',
         'Parent Phone': '+1234567900'
       },
       {
-        'Name': 'Grace Yellow',
-        'Email': 'grace.yellow@student.edu',
-        'Sats No.': 'PCMB012',
+        'Name': 'Meera Pillai',
+        'Email': 'meera.pillai@student.edu',
+        'Sats No.': '265212758',
         'Class': 'PCMB',
         'Year': '2nd Year',
-        'Parent Email': 'parent12@email.com',
+        'Parent Email': 'parent.pillai@email.com',
         'Parent Phone': '+1234567901'
       },
       {
-        'Name': 'Harry Orange',
-        'Email': 'harry.orange@student.edu',
-        'Sats No.': 'PCMC013',
+        'Name': 'Rahul Menon',
+        'Email': 'rahul.menon@student.edu',
+        'Sats No.': '265212759',
         'Class': 'PCMC',
         'Year': '1st Year',
-        'Parent Email': 'parent13@email.com',
+        'Parent Email': 'parent.menon@email.com',
         'Parent Phone': '+1234567902'
       }
     ];
@@ -523,39 +523,39 @@ export function Students() {
     // Add examples for EBAC and EBAS classes
     const ebacEbasExamples = [
       {
-        'Name': 'Ivy Purple',
-        'Email': 'ivy.purple@student.edu',
-        'Sats No.': 'EBAC014',
+        'Name': 'Divya Krishnan',
+        'Email': 'divya.krishnan@student.edu',
+        'Sats No.': '265212760',
         'Class': 'EBAC',
         'Year': '1st Year',
-        'Parent Email': 'parent14@email.com',
+        'Parent Email': 'parent.krishnan@email.com',
         'Parent Phone': '+1234567903'
       },
       {
-        'Name': 'Jack Silver',
-        'Email': 'jack.silver@student.edu',
-        'Sats No.': 'EBAC015',
+        'Name': 'Siddharth Rao',
+        'Email': 'siddharth.rao@student.edu',
+        'Sats No.': '265212761',
         'Class': 'EBAC',
         'Year': '2nd Year',
-        'Parent Email': 'parent15@email.com',
+        'Parent Email': 'parent.rao@email.com',
         'Parent Phone': '+1234567904'
       },
       {
-        'Name': 'Kate Gold',
-        'Email': 'kate.gold@student.edu',
-        'Sats No.': 'EBAS016',
+        'Name': 'Pooja Shetty',
+        'Email': 'pooja.shetty@student.edu',
+        'Sats No.': '265212762',
         'Class': 'EBAS',
         'Year': '1st Year',
-        'Parent Email': 'parent16@email.com',
+        'Parent Email': 'parent.shetty@email.com',
         'Parent Phone': '+1234567905'
       },
       {
-        'Name': 'Leo Bronze',
-        'Email': 'leo.bronze@student.edu',
-        'Sats No.': 'EBAS017',
+        'Name': 'Akash Bhat',
+        'Email': 'akash.bhat@student.edu',
+        'Sats No.': '265212763',
         'Class': 'EBAS',
         'Year': '2nd Year',
-        'Parent Email': 'parent17@email.com',
+        'Parent Email': 'parent.bhat@email.com',
         'Parent Phone': '+1234567906'
       }
     ];
@@ -729,7 +729,8 @@ export function Students() {
                   <input
                     type="text"
                     value={formData.rollNumber}
-                    onChange={(e) => setFormData(prev => ({ ...prev, rollNumber: e.target.value }))}
+                    onChange={(e) => setFormData(prev => ({ ...prev, rollNumber: e.target.value.replace(/\D/g, '') }))}
+                    placeholder="e.g., 265212747"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     required
                   />

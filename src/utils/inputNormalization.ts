@@ -4,12 +4,12 @@
  */
 
 /**
- * Normalizes a roll number/Sats No. input by converting to uppercase and trimming whitespace
+ * Normalizes a roll number/Sats No. input by keeping only numeric characters and trimming whitespace
  * @param input - The raw input string
  * @returns Normalized string suitable for database queries
  */
 export function normalizeRollNumber(input: string): string {
-  return input.toUpperCase().trim();
+  return input.replace(/\D/g, '').trim();
 }
 
 /**
@@ -18,8 +18,8 @@ export function normalizeRollNumber(input: string): string {
  * @returns boolean indicating if the format is valid
  */
 export function validateRollNumberFormat(rollNumber: string): boolean {
-  // Basic validation: should be alphanumeric, 3-10 characters
-  const rollNumberRegex = /^[A-Z0-9]{3,10}$/;
+  // Basic validation: should be numeric, 6-12 digits
+  const rollNumberRegex = /^\d{6,12}$/;
   return rollNumberRegex.test(rollNumber);
 }
 

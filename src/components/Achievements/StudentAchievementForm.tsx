@@ -175,7 +175,7 @@ export function StudentAchievementForm() {
               <option value="">Select Student</option>
               {students.map(student => (
                 <option key={student.id} value={student.id}>
-                  {student.name} ({student.rollNumber}) - {student.class}
+                  {student.name} (Sats No: {student.rollNumber}) - {student.class}
                 </option>
               ))}
             </select>

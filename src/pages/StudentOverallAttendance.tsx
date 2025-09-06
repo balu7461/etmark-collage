@@ -24,18 +24,18 @@ export function StudentOverallAttendance() {
   } | null>(null);
 
   const searchStudentAttendance = async () => {
-    if (!satsNo.trim()) {
-      toast.error('Please enter a valid Sats No.');
+    if (!satsNo.trim() || !/^\d+$/.test(satsNo.trim())) {
+      toast.error('Please enter a valid numeric Sats No. (e.g., 265212747)');
       return;
     }
 
     setLoading(true);
-    console.log('🔍 Starting student search with Sats No.:', satsNo.trim());
+    console.log('🔍 Starting student search with numeric Sats No.:', satsNo.trim());
     
     try {
       // Search for student by roll number with multiple query attempts
-      const searchTerm = satsNo.trim().toUpperCase();
-      console.log('📡 Searching for student with normalized Sats No.:', searchTerm);
+      const searchTerm = satsNo.trim(); // Keep as numeric string
+      console.log('📡 Searching for student with numeric Sats No.:', searchTerm);
       
       // First attempt: exact match
       const studentQuery = query(
@@ -62,7 +62,7 @@ export function StudentOverallAttendance() {
         // Find student with case-insensitive roll number match
         const matchingDoc = allStudentsSnapshot.docs.find(doc => {
           const studentData = doc.data();
-          const rollNumber = String(studentData.rollNumber || '').toUpperCase().trim();
+          const rollNumber = String(studentData.rollNumber || '').trim();
           const matches = rollNumber === searchTerm;
           
           if (matches) {
@@ -243,9 +243,9 @@ export function StudentOverallAttendance() {
                 <input
                   type="text"
                   value={satsNo}
-                  onChange={(e) => setSatsNo(e.target.value.toUpperCase().trim())}
+                  onChange={(e) => setSatsNo(e.target.value.replace(/\D/g, ''))}
                   onKeyPress={handleKeyPress}
-                  placeholder="Enter Sats No. (e.g., BCA001, COM123)"
+                  placeholder="Enter Sats No. (e.g., 265212747)"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm lg:text-base"
                 />
               </div>
@@ -542,13 +542,13 @@ export function StudentOverallAttendance() {
             <div className="text-center py-12 bg-white rounded-xl shadow-sm border border-gray-100">
               <GraduationCap className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-base lg:text-lg font-medium text-gray-900 mb-2">Search for Student Attendance</h3>
-              <p className="text-sm lg:text-base text-gray-600">Enter a student's Sats No. to view their complete attendance record.</p>
+              <p className="text-sm lg:text-base text-gray-600">Enter a student's numeric Sats No. to view their complete attendance record.</p>
               <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4 text-left max-w-md mx-auto">
                 <h4 className="font-medium text-blue-900 mb-2">Search Tips:</h4>
                 <ul className="text-sm text-blue-800 space-y-1">
-                  <li>• Enter the exact Sats No. as shown on student ID</li>
-                  <li>• Search is case-insensitive (BCA001 = bca001)</li>
-                  <li>• Works for all classes: {ALL_CLASSES.join(', ')}</li>
+                  <li>• Enter the exact numeric Sats No. as shown on student ID</li>
+                  <li>• Only numbers are allowed (e.g., 265212747)</li>
+                  <li>• Works for all classes and students</li>
                   <li>• If student not found, check spelling or contact admin</li>
                 </ul>
               </div>
