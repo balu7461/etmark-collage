@@ -36,8 +36,7 @@ export function UserManagement() {
 
       // Fetch students
       const studentsQuery = query(
-        collection(db, 'students'),
-        where('isApproved', '==', true)
+        collection(db, 'students')
       );
       const studentsSnapshot = await getDocs(studentsQuery);
       const studentsData = studentsSnapshot.docs.map(doc => ({

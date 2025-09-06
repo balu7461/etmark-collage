@@ -41,8 +41,7 @@ export function Students() {
     try {
       // Fetch only approved students for real-time data
       const q = query(
-        collection(db, 'students'), 
-        where('isApproved', '==', true)
+        collection(db, 'students')
       );
       
       console.log('📡 Executing Firestore query with server source...');

@@ -38,8 +38,7 @@ export function AttendanceForm() {
       const q = query(
         collection(db, 'students'), 
         where('class', '==', selectedClass),
-        where('year', '==', selectedYear),
-        where('isApproved', '==', true)
+        where('year', '==', selectedYear)
       );
       
       console.log('🔎 Firestore query created for:', {

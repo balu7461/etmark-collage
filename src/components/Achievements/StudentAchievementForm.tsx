@@ -53,8 +53,7 @@ export function StudentAchievementForm() {
   const fetchStudents = async () => {
     try {
       const q = query(
-        collection(db, 'students'),
-        where('isApproved', '==', true)
+        collection(db, 'students')
       );
       const querySnapshot = await getDocs(q);
       const studentsData = querySnapshot.docs.map(doc => ({

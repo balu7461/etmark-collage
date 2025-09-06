@@ -139,8 +139,7 @@ export function Reports() {
     try {
       // Fetch only approved students for real-time data
       const studentsQuery = query(
-        collection(db, 'students'),
-        where('isApproved', '==', true)
+        collection(db, 'students')
       );
       const studentsSnapshot = await getDocs(studentsQuery);
       const studentsData = studentsSnapshot.docs.map(doc => doc.data()) as Student[];
