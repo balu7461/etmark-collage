@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 import { ALL_CLASSES, TIME_SLOTS, getYearsForClass, subjectsByClassAndYear } from '../../utils/constants';
 import { processStudentData } from '../../utils/dataNormalization';
+import { formatStudentIdForDisplay } from '../../utils/studentIdValidation';
 
 export function AttendanceForm() {
   const { currentUser } = useAuth();
@@ -404,7 +405,7 @@ export function AttendanceForm() {
                     <div className="flex flex-col lg:flex-row lg:items-center justify-between space-y-3 lg:space-y-0 attendance-student-info">
                       <div className="flex-1">
                         <h4 className="font-medium text-gray-900 text-sm lg:text-base student-name">{student.name}</h4>
-                        <p className="text-xs lg:text-sm text-gray-600 student-details">Roll No: {student.rollNumber}</p>
+                        <p className="text-xs lg:text-sm text-gray-600 student-details">Sats No: {formatStudentIdForDisplay(student.rollNumber)}</p>
                         {student.parentEmail && (
                           <p className="text-xs text-gray-500 flex items-center mt-1 student-details">
                             <Mail className="h-3 w-3 mr-1" />

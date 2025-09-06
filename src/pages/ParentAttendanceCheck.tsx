@@ -5,6 +5,7 @@ import { Student, AttendanceRecord } from '../types';
 import { Search, User, Calendar, CheckCircle, XCircle, Clock, BookOpen, GraduationCap, AlertCircle, Phone, Mail, ArrowLeft, Trophy, Star } from 'lucide-react';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
+import { processStudentId, generateSearchTerms, formatStudentIdForDisplay } from '../utils/studentIdValidation';
 import { normalizeStudentClassAndYear, isValidStudentData } from '../utils/dataNormalization';
 
 export function ParentAttendanceCheck() {
@@ -16,8 +17,16 @@ export function ParentAttendanceCheck() {
   const [hasSearched, setHasSearched] = useState(false);
 
   const searchAttendance = async () => {
-    if (!satsNo.trim() || !/^\d+$/.test(satsNo.trim())) {
-      toast.error('Please enter a valid numeric Sats No. (e.g., 265212747)');
+    if (!satsNo.trim()) {
+      toast.error('Please enter a Sats No.');
+      return;
+    }
+
+    // Process and validate the student ID
+    const idProcessingResult = processStudentId(satsNo);
+    
+    if (idProcessingResult.status === 'Invalid') {
+      toast.error(`Invalid Sats No. format: ${idProcessingResult.notes}`);
       return;
     }
 
@@ -26,28 +35,46 @@ export function ParentAttendanceCheck() {
       return;
     }
 
+    const standardizedId = idProcessingResult.standardizedVersion;
+    const searchTerms = generateSearchTerms(satsNo);
+    
+    console.log('🔍 Student ID processing result:', {
+      original: satsNo,
+      standardized: standardizedId,
+      formatType: idProcessingResult.formatType,
+      searchTerms,
+      notes: idProcessingResult.notes
+    });
+
     setLoading(true);
     setHasSearched(true);
     
     try {
-      // First, find the student by Sats No.
-      const searchTerm = satsNo.trim(); // Keep as numeric string
-      console.log('🔍 Parent portal searching for student with numeric Sats No.:', searchTerm);
+      let studentSnapshot: any = null;
       
-      // First attempt: exact match
-      const studentQuery = query(
-        collection(db, 'students'),
-        where('rollNumber', '==', searchTerm)
-      );
-      let studentSnapshot = await getDocs(studentQuery);
+      // Try each search term until we find a match
+      for (const searchTerm of searchTerms) {
+        console.log('📡 Parent portal searching with term:', searchTerm);
+        
+        const studentQuery = query(
+          collection(db, 'students'),
+          where('rollNumber', '==', searchTerm)
+        );
+        studentSnapshot = await getDocs(studentQuery);
+        
+        if (!studentSnapshot.empty) {
+          console.log('✅ Found student with search term:', searchTerm);
+          break;
+        }
+      }
       
       console.log('📊 First search attempt results:', {
-        searchTerm,
+        searchTerms,
         documentsFound: studentSnapshot.size,
         isEmpty: studentSnapshot.empty
       });
       
-      // If no exact match found, try comprehensive search
+      // If no match found with direct queries, try comprehensive search
       if (studentSnapshot.empty) {
         console.log('🔄 No exact match found, trying comprehensive search...');
         
@@ -59,15 +86,15 @@ export function ParentAttendanceCheck() {
         // Find student with case-insensitive roll number match
         const matchingDoc = allStudentsSnapshot.docs.find(doc => {
           const studentData = doc.data();
-          const rollNumber = String(studentData.rollNumber || '').trim();
-          const matches = rollNumber === searchTerm;
+          const rollNumber = String(studentData.rollNumber || '').trim().toUpperCase();
+          const matches = searchTerms.some(term => rollNumber === term);
           
           if (matches) {
             console.log('✅ Found matching student in comprehensive search:', {
               name: studentData.name,
               rollNumber: studentData.rollNumber,
               normalizedRollNumber: rollNumber,
-              searchTerm
+              searchTerms
             });
           }
           
@@ -85,7 +112,7 @@ export function ParentAttendanceCheck() {
       }
 
       if (studentSnapshot.empty) {
-        console.log('❌ No student found with Sats No.:', searchTerm);
+        console.log('❌ No student found with Sats No.:', standardizedId);
         toast.error('Student not found with this Sats No. Please check and try again.');
         setStudentData(null);
         setAttendanceData([]);
@@ -276,11 +303,23 @@ export function ParentAttendanceCheck() {
                     <input
                       type="text"
                       value={satsNo}
-                      onChange={(e) => setSatsNo(e.target.value.replace(/\D/g, ''))}
+                      onChange={(e) => setSatsNo(e.target.value)}
                       onKeyPress={handleKeyPress}
-                      placeholder="e.g., 265212747"
+                      placeholder="e.g., 265212747 or U01IQ25M0001"
                       className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center font-mono"
                     />
+                    {satsNo && (
+                      <div className="mt-2 text-xs text-center">
+                        {(() => {
+                          const result = processStudentId(satsNo);
+                          return (
+                            <span className={result.status === 'Valid' ? 'text-green-600' : 'text-red-600'}>
+                              Format: {result.formatType} | Status: {result.status}
+                            </span>
+                          );
+                        })()}
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -336,7 +375,8 @@ export function ParentAttendanceCheck() {
                 <div className="text-left">
                   <h4 className="font-medium text-blue-900 mb-1">How to Use</h4>
                   <ul className="text-sm text-blue-800 space-y-1">
-                    <li>• Enter your child's numeric Sats No. (Student ID) as provided by the college</li>
+                    <li>• Enter your child's Sats No. (Student ID) as provided by the college</li>
+                    <li>• Supports both numeric (e.g., 265212747) and alphanumeric (e.g., U01IQ25M0001) formats</li>
                     <li>• Select the date you want to check attendance for</li>
                     <li>• Click "Check Attendance" to view the records</li>
                     <li>• You can check attendance for any past or current date</li>
@@ -364,7 +404,7 @@ export function ParentAttendanceCheck() {
               </div>
               <div className="bg-gray-50 rounded-lg p-4">
                 <p className="text-sm font-medium text-gray-600">Sats No.</p>
-                <p className="text-lg font-semibold text-gray-900">{studentData.rollNumber}</p>
+                <p className="text-lg font-semibold text-gray-900">{formatStudentIdForDisplay(studentData.rollNumber)}</p>
               </div>
               <div className="bg-gray-50 rounded-lg p-4">
                 <p className="text-sm font-medium text-gray-600">Class</p>
@@ -627,14 +667,15 @@ export function ParentAttendanceCheck() {
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Student Not Found</h3>
             <p className="text-gray-600 mb-4">
-              We couldn't find a student with Sats No. "{satsNo}". Please check the number and try again.
+              We couldn't find a student with Sats No. "{formatStudentIdForDisplay(satsNo)}". Please check the number and try again.
             </p>
             <div className="bg-gray-50 rounded-lg p-4 text-left">
               <h4 className="font-medium text-gray-900 mb-2">Tips:</h4>
               <ul className="text-sm text-gray-600 space-y-1">
-                <li>• Make sure you're entering the correct numeric Sats No.</li>
+                <li>• Make sure you're entering the correct Sats No.</li>
+                <li>• Supports both numeric (265212747) and alphanumeric (U01IQ25M0001) formats</li>
                 <li>• Check if there are any spaces or special characters</li>
-                <li>• The Sats No. should be numbers only (e.g., 265212747)</li>
+                <li>• The system will automatically standardize the format</li>
                 <li>• Contact the college office if you're unsure about the Sats No.</li>
               </ul>
             </div>
