@@ -47,7 +47,8 @@ export function Attendance() {
       const studentsSnapshot = await getDocs(studentsQuery, { source: 'server' });
       const studentsData = studentsSnapshot.docs.map(doc => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
+        rollNumber: String(doc.data().rollNumber || '')
       })) as Student[];
 
       // Process and normalize student data to handle class/year inconsistencies

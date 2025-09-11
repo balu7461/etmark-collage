@@ -60,7 +60,8 @@ export function AttendanceForm() {
       
       const studentsData = querySnapshot.docs.map(doc => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
+        rollNumber: String(doc.data().rollNumber || '')
       })) as Student[];
       
       console.log('📋 Raw students data from Firestore:', {

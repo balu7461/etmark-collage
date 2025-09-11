@@ -32,7 +32,8 @@ export function Reports() {
       const studentsSnapshot = await getDocs(collection(db, 'students'));
       const studentsData = studentsSnapshot.docs.map(doc => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
+        rollNumber: String(doc.data().rollNumber || '')
       })) as Student[];
 
       // Create student lookup
