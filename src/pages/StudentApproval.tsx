@@ -30,7 +30,8 @@ export function StudentApproval() {
       const pendingSnapshot = await getDocs(pendingQuery);
       const pendingData = pendingSnapshot.docs.map(doc => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
+        rollNumber: String(doc.data().rollNumber || '')
       })) as Student[];
 
       // Process and normalize pending student data
@@ -44,7 +45,8 @@ export function StudentApproval() {
       const approvedSnapshot = await getDocs(approvedQuery);
       const approvedData = approvedSnapshot.docs.map(doc => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
+        rollNumber: String(doc.data().rollNumber || '')
       })) as Student[];
 
       // Process and normalize approved student data

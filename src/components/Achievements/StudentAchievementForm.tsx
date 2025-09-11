@@ -60,7 +60,8 @@ export function StudentAchievementForm() {
       const querySnapshot = await getDocs(q);
       const studentsData = querySnapshot.docs.map(doc => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
+        rollNumber: String(doc.data().rollNumber || '')
       })) as Student[];
       
       // Process and normalize student data to handle class/year inconsistencies

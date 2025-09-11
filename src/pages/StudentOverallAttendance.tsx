@@ -124,7 +124,8 @@ export function StudentOverallAttendance() {
 
       const student = {
         id: studentSnapshot.docs[0].id,
-        ...studentSnapshot.docs[0].data()
+        ...studentSnapshot.docs[0].data(),
+        rollNumber: String(studentSnapshot.docs[0].data().rollNumber || '')
       } as Student;
 
       console.log('👤 Found student:', {
