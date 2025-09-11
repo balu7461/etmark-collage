@@ -181,7 +181,7 @@ export function ParentAttendanceCheck() {
       setAttendanceData(records);
 
       if (records.length === 0) {
-        toast.info(`Student found: ${student.name}, but no attendance records found for ${selectedDate}.`);
+        toast(`Student found: ${student.name}, but no attendance records found for ${selectedDate}.`);
       } else {
         toast.success(`Found ${records.length} attendance record(s) for ${student.name} on ${selectedDate}`);
       }
