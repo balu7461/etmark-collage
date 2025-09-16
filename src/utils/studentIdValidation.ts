@@ -17,6 +17,20 @@ export interface StudentIdProcessingResult {
  * @returns Processing result with standardized ID and validation status
  */
 export function processStudentId(input: string): StudentIdProcessingResult {
+  // Handle non-string inputs by converting to string
+  if (typeof input !== 'string') {
+    if (input === null || input === undefined) {
+      return {
+        originalInput: String(input),
+        formatType: 'Invalid',
+        standardizedVersion: 'N/A',
+        status: 'Invalid',
+        notes: 'Input is null or undefined'
+      };
+    }
+    input = String(input);
+  }
+  
   const originalInput = input;
   let notes: string[] = [];
   
