@@ -30,11 +30,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function login(email: string, password: string) {
     try {
       // Check if this is the main admin account
-      if (email === 'hiddencave168@gmail.com' && password === 'Test@123') {
+      if (email === 'Principaldmtrinity@gmail.com' && password === 'Admin@trinity.com') {
         // Create admin user object for main admin
         const adminUser: User = {
           id: 'main-admin',
-          email: 'hiddencave168@gmail.com',
+          email: 'Principaldmtrinity@gmail.com',
           name: 'Main Administrator',
           role: 'admin',
           department: 'Administration',
@@ -97,7 +97,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function logout() {
     try {
       // Handle main admin logout
-      if (currentUser?.email === 'hiddencave168@gmail.com') {
+      if (currentUser?.email === 'Principaldmtrinity@gmail.com') {
         setCurrentUser(null);
         localStorage.removeItem('currentUser');
         toast.success('Logged out successfully');
@@ -172,7 +172,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const storedUser = localStorage.getItem('currentUser');
         if (storedUser) {
           const userData = JSON.parse(storedUser);
-          if (userData.email !== 'hiddencave168@gmail.com') {
+          if (userData.email !== 'Principaldmtrinity@gmail.com') {
             setCurrentUser(null);
             localStorage.removeItem('currentUser');
           }
