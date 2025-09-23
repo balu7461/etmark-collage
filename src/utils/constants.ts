@@ -37,82 +37,100 @@ export const subjectsByClassAndYear = {
   'B.com': {
     '1st Year': [
       'Fundamentals of Financial Accounting',
-      'Business Communication',
       'Business Mathematics',
       'Banking Law and Practice',
-      'Kannada/Hindi',
-      'Constitutional Values with Reference to India',
-      'English'
+      'Hindi',
+      'Kannada',
+      'English',
+      'Constitutional Values with Reference to India'
     ],
     '2nd Year': [
       'Fundamentals of Corporate Accounting',
-      'Logistics and Supply Chain Management',
+      'Income Tax Law and Practice - I',
       'Advanced Cost Accounting',
-      'Income Tax Law & Practice',
+      'Hindi',
+      'Kannada',
       'English',
       'Financial Institutions and Markets',
-      'Kannada/Hindi'
+      'Logistics and Supply Chain Management'
     ],
     '3rd Year': [
       'Financial Management',
+      'Income Tax Law and Practice-I',
+      'Principles and Practice of Auditing',
       'Financial Institutions and Markets',
-      'Employability Skills',
-      'Income Tax Law and Practice – I',
-      'Principles and Practice of Auditing'
+      'Retail Management',
+      'Digital Marketing',
+      'Employability Skills'
     ]
   },
   'BBA': {
     '1st Year': [
+      'Principles and Practices of Management',
       'Fundamentals of Business Accounting',
       'Business Economics',
-      'Principles and Practices of Management',
-      'Kannada/Hindi/French',
-      'Constitutional Values with Reference to India',
-      'English'
+      'Business Communication',
+      'Hindi',
+      'Kannada',
+      'English',
+      'Constitutional Values with Reference to India'
     ],
     '2nd Year': [
       'Cost Accounting',
-      'Entrepreneurship and Startup Ecosystem',
-      'Business Environment',
       'Business Statistics II',
+      'Business Environment',
+      'French - III',
+      'Hindi',
+      'Kannada',
       'English',
-      'Financial Institutions and Markets',
-      'Kannada/Hindi'
+      'Entrepreneurship and Startup Ecosystem',
+      'Digital Marketing'
     ],
     '3rd Year': [
-      'Retail Management',
-      'Advanced Corporate Financial Management',
-      'Digital Marketing',
-      'Income Tax – I',
+      'Production and Operations Management',
+      'Income Tax-I',
       'Banking Law and Practice',
+      'Advanced Corporate Financial Management',
+      'Fundamentals of Retail Management',
+      'Digital Marketing',
       'Employability Skills'
     ]
   },
   'BCA': {
     '1st Year': [
       'Digital Computer Organization',
-      'Mathematical and Statistical Computing',
       'Problem Solving Using C++',
-      'Kannada/Hindi',
-      'Environmental Studies',
-      'English'
+      'Mathematical and Statistical Computing',
+      'Office Automation and HTML',
+      'C++ Programming',
+      'Mathematical and Statistical Computing Using R',
+      'Hindi',
+      'Kannada',
+      'English',
+      'Environmental Studies'
     ],
     '2nd Year': [
-      'C#.Net Programming',
-      'Cloud Computing',
-      'Web Technologies',
+      'C.NET Programming',
       'Data Base Management System',
-      'Cyber Security',
-      'Kannada/Hindi',
-      'English'
+      'Web Technologies',
+      'C.NET Programming Lab',
+      'Data Base Management System Lab',
+      'Web Technologies Lab',
+      'Hindi',
+      'Kannada',
+      'English',
+      'Cloud Computing',
+      'Cyber Security'
     ],
     '3rd Year': [
       'Design and Analysis of Algorithms',
-      'Software Engineering',
+      'Design and Analysis of Algorithms Lab',
       'Statistical Computing and R Programming',
+      'R Programming Lab',
+      'Software Engineering',
       'Cloud Computing',
-      'Employability Skills',
-      'Digital Marketing'
+      'Digital Marketing',
+      'Employability Skills'
     ]
   },
   'PCMB': {
