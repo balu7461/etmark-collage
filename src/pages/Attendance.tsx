@@ -19,7 +19,8 @@ export function Attendance() {
     class: '',
     year: '',
     subject: '',
-    faculty: ''
+    faculty: '',
+    semesterType: ''
   });
 
   useEffect(() => {
@@ -79,8 +80,9 @@ export function Attendance() {
     const matchesYear = !filters.year || record.year === filters.year;
     const matchesSubject = !filters.subject || record.subject.toLowerCase().includes(filters.subject.toLowerCase());
     const matchesFaculty = !filters.faculty || record.facultyName.toLowerCase().includes(filters.faculty.toLowerCase());
-    
-    return matchesDateRange && matchesClass && matchesYear && matchesSubject && matchesFaculty;
+    const matchesSemesterType = !filters.semesterType || record.semesterType === filters.semesterType;
+
+    return matchesDateRange && matchesClass && matchesYear && matchesSubject && matchesFaculty && matchesSemesterType;
   });
 
   const exportToExcel = () => {
@@ -89,6 +91,8 @@ export function Attendance() {
       'Student Name': getStudentName(record.studentId),
       'Sats No.': getStudentRollNumber(record.studentId),
       'Class': record.class,
+      'Year': record.year,
+      'Semester': record.semesterType || 'N/A',
       'Subject': record.subject,
       'Status': record.status,
       'Reason': record.reason || '',
@@ -206,7 +210,7 @@ export function Attendance() {
               <h3 className="text-lg font-medium text-gray-900">Filters</h3>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-7 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
                 <input
@@ -216,7 +220,7 @@ export function Attendance() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">End Date</label>
                 <input
@@ -226,7 +230,7 @@ export function Attendance() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Class</label>
                 <select
@@ -240,7 +244,7 @@ export function Attendance() {
                   ))}
                 </select>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Year</label>
                 <select
@@ -254,7 +258,20 @@ export function Attendance() {
                   ))}
                 </select>
               </div>
-              
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Semester Type</label>
+                <select
+                  value={filters.semesterType}
+                  onChange={(e) => setFilters(prev => ({ ...prev, semesterType: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">All Semesters</option>
+                  <option value="Odd">Odd Semester</option>
+                  <option value="Even">Even Semester</option>
+                </select>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
                 <select
@@ -273,7 +290,7 @@ export function Attendance() {
                     ))
                   ) : (
                     // Show all subjects from classes with definitions
-                    Object.values(subjectsByClassAndYear).flatMap(classData => 
+                    Object.values(subjectsByClassAndYear).flatMap(classData =>
                       Object.values(classData).flat()
                     ).map((subj: string) => (
                       <option key={subj} value={subj}>{subj}</option>
@@ -281,7 +298,7 @@ export function Attendance() {
                   )}
                 </select>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Faculty</label>
                 <input
@@ -337,6 +354,7 @@ export function Attendance() {
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Class</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Year</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Semester</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Time</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
@@ -362,6 +380,17 @@ export function Attendance() {
                         <td className="px-6 py-4 whitespace-nowrap hidden sm:table-cell">
                           <span className="inline-flex px-2 py-1 text-xs font-semibold bg-purple-100 text-purple-800 rounded-full">
                             {record.year || 'N/A'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            record.semesterType === 'Odd'
+                              ? 'bg-blue-100 text-blue-800'
+                              : record.semesterType === 'Even'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-gray-100 text-gray-800'
+                          }`}>
+                            {record.semesterType || 'N/A'}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap hidden md:table-cell">

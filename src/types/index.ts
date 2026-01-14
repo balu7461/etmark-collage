@@ -37,6 +37,7 @@ export interface AttendanceRecord {
   reason?: string;
   class: string;
   year: string;
+  semesterType?: 'Odd' | 'Even';
 }
 
 export interface LeaveApplication {

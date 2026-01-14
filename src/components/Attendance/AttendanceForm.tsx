@@ -6,7 +6,7 @@ import { Student, AttendanceRecord } from '../../types';
 import { Calendar, Users, BookOpen, Save, CheckCircle, XCircle, Mail, Send, Clock, Trophy, Star } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
-import { ALL_CLASSES, TIME_SLOTS, getYearsForClass, subjectsByClassAndYear } from '../../utils/constants';
+import { ALL_CLASSES, TIME_SLOTS, getYearsForClass, subjectsByClassAndYear, getSubjectsForClassYearAndSemester, SEMESTER_TYPES, SemesterType } from '../../utils/constants';
 import { processStudentData } from '../../utils/dataNormalization';
 import { formatStudentIdForDisplay } from '../../utils/studentIdValidation';
 
@@ -15,6 +15,7 @@ export function AttendanceForm() {
   const [students, setStudents] = useState<Student[]>([]);
   const [selectedClass, setSelectedClass] = useState('');
   const [selectedYear, setSelectedYear] = useState('');
+  const [selectedSemester, setSelectedSemester] = useState<SemesterType>('Odd');
   const [selectedTimeSlot, setSelectedTimeSlot] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('');
   const [selectedDate] = useState(format(new Date(), 'yyyy-MM-dd')); // Fixed to current date only
@@ -170,7 +171,8 @@ export function AttendanceForm() {
         facultyName: currentUser.name,
         reason: attendance[student.id]?.reason || '',
         class: selectedClass,
-        year: selectedYear
+        year: selectedYear,
+        semesterType: selectedSemester
       }));
 
       // Save attendance records
@@ -228,6 +230,35 @@ export function AttendanceForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Semester Toggle */}
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border-2 border-blue-200">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">Select Semester Type</h3>
+              <p className="text-sm text-gray-600">Choose between Odd or Even semester subjects</p>
+            </div>
+            <div className="flex gap-3">
+              {SEMESTER_TYPES.map(semester => (
+                <button
+                  key={semester}
+                  type="button"
+                  onClick={() => {
+                    setSelectedSemester(semester);
+                    setSelectedSubject('');
+                  }}
+                  className={`px-6 py-3 rounded-lg font-semibold text-sm transition-all transform hover:scale-105 ${
+                    selectedSemester === semester
+                      ? 'bg-[#002e5d] text-white shadow-lg ring-4 ring-blue-200'
+                      : 'bg-white text-gray-700 border-2 border-gray-300 hover:border-blue-400'
+                  }`}
+                >
+                  {semester} Semester
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
           <div className="md:col-span-5 grid grid-cols-1 md:grid-cols-5 gap-4">
             <div className="transform transition-all duration-200 hover:scale-105">
@@ -302,7 +333,7 @@ export function AttendanceForm() {
 
             <div className="transform transition-all duration-200 hover:scale-105">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Subject
+                Subject ({selectedSemester} Sem)
               </label>
               <select
                 value={selectedSubject}
@@ -313,12 +344,11 @@ export function AttendanceForm() {
               >
                 <option value="">Select Subject</option>
                 {selectedClass && selectedYear ? (
-                  subjectsByClassAndYear[selectedClass as keyof typeof subjectsByClassAndYear] ? (
-                    (subjectsByClassAndYear[selectedClass as keyof typeof subjectsByClassAndYear] as any)[selectedYear]?.map((subj: string) => (
+                  getSubjectsForClassYearAndSemester(selectedClass, selectedYear, selectedSemester).length > 0 ? (
+                    getSubjectsForClassYearAndSemester(selectedClass, selectedYear, selectedSemester).map((subj: string) => (
                       <option key={subj} value={subj}>{subj}</option>
                     ))
                   ) : (
-                    // For classes without predefined subjects, allow manual entry
                     <>
                       <option value="General Class">General Class</option>
                       <option value="Theory">Theory</option>
@@ -390,11 +420,21 @@ export function AttendanceForm() {
         {students.length > 0 && (
           <>
             <div className="bg-gray-50 rounded-lg p-4">
-              <div className="flex items-center space-x-2 mb-4">
+              <div className="flex flex-wrap items-center gap-2 mb-4">
                 <BookOpen className="h-5 w-5 text-gray-600" />
                 <h3 className="font-medium text-gray-900">
-                  Students - {selectedClass} ({selectedYear}) - {selectedSubject}
+                  Students - {selectedClass} ({selectedYear})
                 </h3>
+                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                  selectedSemester === 'Odd'
+                    ? 'bg-blue-100 text-blue-800'
+                    : 'bg-green-100 text-green-800'
+                }`}>
+                  {selectedSemester} Semester
+                </span>
+                <span className="text-sm text-gray-700 font-medium">
+                  {selectedSubject}
+                </span>
                 <span className="text-sm text-gray-500">
                   {selectedTimeSlot} on {selectedDate}
                 </span>

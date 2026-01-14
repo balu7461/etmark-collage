@@ -6,7 +6,7 @@ import { TimeSlot, User } from '../../types';
 import { CalendarDays, Plus, Save, Clock, MapPin, BookOpen } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
-import { ALL_CLASSES, TIME_SLOTS, getYearsForClass, subjectsByClassAndYear, SEMESTERS } from '../../utils/constants';
+import { ALL_CLASSES, TIME_SLOTS, getYearsForClass, getSubjectsForClassYearAndSemester, SEMESTERS, SEMESTER_TYPES, SemesterType } from '../../utils/constants';
 
 interface TimetableFormProps {
   onSuccess?: () => void;
@@ -15,6 +15,7 @@ interface TimetableFormProps {
 export function TimetableForm({ onSuccess }: TimetableFormProps) {
   const { currentUser } = useAuth();
   const [faculty, setFaculty] = useState<User[]>([]);
+  const [selectedSemesterType, setSelectedSemesterType] = useState<SemesterType>('Odd');
   const [formData, setFormData] = useState({
     day: '' as 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | '',
     startTime: '',
@@ -124,6 +125,35 @@ export function TimetableForm({ onSuccess }: TimetableFormProps) {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Semester Type Toggle */}
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border-2 border-blue-200">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div>
+              <h3 className="text-base font-semibold text-gray-900 mb-1">Select Semester Type</h3>
+              <p className="text-xs text-gray-600">Choose between Odd or Even semester subjects</p>
+            </div>
+            <div className="flex gap-2">
+              {SEMESTER_TYPES.map(semester => (
+                <button
+                  key={semester}
+                  type="button"
+                  onClick={() => {
+                    setSelectedSemesterType(semester);
+                    setFormData(prev => ({ ...prev, subject: '' }));
+                  }}
+                  className={`px-5 py-2 rounded-lg font-semibold text-sm transition-all transform hover:scale-105 ${
+                    selectedSemesterType === semester
+                      ? 'bg-[#002e5d] text-white shadow-lg ring-4 ring-blue-200'
+                      : 'bg-white text-gray-700 border-2 border-gray-300 hover:border-blue-400'
+                  }`}
+                >
+                  {semester} Semester
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -180,9 +210,9 @@ export function TimetableForm({ onSuccess }: TimetableFormProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Subject *
+              Subject ({selectedSemesterType} Sem) *
             </label>
-            {formData.class ? (
+            {formData.class && formData.year ? (
               <select
                 value={formData.subject}
                 onChange={handleChange('subject')}
@@ -190,24 +220,19 @@ export function TimetableForm({ onSuccess }: TimetableFormProps) {
                 required
               >
                 <option value="">Select Subject</option>
-                {formData.year ? (
-                  subjectsByClassAndYear[formData.class as keyof typeof subjectsByClassAndYear] ? (
-                    (subjectsByClassAndYear[formData.class as keyof typeof subjectsByClassAndYear] as any)[formData.year]?.map((subj: string) => (
-                      <option key={subj} value={subj}>{subj}</option>
-                    ))
-                  ) : (
-                    // For classes without predefined subjects, provide generic options
-                    <>
-                      <option value="General Class">General Class</option>
-                      <option value="Theory">Theory</option>
-                      <option value="Practical">Practical</option>
-                      <option value="Tutorial">Tutorial</option>
-                      <option value="Lab">Lab</option>
-                      <option value="Seminar">Seminar</option>
-                    </>
-                  )
+                {getSubjectsForClassYearAndSemester(formData.class, formData.year, selectedSemesterType).length > 0 ? (
+                  getSubjectsForClassYearAndSemester(formData.class, formData.year, selectedSemesterType).map((subj: string) => (
+                    <option key={subj} value={subj}>{subj}</option>
+                  ))
                 ) : (
-                  <option value="" disabled>Select Year First</option>
+                  <>
+                    <option value="General Class">General Class</option>
+                    <option value="Theory">Theory</option>
+                    <option value="Practical">Practical</option>
+                    <option value="Tutorial">Tutorial</option>
+                    <option value="Lab">Lab</option>
+                    <option value="Seminar">Seminar</option>
+                  </>
                 )}
               </select>
             ) : (
