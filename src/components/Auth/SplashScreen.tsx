@@ -1,185 +1,192 @@
 import React, { useEffect, useState } from 'react';
-import { GraduationCap } from 'lucide-react';
 
 interface SplashScreenProps {
   onComplete: () => void;
 }
 
 export function SplashScreen({ onComplete }: SplashScreenProps) {
-  const [progress, setProgress] = useState(0);
-  const [showLogo, setShowLogo] = useState(false);
-  const [showText, setShowText] = useState(false);
+  const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
-    // Show logo first
-    setTimeout(() => setShowLogo(true), 500);
-    // Show text after logo
-    setTimeout(() => setShowText(true), 1500);
+    const timer = setTimeout(() => {
+      setFadeOut(true);
+      setTimeout(() => {
+        window.location.href = '/welcome';
+      }, 500);
+    }, 3000);
 
-    const timer = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(timer);
-          setTimeout(() => {
-            window.location.href = '/welcome';
-          }, 800);
-          return 100;
-        }
-        return prev + 1.5;
-      });
-    }, 80);
-
-    return () => clearInterval(timer);
+    return () => clearTimeout(timer);
   }, [onComplete]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#002e5d] via-blue-800 to-blue-900 flex items-center justify-center relative overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0">
-        <div className="absolute top-10 sm:top-20 left-10 sm:left-20 w-16 h-16 sm:w-32 sm:h-32 bg-white/10 rounded-full animate-pulse"></div>
-        <div className="absolute top-20 sm:top-40 right-16 sm:right-32 w-12 h-12 sm:w-24 sm:h-24 bg-white/5 rounded-full animate-bounce delay-300"></div>
-        <div className="absolute bottom-16 sm:bottom-32 left-1/4 sm:left-1/3 w-20 h-20 sm:w-40 sm:h-40 bg-white/5 rounded-full animate-pulse delay-700"></div>
-        <div className="absolute bottom-10 sm:bottom-20 right-10 sm:right-20 w-14 h-14 sm:w-28 sm:h-28 bg-white/10 rounded-full animate-bounce delay-1000"></div>
+    <div className={`min-h-screen bg-gradient-to-br from-[#002e5d] via-blue-800 to-blue-900 flex items-center justify-center relative overflow-hidden transition-opacity duration-500 ${fadeOut ? 'opacity-0' : 'opacity-100'}`}>
+      {/* Subtle animated mesh gradient background */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-cyan-500/10 via-transparent to-blue-500/10 animate-gradient"></div>
       </div>
 
-      <div className="text-center z-10 px-4 sm:px-6 lg:px-8">
-        {/* Logo Animation with Trinity Logo */}
-        <div className="mb-6 sm:mb-8 relative">
-          <div className={`transition-all duration-1000 ${showLogo ? 'scale-100 opacity-100' : 'scale-50 opacity-0'}`}>
-            <div className="bg-white/20 p-4 sm:p-6 lg:p-8 rounded-full inline-block animate-pulse">
+      {/* Minimal geometric shapes */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-20 left-20 w-2 h-2 bg-white/20 transform rotate-45 animate-float"></div>
+        <div className="absolute top-40 right-32 w-3 h-3 bg-white/10 transform rotate-45 animate-float-delayed"></div>
+        <div className="absolute bottom-32 left-1/3 w-2 h-2 bg-white/15 transform rotate-45 animate-float-slow"></div>
+      </div>
+
+      <div className="text-center z-10 px-4">
+        {/* Premium glassmorphic card with logo */}
+        <div className="inline-block animate-scale-in">
+          <div className="relative">
+            {/* Glow effect behind card */}
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/20 to-blue-400/20 blur-3xl rounded-full scale-150"></div>
+
+            {/* Glass card */}
+            <div className="relative bg-white/10 backdrop-blur-md p-12 rounded-3xl border border-white/20 shadow-2xl">
               <div className="relative">
-                {/* Trinity Track Logo */}
-                <div className="h-16 w-16 sm:h-20 sm:w-20 lg:h-28 lg:w-28 mx-auto rounded-full flex items-center justify-center">
-                  <img 
-                    src="/trinity-logo.png" 
-                    alt="Trinity Track Logo" 
-                    className="h-12 w-12 sm:h-16 sm:w-16 lg:h-20 lg:w-20 object-contain filter brightness-0 invert"
+                {/* Logo */}
+                <div className="h-32 w-32 mx-auto flex items-center justify-center mb-6">
+                  <img
+                    src="/trinity-logo.png"
+                    alt="Trinity Track"
+                    className="h-24 w-24 object-contain filter brightness-0 invert animate-subtle-pulse"
                     onError={(e) => {
                       e.currentTarget.style.display = 'none';
-                      e.currentTarget.parentElement!.innerHTML = '<div class="text-white text-2xl sm:text-3xl lg:text-4xl font-bold">Trinity</div>';
+                      const parent = e.currentTarget.parentElement;
+                      if (parent) {
+                        parent.innerHTML = '<div class="text-white text-4xl font-light tracking-wider">TRINITY</div>';
+                      }
                     }}
                   />
                 </div>
-                {/* Pulsing rings around logo */}
-                <div className="absolute inset-0 rounded-full border-2 border-white/30"></div>
-                <div className="absolute inset-0 rounded-full border border-white/20"></div>
+
+                {/* Title */}
+                <h1 className="text-4xl font-light text-white mb-2 tracking-wide animate-fade-in">
+                  Trinity Track
+                </h1>
+                <p className="text-sm text-blue-100/80 font-light tracking-widest uppercase animate-fade-in-delayed">
+                  Student Progress Tracking
+                </p>
               </div>
             </div>
           </div>
-          {/* Floating particles around logo */}
-          <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-            <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white/40 rounded-full animate-ping delay-200"></div>
-            <div className="absolute top-1/3 right-1/4 w-1 h-1 bg-white/60 rounded-full animate-pulse delay-700"></div>
-            <div className="absolute bottom-1/4 left-1/3 w-1.5 h-1.5 bg-white/50 rounded-full animate-bounce delay-1000"></div>
-            <div className="absolute bottom-1/3 right-1/3 w-1 h-1 bg-white/40 rounded-full animate-ping delay-300"></div>
-          </div>
         </div>
 
-        {/* Title with Enhanced Animation */}
-        <div className={`transition-all duration-1000 delay-500 ${showText ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-2 sm:mb-4 animate-fade-in">
-            <span className="inline-block animate-bounce delay-100">T</span>
-            <span className="inline-block animate-bounce delay-200">r</span>
-            <span className="inline-block animate-bounce delay-300">i</span>
-            <span className="inline-block animate-bounce delay-400">n</span>
-            <span className="inline-block animate-bounce delay-500">i</span>
-            <span className="inline-block animate-bounce delay-600">t</span>
-            <span className="inline-block animate-bounce delay-700">y</span>
-            <span className="inline-block mx-2 sm:mx-3"></span>
-            <span className="inline-block animate-bounce delay-800 text-yellow-300">T</span>
-            <span className="inline-block animate-bounce delay-900 text-yellow-300">r</span>
-            <span className="inline-block animate-bounce delay-1000 text-yellow-300">a</span>
-            <span className="inline-block animate-bounce delay-1100 text-yellow-300">c</span>
-            <span className="inline-block animate-bounce delay-1200 text-yellow-300">k</span>
-          </h1>
-          <p className="text-base sm:text-lg lg:text-xl text-blue-100 mb-6 sm:mb-8 animate-fade-in-delay">
-            Student & Faculty Management System
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-4 text-xs sm:text-sm text-blue-200 mb-6 sm:mb-8 animate-fade-in-delay-2">
-            <span>Powered by</span>
-            <div className="flex items-center space-x-4">
-              <a 
-                href="https://doutly.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-yellow-300 hover:text-yellow-200 font-semibold transition-colors duration-200 hover:scale-105 transform"
-              >
-                Doutly
-              </a>
-              <span className="text-blue-300">&</span>
-              <a 
-                href="https://sugarsaltmedia.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center space-x-2 text-yellow-300 hover:text-yellow-200 font-semibold transition-colors duration-200 hover:scale-105 transform"
-              >
-                <span>Sugarsaltmedia</span>
-              </a>
-            </div>
-          </div>
-        </div>
-
-        {/* Enhanced Progress Bar */}
-        <div className="w-64 sm:w-80 lg:w-96 mx-auto">
-          <div className="bg-white/20 rounded-full h-2 sm:h-3 mb-3 sm:mb-4 overflow-hidden">
-            <div 
-              className="bg-gradient-to-r from-white via-yellow-300 to-white rounded-full h-full transition-all duration-300 ease-out relative"
-              style={{ width: `${progress}%` }}
-            >
-              <div className="absolute inset-0 bg-white/30 animate-pulse"></div>
-            </div>
-          </div>
-          <div className="flex justify-between items-center">
-            <p className="text-blue-100 text-xs sm:text-sm">Loading Trinity Track...</p>
-            <p className="text-blue-100 text-xs sm:text-sm font-bold">{Math.round(progress)}%</p>
-          </div>
-        </div>
-
-        {/* Loading dots animation */}
-        <div className="flex justify-center space-x-1 sm:space-x-2 mt-4 sm:mt-6">
-          <div className="w-2 h-2 sm:w-3 sm:h-3 bg-white/60 rounded-full animate-bounce"></div>
-          <div className="w-2 h-2 sm:w-3 sm:h-3 bg-white/60 rounded-full animate-bounce delay-100"></div>
-          <div className="w-2 h-2 sm:w-3 sm:h-3 bg-white/60 rounded-full animate-bounce delay-200"></div>
+        {/* Minimal loading indicator */}
+        <div className="flex justify-center space-x-2 mt-12 animate-fade-in-late">
+          <div className="w-2 h-2 bg-white/60 rounded-full animate-pulse-dot"></div>
+          <div className="w-2 h-2 bg-white/60 rounded-full animate-pulse-dot-delayed"></div>
+          <div className="w-2 h-2 bg-white/60 rounded-full animate-pulse-dot-more-delayed"></div>
         </div>
       </div>
 
-      {/* Floating Elements with improved responsiveness */}
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-        <svg className="w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 opacity-10 animate-spin-slow" viewBox="0 0 200 200">
-          <circle cx="100" cy="100" r="80" stroke="white" strokeWidth="2" fill="none" strokeDasharray="10,5" />
-          <circle cx="100" cy="100" r="60" stroke="white" strokeWidth="1" fill="none" strokeDasharray="5,3" />
-          <circle cx="100" cy="100" r="40" stroke="white" strokeWidth="1" fill="none" strokeDasharray="3,2" />
-        </svg>
-      </div>
+      <style>{`
+        @keyframes scale-in {
+          from {
+            opacity: 0;
+            transform: scale(0.9);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
 
-      <style jsx>{`
         @keyframes fade-in {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
-        @keyframes fade-in-delay {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
+
+        @keyframes subtle-pulse {
+          0%, 100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 0.95;
+            transform: scale(1.02);
+          }
         }
-        @keyframes fade-in-delay-2 {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
+
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0) rotate(45deg);
+          }
+          50% {
+            transform: translateY(-20px) rotate(45deg);
+          }
         }
-        @keyframes spin-slow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
+
+        @keyframes gradient {
+          0%, 100% {
+            opacity: 0.3;
+          }
+          50% {
+            opacity: 0.5;
+          }
         }
+
+        @keyframes pulse-dot {
+          0%, 100% {
+            opacity: 0.3;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 1;
+            transform: scale(1.2);
+          }
+        }
+
+        .animate-scale-in {
+          animation: scale-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
         .animate-fade-in {
-          animation: fade-in 1s ease-out;
+          animation: fade-in 0.8s ease-out 0.3s both;
         }
-        .animate-fade-in-delay {
-          animation: fade-in-delay 1s ease-out 0.5s both;
+
+        .animate-fade-in-delayed {
+          animation: fade-in 0.8s ease-out 0.5s both;
         }
-        .animate-fade-in-delay-2 {
-          animation: fade-in-delay-2 1s ease-out 1s both;
+
+        .animate-fade-in-late {
+          animation: fade-in 0.8s ease-out 0.8s both;
         }
-        .animate-spin-slow {
-          animation: spin-slow 20s linear infinite;
+
+        .animate-subtle-pulse {
+          animation: subtle-pulse 3s ease-in-out infinite;
+        }
+
+        .animate-float {
+          animation: float 6s ease-in-out infinite;
+        }
+
+        .animate-float-delayed {
+          animation: float 6s ease-in-out 2s infinite;
+        }
+
+        .animate-float-slow {
+          animation: float 8s ease-in-out 1s infinite;
+        }
+
+        .animate-gradient {
+          animation: gradient 4s ease-in-out infinite;
+        }
+
+        .animate-pulse-dot {
+          animation: pulse-dot 1.5s ease-in-out infinite;
+        }
+
+        .animate-pulse-dot-delayed {
+          animation: pulse-dot 1.5s ease-in-out 0.2s infinite;
+        }
+
+        .animate-pulse-dot-more-delayed {
+          animation: pulse-dot 1.5s ease-in-out 0.4s infinite;
         }
       `}</style>
     </div>

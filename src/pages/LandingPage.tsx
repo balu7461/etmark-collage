@@ -1,13 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserCog, Home, GraduationCap, Users, Calendar, Award, Shield, Heart } from 'lucide-react';
+import { Heart } from 'lucide-react';
 
 export function LandingPage() {
   const navigate = useNavigate();
-
-  const handleManagementClick = () => {
-    navigate('/login');
-  };
 
   const handleParentClick = () => {
     navigate('/parent-attendance');
@@ -15,159 +11,171 @@ export function LandingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#002e5d] via-blue-800 to-blue-900 flex items-center justify-center relative overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0">
-        <div className="absolute top-10 sm:top-20 left-10 sm:left-20 w-16 h-16 sm:w-32 sm:h-32 bg-white/10 rounded-full animate-pulse"></div>
-        <div className="absolute top-20 sm:top-40 right-16 sm:right-32 w-12 h-12 sm:w-24 sm:h-24 bg-white/5 rounded-full animate-bounce delay-300"></div>
-        <div className="absolute bottom-16 sm:bottom-32 left-1/4 sm:left-1/3 w-20 h-20 sm:w-40 sm:h-40 bg-white/5 rounded-full animate-pulse delay-700"></div>
-        <div className="absolute bottom-10 sm:bottom-20 right-10 sm:right-20 w-14 h-14 sm:w-28 sm:h-28 bg-white/10 rounded-full animate-bounce delay-1000"></div>
+      {/* Subtle animated mesh gradient background */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-cyan-500/10 via-transparent to-blue-500/10 animate-gradient"></div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
-        {/* Header Section */}
-        <div className="mb-12 sm:mb-16">
-          <div className="flex justify-center mb-6 sm:mb-8">
-            <div className="bg-white/20 p-4 sm:p-6 lg:p-8 rounded-full animate-pulse">
-              <img 
-                src="/trinity-logo.png" 
-                alt="Trinity Track Logo" 
-                className="h-16 w-16 sm:h-20 sm:w-20 lg:h-24 lg:w-24 object-contain filter brightness-0 invert"
+      {/* Minimal geometric shapes - triangles */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-20 left-20 w-3 h-3 bg-white/10 transform rotate-45 animate-float"></div>
+        <div className="absolute top-40 right-32 w-2 h-2 bg-white/15 transform rotate-45 animate-float-delayed"></div>
+        <div className="absolute bottom-32 left-1/3 w-4 h-4 bg-white/10 transform rotate-45 animate-float-slow"></div>
+        <div className="absolute bottom-40 right-1/4 w-2 h-2 bg-white/20 transform rotate-45 animate-float"></div>
+      </div>
+
+      <div className="max-w-2xl mx-auto px-6 text-center z-10">
+        {/* Logo Section */}
+        <div className="mb-12 animate-fade-in">
+          <div className="relative inline-block">
+            {/* Glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/20 to-blue-400/20 blur-3xl rounded-full scale-150"></div>
+
+            {/* Logo */}
+            <div className="relative bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/20 shadow-2xl inline-block">
+              <img
+                src="/trinity-logo.png"
+                alt="Trinity Track Logo"
+                className="h-20 w-20 object-contain filter brightness-0 invert animate-subtle-pulse"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
-                  e.currentTarget.parentElement!.innerHTML = '<div class="text-white text-3xl sm:text-4xl lg:text-5xl font-bold">Trinity</div>';
+                  const parent = e.currentTarget.parentElement;
+                  if (parent) {
+                    parent.innerHTML = '<div class="text-white text-4xl font-light tracking-wider">TRINITY</div>';
+                  }
                 }}
               />
             </div>
           </div>
-          
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-4 sm:mb-6">
-            Welcome to Trinity Track
+        </div>
+
+        {/* Header */}
+        <div className="mb-16 animate-fade-in-delayed">
+          <h1 className="text-5xl font-light text-white mb-4 tracking-wide">
+            Trinity Track
           </h1>
-          <p className="text-lg sm:text-xl lg:text-2xl text-blue-100 mb-6 sm:mb-8">
-            Complete Student & Faculty Management System
-          </p>
-          <p className="text-sm sm:text-base lg:text-lg text-blue-200 max-w-2xl mx-auto">
-            Choose your portal to access the features designed for you
+          <p className="text-lg text-blue-100/80 font-light">
+            Student Progress Tracking
           </p>
         </div>
 
-        {/* Portal Selection */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 max-w-4xl mx-auto">
-          {/* Management Portal */}
-          <div className="group">
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-10 border border-white/20 hover:bg-white/20 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
-              <div className="flex justify-center mb-6 sm:mb-8">
-                <div className="bg-gradient-to-br from-blue-400 to-blue-600 p-4 sm:p-6 lg:p-8 rounded-full group-hover:from-blue-300 group-hover:to-blue-500 transition-all duration-300 shadow-lg">
-                  <UserCog className="h-12 w-12 sm:h-16 sm:w-16 lg:h-20 lg:w-20 text-white" />
-                </div>
-              </div>
-              
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 sm:mb-6">
-                Management Portal
-              </h2>
-              <p className="text-blue-100 text-sm sm:text-base lg:text-lg mb-6 sm:mb-8 leading-relaxed">
-                For administrators, faculty, and committee members to manage students, attendance, timetables, and achievements.
-              </p>
-              
-              <button
-                onClick={handleManagementClick}
-                className="w-full bg-white text-[#002e5d] py-3 sm:py-4 lg:py-5 px-6 sm:px-8 rounded-xl sm:rounded-2xl font-semibold text-base sm:text-lg lg:text-xl hover:bg-blue-50 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
-              >
-                Access Management Portal
-              </button>
-            </div>
-          </div>
+        {/* Single Parent Portal Card */}
+        <div className="group animate-scale-in-delayed">
+          <div className="relative">
+            {/* Hover glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/0 to-blue-400/0 group-hover:from-cyan-400/10 group-hover:to-blue-400/10 blur-2xl transition-all duration-500 rounded-3xl"></div>
 
-          {/* Parent Portal */}
-          <div className="group">
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-10 border border-white/20 hover:bg-white/20 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
-              <div className="flex justify-center mb-6 sm:mb-8">
-                <div className="bg-gradient-to-br from-green-400 to-green-600 p-4 sm:p-6 lg:p-8 rounded-full group-hover:from-green-300 group-hover:to-green-500 transition-all duration-300 shadow-lg">
-                  <Heart className="h-12 w-12 sm:h-16 sm:w-16 lg:h-20 lg:w-20 text-white" />
+            {/* Main card */}
+            <div className="relative bg-white/10 backdrop-blur-md rounded-3xl p-10 border border-white/20 hover:border-white/30 transition-all duration-500 shadow-2xl group-hover:shadow-cyan-500/10 group-hover:transform group-hover:scale-105">
+              {/* Icon */}
+              <div className="flex justify-center mb-8">
+                <div className="bg-gradient-to-br from-cyan-400/20 to-blue-500/20 p-6 rounded-2xl border border-white/20 group-hover:scale-110 transition-transform duration-500">
+                  <Heart className="h-16 w-16 text-white" strokeWidth={1.5} />
                 </div>
               </div>
-              
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 sm:mb-6">
+
+              {/* Content */}
+              <h2 className="text-3xl font-light text-white mb-4 tracking-wide">
                 Parent Portal
               </h2>
-              <p className="text-blue-100 text-sm sm:text-base lg:text-lg mb-6 sm:mb-8 leading-relaxed">
-                For parents to check their child's daily attendance records and stay connected with their academic progress.
+              <p className="text-blue-100/70 text-base leading-relaxed mb-8 font-light">
+                Check your child's attendance and academic progress
               </p>
-              
+
+              {/* Button */}
               <button
                 onClick={handleParentClick}
-                className="w-full bg-white text-green-600 py-3 sm:py-4 lg:py-5 px-6 sm:px-8 rounded-xl sm:rounded-2xl font-semibold text-base sm:text-lg lg:text-xl hover:bg-green-50 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                className="w-full bg-white/90 backdrop-blur-sm text-[#002e5d] py-4 px-8 rounded-2xl font-medium text-lg hover:bg-white transition-all duration-300 shadow-lg hover:shadow-xl group-hover:scale-105"
               >
-                Check Child's Attendance
+                View Attendance
               </button>
             </div>
           </div>
         </div>
-
-        {/* Footer Information */}
-        <div className="mt-12 sm:mt-16 text-center">
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/20 max-w-2xl mx-auto">
-            <h3 className="text-lg sm:text-xl font-semibold text-white mb-3 sm:mb-4">
-              Trinity Track Features
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-blue-200 text-xs sm:text-sm">
-              <div className="flex items-center justify-center space-x-2">
-                <Calendar className="h-4 w-4" />
-                <span>Attendance Management</span>
-              </div>
-              <div className="flex items-center justify-center space-x-2">
-                <Award className="h-4 w-4" />
-                <span>Achievement Tracking</span>
-              </div>
-              <div className="flex items-center justify-center space-x-2">
-                <Shield className="h-4 w-4" />
-                <span>Leave Management</span>
-              </div>
-            </div>
-          </div>
-          
-          <div className="mt-6 sm:mt-8 text-blue-200 text-xs sm:text-sm">
-            <p>© 2025 Trinity Track - Student & Faculty Management System</p>
-            <div className="flex items-center justify-center space-x-4 mt-2">
-              <span>Powered by</span>
-              <a 
-                href="https://doutly.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-yellow-300 hover:text-yellow-200 font-semibold transition-colors duration-200"
-              >
-                Doutly
-              </a>
-              <span>&</span>
-              <a 
-                href="https://sugarsaltmedia.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-yellow-300 hover:text-yellow-200 font-semibold transition-colors duration-200"
-              >
-                Sugarsaltmedia
-              </a>
-            </div>
-          </div>
-        </div>
       </div>
 
-      {/* Floating Elements */}
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-        <svg className="w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 opacity-5 animate-spin-slow" viewBox="0 0 200 200">
-          <circle cx="100" cy="100" r="80" stroke="white" strokeWidth="2" fill="none" strokeDasharray="10,5" />
-          <circle cx="100" cy="100" r="60" stroke="white" strokeWidth="1" fill="none" strokeDasharray="5,3" />
-          <circle cx="100" cy="100" r="40" stroke="white" strokeWidth="1" fill="none" strokeDasharray="3,2" />
-        </svg>
-      </div>
-
-      <style jsx>{`
-        @keyframes spin-slow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
+      <style>{`
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
-        .animate-spin-slow {
-          animation: spin-slow 20s linear infinite;
+
+        @keyframes scale-in {
+          from {
+            opacity: 0;
+            transform: scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+
+        @keyframes subtle-pulse {
+          0%, 100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 0.95;
+            transform: scale(1.02);
+          }
+        }
+
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0) rotate(45deg);
+          }
+          50% {
+            transform: translateY(-20px) rotate(45deg);
+          }
+        }
+
+        @keyframes gradient {
+          0%, 100% {
+            opacity: 0.3;
+          }
+          50% {
+            opacity: 0.5;
+          }
+        }
+
+        .animate-fade-in {
+          animation: fade-in 0.8s ease-out 0.2s both;
+        }
+
+        .animate-fade-in-delayed {
+          animation: fade-in 0.8s ease-out 0.5s both;
+        }
+
+        .animate-scale-in-delayed {
+          animation: scale-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.8s both;
+        }
+
+        .animate-subtle-pulse {
+          animation: subtle-pulse 3s ease-in-out infinite;
+        }
+
+        .animate-float {
+          animation: float 6s ease-in-out infinite;
+        }
+
+        .animate-float-delayed {
+          animation: float 6s ease-in-out 2s infinite;
+        }
+
+        .animate-float-slow {
+          animation: float 8s ease-in-out 1s infinite;
+        }
+
+        .animate-gradient {
+          animation: gradient 4s ease-in-out infinite;
         }
       `}</style>
     </div>
